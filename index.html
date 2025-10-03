@@ -191,6 +191,13 @@
             font-weight: 700;
             color: var(--primary-color);
             text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-logo:hover {
+            color: var(--secondary-color);
+            transform: scale(1.05);
         }
 
         .nav-menu {
@@ -612,7 +619,7 @@
     <!-- 主選單 -->
     <nav class="main-nav">
         <div class="nav-container">
-            <a href="#" class="nav-logo">AIJob智能</a>
+            <a href="#" class="nav-logo" onclick="returnToHome(); return false;">AIJob智能</a>
             <ul class="nav-menu">
                 <li><a href="index_light.html">首頁</a></li>
                 <li><a href="#" onclick="showInstructions(); return false;">使用說明</a></li>
@@ -827,6 +834,21 @@
             document.getElementById('back-to-main').addEventListener('click', function() {
                 document.querySelector('.instructions-container').remove();
                 document.querySelector('.main-content').style.display = 'block';
+            });
+        }
+        
+        function returnToHome() {
+            // 如果在使用說明頁面，先返回主頁面
+            const instructionsContainer = document.querySelector('.instructions-container');
+            if (instructionsContainer) {
+                instructionsContainer.remove();
+                document.querySelector('.main-content').style.display = 'block';
+            }
+            
+            // 滾動到頁面頂部
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         }
 
