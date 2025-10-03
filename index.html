@@ -74,7 +74,7 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
-            padding: 15px 0;
+            padding: 12px 0;
         }
 
         .nav-container {
@@ -83,11 +83,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 15px;
         }
 
         .nav-logo {
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
             font-weight: 700;
             color: var(--primary-color);
             text-decoration: none;
@@ -103,14 +103,16 @@
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: 30px;
+            gap: clamp(15px, 3vw, 30px);
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .nav-menu a {
             color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
             transition: color 0.3s ease;
             position: relative;
         }
@@ -122,8 +124,8 @@
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
+            gap: 8px;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
             color: var(--text-secondary);
         }
 
@@ -132,12 +134,13 @@
             margin-top: 80px;
             width: 100%;
             max-width: 1200px;
+            padding: 0 15px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 50px;
-            padding: 40px 20px;
+            margin-bottom: clamp(30px, 6vw, 50px);
+            padding: clamp(20px, 5vw, 40px);
             background: var(--card-bg);
             border-radius: 20px;
             box-shadow: 0 10px 30px var(--shadow-color);
@@ -146,34 +149,36 @@
         }
 
         .logo {
-            width: 120px;
+            width: clamp(80px, 15vw, 120px);
             height: auto;
             margin-bottom: 20px;
             filter: drop-shadow(0 5px 15px var(--hover-shadow));
         }
 
         .header h1 {
-            font-size: 2.8rem;
+            font-size: clamp(1.8rem, 6vw, 2.8rem);
             font-weight: 700;
             margin: 0 0 15px 0;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1.2;
         }
 
         .header p {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3vw, 1.2rem);
             color: var(--text-secondary);
             max-width: 600px;
             margin: 0 auto;
+            line-height: 1.5;
         }
 
         /* 用戶等級選擇器 */
         .user-level-selector {
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 30px;
+            padding: clamp(20px, 5vw, 30px);
             margin-bottom: 30px;
             box-shadow: 0 5px 15px var(--shadow-color);
             border: 2px solid var(--border-color);
@@ -183,7 +188,7 @@
             text-align: center;
             margin-bottom: 20px;
             color: var(--text-color);
-            font-size: 1.4rem;
+            font-size: clamp(1.2rem, 3.5vw, 1.4rem);
         }
 
         .level-options {
@@ -216,19 +221,20 @@
 
         .level-option h4 {
             margin-bottom: 8px;
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 2.8vw, 1.1rem);
         }
 
         .level-option p {
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 2.2vw, 0.9rem);
             opacity: 0.8;
+            line-height: 1.4;
         }
 
         /* 歷史記錄區域 */
         .history-section {
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 30px;
+            padding: clamp(20px, 5vw, 30px);
             margin-bottom: 30px;
             box-shadow: 0 5px 15px var(--shadow-color);
             border: 2px solid var(--border-color);
@@ -238,13 +244,15 @@
             background: none;
             border: none;
             color: var(--primary-color);
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3vw, 1.2rem);
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
+            width: 100%;
+            justify-content: center;
         }
 
         .history-content {
@@ -268,23 +276,25 @@
         .history-item h5 {
             color: var(--primary-color);
             margin-bottom: 5px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
         }
 
         .history-item p {
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 2.2vw, 0.9rem);
             color: var(--text-secondary);
             margin-bottom: 5px;
+            line-height: 1.4;
         }
 
         .history-item .timestamp {
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
             color: var(--text-secondary);
         }
 
         .main-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: clamp(20px, 4vw, 30px);
             margin-bottom: 50px;
         }
 
@@ -292,13 +302,17 @@
             background: var(--card-bg);
             border: 2px solid var(--border-color);
             border-radius: 16px;
-            padding: 30px;
+            padding: clamp(20px, 5vw, 30px);
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             box-shadow: 0 5px 15px var(--shadow-color);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .card:hover {
@@ -308,21 +322,22 @@
         }
 
         .card-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin-bottom: 15px;
             display: block;
         }
 
         .card h3 {
             margin: 0 0 15px 0;
-            font-size: 1.6rem;
+            font-size: clamp(1.2rem, 3.5vw, 1.6rem);
             color: var(--text-color);
+            line-height: 1.3;
         }
 
         .card p {
             margin: 0;
             color: var(--text-secondary);
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
             line-height: 1.6;
         }
 
@@ -342,6 +357,7 @@
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
             backdrop-filter: blur(5px);
+            padding: 20px;
         }
 
         .modal-overlay.active {
@@ -351,16 +367,16 @@
 
         .modal-content {
             background: var(--card-bg);
-            padding: 40px;
+            padding: clamp(20px, 5vw, 40px);
             border-radius: 20px;
-            width: 90%;
+            width: 100%;
             max-width: 700px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             border: 2px solid var(--border-color);
             position: relative;
             transform: scale(0.9);
             transition: transform 0.3s;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
         }
         
@@ -392,13 +408,16 @@
         .modal-content h2 {
             margin-top: 0;
             color: var(--text-color);
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
             margin-bottom: 10px;
+            line-height: 1.3;
         }
 
         .modal-content p {
             color: var(--text-secondary);
             margin-bottom: 25px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            line-height: 1.5;
         }
 
         #topic-input {
@@ -409,7 +428,7 @@
             border: 2px solid var(--border-color);
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
@@ -426,7 +445,7 @@
             border-radius: 10px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 2.8vw, 1.1rem);
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -456,6 +475,7 @@
             border: 1px solid var(--border-color);
             color: var(--text-color);
             line-height: 1.6;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
         }
 
         /* 反饋系統 */
@@ -472,15 +492,22 @@
             display: block;
         }
 
+        .feedback-section h4 {
+            font-size: clamp(1rem, 2.8vw, 1.1rem);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
         .rating-stars {
             display: flex;
             gap: 5px;
             margin: 10px 0;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .star {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             color: var(--border-color);
             cursor: pointer;
             transition: color 0.3s;
@@ -499,6 +526,7 @@
             margin: 10px 0;
             resize: vertical;
             min-height: 80px;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
         }
 
         .feedback-submit {
@@ -509,6 +537,8 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            width: 100%;
         }
 
         .loader {
@@ -530,7 +560,7 @@
             display: inline-block;
             padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
             font-weight: 500;
             margin-left: 10px;
         }
@@ -552,21 +582,20 @@
 
         /* 響應式設計 */
         @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
+            body {
+                padding: 20px 10px;
             }
             
             .main-content {
-                margin-top: 60px;
+                margin-top: 70px;
             }
             
-            .header {
-                margin-bottom: 30px;
-                padding: 30px 15px;
+            .nav-menu {
+                gap: 10px;
             }
             
-            .header h1 {
-                font-size: 2.2rem;
+            .user-info {
+                display: none;
             }
             
             .main-grid {
@@ -576,20 +605,65 @@
             
             .level-options {
                 grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .rating-stars {
+                gap: 3px;
             }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 20px 10px;
+            .nav-container {
+                padding: 0 10px;
             }
             
-            .header h1 {
-                font-size: 1.8rem;
+            .header {
+                margin-bottom: 20px;
+                padding: 20px 15px;
             }
             
             .card {
-                padding: 20px;
+                padding: 20px 15px;
+                min-height: 180px;
+            }
+            
+            .modal-overlay {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .nav-menu {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .nav-logo {
+                margin-bottom: 5px;
+            }
+        }
+
+        /* 平板橫向優化 */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .level-options {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* 大螢幕優化 */
+        @media (min-width: 1200px) {
+            .main-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
     </style>
@@ -670,6 +744,11 @@
                 <div class="card-icon">📊</div>
                 <h3>創作分析</h3>
                 <p>查看您的創作統計和改進建議</p>
+            </div>
+            <div class="card" data-action="customize">
+                <div class="card-icon">🚀</div>
+                <h3>進階客製化</h3>
+                <p>填寫表單，打造您的專屬 AI。個性化設定，滿足特殊需求！</p>
             </div>
         </div>
     </div>
@@ -788,6 +867,8 @@
                     showInstructions();
                 } else if (action === 'analytics') {
                     showAnalytics();
+                } else if (action === 'customize') {
+                    showCustomization();
                 }
             });
         });
@@ -967,6 +1048,74 @@
             }
         }
 
+        function showCustomization() {
+            // 隱藏主要內容
+            document.querySelector('.main-content').style.display = 'none';
+            
+            // 移除現有的動態內容
+            const existingContent = document.querySelector('.dynamic-content');
+            if (existingContent) {
+                existingContent.remove();
+            }
+            
+            // 創建進階客製化內容
+            const customizationContent = `
+                <div class="dynamic-content" style="max-width: 1000px; margin: 80px auto 0; padding: 20px 15px; width: 100%; box-sizing: border-box;">
+                    <div class="page-header" style="text-align: center; margin-bottom: 30px; padding: 30px 15px; background: var(--card-bg); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow-color); position: relative; overflow: hidden;">
+                        <h1 style="font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2;">🚀 進階客製化</h1>
+                        <p style="font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-secondary); line-height: 1.4;">打造您的專屬 AI 助手，滿足個性化需求</p>
+                    </div>
+
+                    <div class="content-section" style="background: var(--card-bg); border-radius: 12px; padding: clamp(20px, 5vw, 40px); margin-bottom: 20px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); width: 100%; box-sizing: border-box;">
+                        <h2 style="color: var(--text-color); font-size: clamp(1.4rem, 3.5vw, 1.8rem); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color); line-height: 1.3;">🎁 專屬客製化方案</h2>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin: 20px 0;">
+                            <div style="background: linear-gradient(135deg, #fff9c4, #ffe082); border: 3px solid var(--primary-color); border-radius: 15px; padding: clamp(20px, 5vw, 30px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
+                                <div style="position: absolute; top: 10px; right: 15px; background: var(--primary-color); color: white; padding: 5px 12px; border-radius: 20px; font-size: clamp(0.8rem, 2vw, 0.9rem); font-weight: 700;">🔥 熱門</div>
+                                <h3 style="color: var(--text-color); font-size: clamp(1.3rem, 3.2vw, 1.6rem); margin-bottom: 10px; font-weight: 700;">爆款流量 AI 方案</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">適合想要快速打造爆款內容的創作者</p>
+                                <ul style="color: var(--text-secondary); margin-bottom: 20px; padding-left: 20px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.6;">
+                                    <li>🎯 爆款流量密碼解析系統</li>
+                                    <li>📝 從 0 開始腳本創作教學</li>
+                                    <li>🔥 個性化內容策略制定</li>
+                                    <li>📈 持續優化與效果追蹤</li>
+                                    <li>🎓 專業一對一指導</li>
+                                </ul>
+                                <div style="text-align: center; margin-top: 20px;">
+                                    <p style="font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-secondary); margin-bottom: 15px; font-style: italic;">專屬定制價格，根據需求量身報價</p>
+                                    <button style="background: var(--primary-color); color: white; border: none; padding: clamp(12px, 3vw, 15px) clamp(25px, 6vw, 30px); border-radius: 25px; font-size: clamp(1rem, 2.5vw, 1.1rem); font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); width: 100%; max-width: 200px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(255, 193, 7, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(255, 193, 7, 0.3)'" onclick="window.open('https://www.aijob.com.tw/', '_blank')">查看方案價格</button>
+                                </div>
+                            </div>
+                            
+                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: clamp(20px, 5vw, 30px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
+                                <h3 style="color: var(--text-color); font-size: clamp(1.3rem, 3.2vw, 1.6rem); margin-bottom: 10px; font-weight: 700;">企業級爆款流量方案</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">適合企業品牌和大型團隊</p>
+                                <ul style="color: var(--text-secondary); margin-bottom: 20px; padding-left: 20px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.6;">
+                                    <li>🚀 完整爆款流量生態系統</li>
+                                    <li>👥 團隊協作內容創作平台</li>
+                                    <li>📊 深度數據分析與洞察</li>
+                                    <li>🎯 品牌專屬流量策略</li>
+                                    <li>🔧 系統整合與 API 服務</li>
+                                    <li>📞 24/7 專業技術支援</li>
+                                </ul>
+                                <div style="text-align: center; margin-top: 20px;">
+                                    <p style="font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-secondary); margin-bottom: 15px; font-style: italic;">企業級定制方案，專業顧問一對一諮詢</p>
+                                    <button style="background: var(--text-color); color: white; border: none; padding: clamp(12px, 3vw, 15px) clamp(25px, 6vw, 30px); border-radius: 25px; font-size: clamp(1rem, 2.5vw, 1.1rem); font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); width: 100%; max-width: 200px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0, 0, 0, 0.2)'" onclick="window.open('https://www.aijob.com.tw/', '_blank')">查看方案價格</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 30px 0; padding: 0 15px;">
+                        <button onclick="returnToHome()" style="display: inline-block; background: var(--primary-color); color: white; padding: clamp(12px, 3vw, 15px) clamp(25px, 6vw, 30px); border: none; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: clamp(1rem, 2.5vw, 1.1rem); cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); width: auto; max-width: 200px;">返回主頁</button>
+                    </div>
+                </div>
+            `;
+            
+            // 插入進階客製化內容
+            document.body.insertAdjacentHTML('beforeend', customizationContent);
+        }
+
         function showInstructions() {
             document.querySelector('.main-content').style.display = 'none';
             
@@ -978,23 +1127,23 @@
             const instructionsContent = `
                 <div class="dynamic-content" style="max-width: 1000px; margin: 80px auto 0; padding: 20px;">
                     <div class="page-header" style="text-align: center; margin-bottom: 30px; padding: 30px; background: var(--card-bg); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow-color);">
-                        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ultimate版使用說明</h1>
-                        <p style="font-size: 1.2rem; color: var(--text-secondary);">了解如何使用對話記憶、個性化學習和反饋系統</p>
+                        <h1 style="font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 700; margin-bottom: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ultimate版使用說明</h1>
+                        <p style="font-size: clamp(1rem, 3vw, 1.2rem); color: var(--text-secondary);">了解如何使用對話記憶、個性化學習和反饋系統</p>
                     </div>
 
-                    <div class="content-section" style="background: var(--card-bg); border-radius: 12px; padding: 40px; margin-bottom: 20px; box-shadow: 0 5px 15px var(--shadow-color);">
-                        <h2 style="color: var(--text-color); font-size: 1.8rem; margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">🧠 智能記憶功能</h2>
-                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px;">系統會記住您的每次創作，分析您的偏好模式，並在未來的創作中提供個性化建議。您的創作歷史會影響AI的回應風格和內容深度。</p>
+                    <div class="content-section" style="background: var(--card-bg); border-radius: 12px; padding: clamp(20px, 5vw, 40px); margin-bottom: 20px; box-shadow: 0 5px 15px var(--shadow-color);">
+                        <h2 style="color: var(--text-color); font-size: clamp(1.4rem, 4vw, 1.8rem); margin-bottom: 20px; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">🧠 智能記憶功能</h2>
+                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px; font-size: clamp(0.9rem, 2.5vw, 1rem);">系統會記住您的每次創作，分析您的偏好模式，並在未來的創作中提供個性化建議。您的創作歷史會影響AI的回應風格和內容深度。</p>
                         
-                        <h2 style="color: var(--text-color); font-size: 1.8rem; margin: 30px 0 20px 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">⭐ 反饋學習系統</h2>
-                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px;">每次生成內容後，請為結果評分並提供反饋。這些數據會幫助系統更好地理解您的需求，持續改進創作品質。</p>
+                        <h2 style="color: var(--text-color); font-size: clamp(1.4rem, 4vw, 1.8rem); margin: 30px 0 20px 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">⭐ 反饋學習系統</h2>
+                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px; font-size: clamp(0.9rem, 2.5vw, 1rem);">每次生成內容後，請為結果評分並提供反饋。這些數據會幫助系統更好地理解您的需求，持續改進創作品質。</p>
                         
-                        <h2 style="color: var(--text-color); font-size: 1.8rem; margin: 30px 0 20px 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">📊 個性化分析</h2>
-                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px;">系統會分析您最常使用的功能、偏好的主題類型，並在創作分析頁面提供詳細的使用統計和改進建議。</p>
+                        <h2 style="color: var(--text-color); font-size: clamp(1.4rem, 4vw, 1.8rem); margin: 30px 0 20px 0; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">📊 個性化分析</h2>
+                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 15px; font-size: clamp(0.9rem, 2.5vw, 1rem);">系統會分析您最常使用的功能、偏好的主題類型，並在創作分析頁面提供詳細的使用統計和改進建議。</p>
                     </div>
 
                     <div style="text-align: center; margin: 30px 0;">
-                        <button onclick="returnToHome()" style="padding: 15px 30px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 25px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">返回首頁</button>
+                        <button onclick="returnToHome()" style="padding: 15px 30px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 25px; font-size: clamp(1rem, 2.8vw, 1.1rem); font-weight: 700; cursor: pointer;">返回首頁</button>
                     </div>
                 </div>
             `;
@@ -1035,36 +1184,78 @@
             const history = data.history || [];
             const patterns = data.patterns || {};
 
+            // 計算統計數據
+            const copywritingCount = history.filter(h => h.action === 'copywriting').length;
+            const scriptwritingCount = history.filter(h => h.action === 'scriptwriting').length;
+            const levelStats = {
+                beginner: history.filter(h => h.user_level === 'beginner').length,
+                intermediate: history.filter(h => h.user_level === 'intermediate').length,
+                advanced: history.filter(h => h.user_level === 'advanced').length
+            };
+
             const analyticsContent = `
                 <div class="dynamic-content" style="max-width: 1000px; margin: 80px auto 0; padding: 20px;">
                     <div class="page-header" style="text-align: center; margin-bottom: 30px; padding: 30px; background: var(--card-bg); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow-color);">
-                        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">創作分析報告</h1>
-                        <p style="font-size: 1.2rem; color: var(--text-secondary);">您的個人創作統計和改進建議</p>
+                        <h1 style="font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 700; margin-bottom: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">📊 創作分析報告</h1>
+                        <p style="font-size: clamp(1rem, 3vw, 1.2rem); color: var(--text-secondary);">您的個人創作統計和使用模式分析</p>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                        <div style="background: var(--card-bg); border-radius: 12px; padding: 30px; box-shadow: 0 5px 15px var(--shadow-color);">
-                            <h3 style="color: var(--primary-color); margin-bottom: 15px;">📊 創作統計</h3>
-                            <p><strong>總創作次數：</strong>${history.length}</p>
-                            <p><strong>文案創作：</strong>${history.filter(h => h.action === 'copywriting').length} 次</p>
-                            <p><strong>腳本創作：</strong>${history.filter(h => h.action === 'scriptwriting').length} 次</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div style="background: var(--card-bg); border-radius: 12px; padding: 25px; box-shadow: 0 5px 15px var(--shadow-color); border-left: 4px solid var(--primary-color);">
+                            <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: clamp(1.1rem, 3vw, 1.3rem);">📈 創作統計</h3>
+                            <div style="font-size: clamp(0.9rem, 2.5vw, 1rem); line-height: 1.8;">
+                                <p><strong>總創作次數：</strong>${history.length} 次</p>
+                                <p><strong>文案創作：</strong>${copywritingCount} 次 (${history.length > 0 ? Math.round(copywritingCount/history.length*100) : 0}%)</p>
+                                <p><strong>腳本創作：</strong>${scriptwritingCount} 次 (${history.length > 0 ? Math.round(scriptwritingCount/history.length*100) : 0}%)</p>
+                            </div>
                         </div>
 
-                        <div style="background: var(--card-bg); border-radius: 12px; padding: 30px; box-shadow: 0 5px 15px var(--shadow-color);">
-                            <h3 style="color: var(--primary-color); margin-bottom: 15px;">🎯 偏好分析</h3>
-                            ${patterns.preferred_actions && patterns.preferred_actions.length > 0 ? 
-                                `<p><strong>最常用功能：</strong>${patterns.preferred_actions[0].action === 'copywriting' ? '文案創作' : '腳本創作'}</p>` : 
-                                '<p>數據收集中...</p>'
-                            }
-                            ${patterns.common_topics && patterns.common_topics.length > 0 ? 
-                                `<p><strong>常用主題：</strong>${patterns.common_topics.slice(0, 3).map(t => t.topic).join(', ')}</p>` : 
-                                '<p>主題分析中...</p>'
-                            }
+                        <div style="background: var(--card-bg); border-radius: 12px; padding: 25px; box-shadow: 0 5px 15px var(--shadow-color); border-left: 4px solid var(--success-color);">
+                            <h3 style="color: var(--success-color); margin-bottom: 15px; font-size: clamp(1.1rem, 3vw, 1.3rem);">🎯 等級使用分布</h3>
+                            <div style="font-size: clamp(0.9rem, 2.5vw, 1rem); line-height: 1.8;">
+                                <p><strong>初學者模式：</strong>${levelStats.beginner} 次</p>
+                                <p><strong>中級模式：</strong>${levelStats.intermediate} 次</p>
+                                <p><strong>進階模式：</strong>${levelStats.advanced} 次</p>
+                            </div>
+                        </div>
+
+                        <div style="background: var(--card-bg); border-radius: 12px; padding: 25px; box-shadow: 0 5px 15px var(--shadow-color); border-left: 4px solid var(--link-color);">
+                            <h3 style="color: var(--link-color); margin-bottom: 15px; font-size: clamp(1.1rem, 3vw, 1.3rem);">🔍 偏好分析</h3>
+                            <div style="font-size: clamp(0.9rem, 2.5vw, 1rem); line-height: 1.8;">
+                                ${patterns.preferred_actions && patterns.preferred_actions.length > 0 ? 
+                                    `<p><strong>最常用功能：</strong>${patterns.preferred_actions[0].action === 'copywriting' ? '文案創作' : '腳本創作'}</p>` : 
+                                    '<p><strong>最常用功能：</strong>數據收集中...</p>'
+                                }
+                                ${patterns.common_topics && patterns.common_topics.length > 0 ? 
+                                    `<p><strong>熱門主題：</strong>${patterns.common_topics.slice(0, 2).map(t => t.topic).join(', ')}</p>` : 
+                                    '<p><strong>熱門主題：</strong>主題分析中...</p>'
+                                }
+                                <p><strong>創作活躍度：</strong>${history.length >= 10 ? '高' : history.length >= 5 ? '中' : '低'}</p>
+                            </div>
                         </div>
                     </div>
+
+                    ${history.length > 0 ? `
+                    <div style="background: var(--card-bg); border-radius: 12px; padding: 25px; box-shadow: 0 5px 15px var(--shadow-color); margin-bottom: 20px;">
+                        <h3 style="color: var(--text-color); margin-bottom: 15px; font-size: clamp(1.1rem, 3vw, 1.3rem);">💡 個性化建議</h3>
+                        <div style="font-size: clamp(0.9rem, 2.5vw, 1rem); line-height: 1.6; color: var(--text-secondary);">
+                            ${copywritingCount > scriptwritingCount ? 
+                                '<p>✨ 您偏好文案創作，建議嘗試更多腳本創作來豐富技能。</p>' : 
+                                scriptwritingCount > copywritingCount ? 
+                                '<p>✨ 您偏好腳本創作，建議嘗試文案創作來提升文字表達能力。</p>' :
+                                '<p>✨ 您在文案和腳本創作上保持平衡，繼續保持多元化創作！</p>'
+                            }
+                            ${levelStats.advanced > levelStats.beginner + levelStats.intermediate ? 
+                                '<p>🎯 您經常使用進階模式，顯示出專業的創作需求。</p>' :
+                                '<p>🎯 建議嘗試更高等級的創作模式，挑戰更複雜的內容。</p>'
+                            }
+                            <p>📈 持續使用系統將獲得更精準的個性化建議。</p>
+                        </div>
+                    </div>
+                    ` : ''}
 
                     <div style="text-align: center; margin: 30px 0;">
-                        <button onclick="returnToHome()" style="padding: 15px 30px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 25px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">返回首頁</button>
+                        <button onclick="returnToHome()" style="padding: 15px 30px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 25px; font-size: clamp(1rem, 2.8vw, 1.1rem); font-weight: 700; cursor: pointer;">返回首頁</button>
                     </div>
                 </div>
             `;
@@ -1075,4 +1266,3 @@
 </body>
 </html>
 
-</html>
