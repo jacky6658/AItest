@@ -621,8 +621,9 @@
         <div class="nav-container">
             <a href="#" class="nav-logo" onclick="returnToHome(); return false;">AIJob智能</a>
             <ul class="nav-menu">
-                <li><a href="index_light.html">首頁</a></li>
-                <li><a href="#" onclick="showInstructions(); return false;">使用說明</a></li>                <li><a href="#" onclick="showCustomization(); return false;">進階客製化</a></li>
+                <li><a href="#" onclick="returnToHome(); return false;">首頁</a></li>
+                <li><a href="#" onclick="showInstructions(); return false;">使用說明</a></li>
+                <li><a href="#" onclick="showCustomization(); return false;">進階客製化</a></li>
                 <li><a href="https://onsell.aijob.com.tw" target="_blank">學習 AI</a></li>
             </ul>
         </div>
@@ -631,7 +632,7 @@
     <!-- 主要內容 -->
     <div class="main-content">
         <div class="header">
-            <img src="https://static.wixstatic.com/media/9705bb_97d9b2bed39749d3869eb2153bc5d2c5~mv2.png" alt="Logo" class="logo">
+            <img src="https://static.wixstatic.com/media/9705bb_10fc5f34d58f4fa0aa95e913e15d0457~mv2.png" alt="Logo" class="logo">
             <h1>AI 文案與腳本智能小助手</h1>
             <p>您的創意引擎，一鍵生成爆款內容。簡單易用，新手也能快速上手！</p>
         </div>
@@ -686,7 +687,7 @@
     </div>
 
     <script>
-        const cards = document.querySelectorAll('.card' );
+        const cards = document.querySelectorAll('.card');
         const modal = document.getElementById('modal');
         const modalTitle = document.getElementById('modal-title');
         const modalDescription = document.getElementById('modal-description');
@@ -741,7 +742,8 @@
             resultDisplay.innerHTML = '';
 
             try {
-                const response = await fetch('/generate', {
+                // 更新：指向 Zeabur 後端
+                const response = await fetch('https://aijobvideobackend.zeabur.app/generate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -769,15 +771,32 @@
             }
         });
 
-        function openCustomizeForm() {
+        function returnToHome() {
+            // 顯示主要內容
+            document.querySelector('.main-content').style.display = 'block';
+            
+            // 移除任何可能存在的說明內容
+            const existingInstructions = document.querySelector('.instructions-container');
+            if (existingInstructions) {
+                existingInstructions.remove();
+            }
+        }
+
+        function showCustomization() {
             if (confirm("您即將前往「進階客製化」表單，是否繼續？")) {
-                window.open('https://your-form-link.com', '_blank' ); // 請替換成您的表單連結
+                window.open('https://forms.gle/your-form-link', '_blank'); // 請替換成您的表單連結
             }
         }
 
         function showInstructions() {
             // 隱藏主要內容
             document.querySelector('.main-content').style.display = 'none';
+            
+            // 移除任何可能存在的說明內容
+            const existingInstructions = document.querySelector('.instructions-container');
+            if (existingInstructions) {
+                existingInstructions.remove();
+            }
             
             // 創建使用說明內容
             const instructionsContent = `
@@ -804,173 +823,17 @@
                         <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: clamp(0.9rem, 2.2vw, 1.1rem); line-height: 1.5;">生成的內容會顯示在結果區域，您可以直接複製使用，或作為靈感進行進一步修改。</p>
                     </div>
 
-                    <div class="content-section" style="background: var(--card-bg); border-radius: 12px; padding: clamp(20px, 5vw, 40px); margin-bottom: 20px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); width: 100%; box-sizing: border-box;">
-                        <h2 style="color: var(--text-color); font-size: clamp(1.4rem, 3.5vw, 1.8rem); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color); line-height: 1.3;">✨ 功能介紹</h2>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0;">
-                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 10px; padding: clamp(15px, 4vw, 25px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));"></div>
-                                <h4 style="color: var(--text-color); font-size: clamp(1.1rem, 2.8vw, 1.3rem); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; line-height: 1.3;"><span style="font-size: clamp(1.2rem, 3vw, 1.5rem);">✍️</span>生成文案</h4>
-                                <p style="color: var(--text-secondary); margin: 0; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">專業的行銷文案生成工具，適用於社群媒體、廣告宣傳、產品介紹等各種場景。AI 會根據您的主題創作吸引人的文案內容。</p>
-                            </div>
-                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 10px; padding: clamp(15px, 4vw, 25px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));"></div>
-                                <h4 style="color: var(--text-color); font-size: clamp(1.1rem, 2.8vw, 1.3rem); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; line-height: 1.3;"><span style="font-size: clamp(1.2rem, 3vw, 1.5rem);">🎬</span>生成腳本</h4>
-                                <p style="color: var(--text-secondary); margin: 0; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">影片腳本創作助手，從故事大綱到分鏡描述，幫您規劃完整的影片內容。適合 YouTube、TikTok、廣告影片等用途。</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div style="text-align: center; margin: 30px 0; padding: 0 15px;">
-                        <button id="back-to-main" style="display: inline-block; background: var(--primary-color); color: white; padding: clamp(12px, 3vw, 15px) clamp(25px, 6vw, 30px); border: none; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: clamp(1rem, 2.5vw, 1.1rem); cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); width: auto; max-width: 200px;">返回主頁</button>
+                        <button id="back-to-main" style="display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 25px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-decoration: none; box-shadow: 0 5px 15px var(--hover-shadow);">返回首頁</button>
                     </div>
                 </div>
             `;
             
-            // 插入使用說明內容
             document.body.insertAdjacentHTML('beforeend', instructionsContent);
             
-            // 添加返回按鈕事件
-            document.getElementById('back-to-main').addEventListener('click', function() {
-                document.querySelector('.instructions-container').remove();
-                document.querySelector('.main-content').style.display = 'block';
-            });
+            // 添加返回首頁按鈕事件
+            document.getElementById('back-to-main').addEventListener('click', returnToHome);
         }
-        
-        function returnToHome() {
-            // 如果在使用說明頁面，先返回主頁面
-            const instructionsContainer = document.querySelector('.instructions-container');
-            if (instructionsContainer) {
-                instructionsContainer.remove();
-                document.querySelector('.main-content').style.display = 'block';
-            }
-            
-            // 如果在進階客製化頁面，先返回主頁面
-            const customizationContainer = document.querySelector('.customization-container');
-            if (customizationContainer) {
-                customizationContainer.remove();
-                document.querySelector('.main-content').style.display = 'block';
-            }
-            
-            // 滾動到頁面頂部
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-        
-        function showCustomization() {
-            // 隱藏主要內容
-            document.querySelector('.main-content').style.display = 'none';
-            
-            // 創建進階客製化內容
-            const customizationContent = `
-                <div class="customization-container" style="max-width: 1000px; margin: 80px auto 0; padding: 20px 15px; width: 100%; box-sizing: border-box;">
-                    <div class="page-header" style="text-align: center; margin-bottom: 30px; padding: 30px 15px; background: var(--card-bg); border-radius: 15px; box-shadow: 0 5px 15px var(--shadow-color); position: relative; overflow: hidden;">
-                        <h1 style="font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2;">🔥 爆款流量 AI 客製化服務</h1>
-                        <p style="font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-secondary); line-height: 1.4;">大數據訓練的專業 AI，教您從 0 開始打造爆款火紅短影音</p>
-                    </div>
-
-                    <div class="content-section" style="background: var(--card-bg); border-radius: 12px; padding: clamp(20px, 5vw, 40px); margin-bottom: 20px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); width: 100%; box-sizing: border-box;">
-                        <h2 style="color: var(--text-color); font-size: clamp(1.4rem, 3.5vw, 1.8rem); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color); line-height: 1.3;">🚀 大數據訓練的爆款 AI 智能</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: clamp(0.9rem, 2.2vw, 1.1rem); line-height: 1.5;">我們的 AI 智能經過海量爆款短影音大數據訓練，擁有獨特的流量密碼解析能力。無論您是完全新手還是想要突破現有瓶頸，我們的 AI 都能從 0 開始教會您打造爆款火紅的短影音腳本與文案。</p>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0;">
-                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 10px; padding: clamp(15px, 4vw, 20px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #ff6b6b, #ffd93d);"></div>
-                                <h4 style="color: var(--text-color); font-size: clamp(1.1rem, 2.8vw, 1.3rem); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; line-height: 1.3;"><span style="font-size: clamp(1.2rem, 3vw, 1.5rem);">🔥</span>爆款流量密碼解析</h4>
-                                <p style="color: var(--text-secondary); margin: 0; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">透過大數據分析千萬爆款短影音，AI 智能掌握流量密碼，教您創作吸睛內容，輕鬆獲得高流量。</p>
-                            </div>
-                            
-                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 10px; padding: clamp(15px, 4vw, 20px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));"></div>
-                                <h4 style="color: var(--text-color); font-size: clamp(1.1rem, 2.8vw, 1.3rem); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; line-height: 1.3;"><span style="font-size: clamp(1.2rem, 3vw, 1.5rem);">📝</span>從 0 開始腳本教學</h4>
-                                <p style="color: var(--text-secondary); margin: 0; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">即使是完全新手，AI 也能手把手教您從零開始，學會撰寫吸引人的短影音腳本和文案。</p>
-                            </div>
-                            
-                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 10px; padding: clamp(15px, 4vw, 20px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));"></div>
-                                <h4 style="color: var(--text-color); font-size: clamp(1.1rem, 2.8vw, 1.3rem); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; line-height: 1.3;"><span style="font-size: clamp(1.2rem, 3vw, 1.5rem);">🎯</span>個性化內容策略</h4>
-                                <p style="color: var(--text-secondary); margin: 0; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">根據您的品牌特色和目標受眾，AI 智能為您量身打造專屬的內容創作策略和風格。</p>
-                            </div>
-                            
-                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 10px; padding: clamp(15px, 4vw, 20px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));"></div>
-                                <h4 style="color: var(--text-color); font-size: clamp(1.1rem, 2.8vw, 1.3rem); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; line-height: 1.3;"><span style="font-size: clamp(1.2rem, 3vw, 1.5rem);">📈</span>持續優化與追蹤</h4>
-                                <p style="color: var(--text-secondary); margin: 0; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">提供內容效果分析和持續優化建議，確保您的短影音持續保持高流量和高互動率。</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="content-section" style="background: var(--card-bg); border-radius: 12px; padding: clamp(20px, 5vw, 40px); margin-bottom: 20px; box-shadow: 0 5px 15px var(--shadow-color); border: 1px solid var(--border-color); width: 100%; box-sizing: border-box;">
-                        <h2 style="color: var(--text-color); font-size: clamp(1.4rem, 3.5vw, 1.8rem); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color); line-height: 1.3;">🎁 專屬客製化方案</h2>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin: 20px 0;">
-                            <div style="background: linear-gradient(135deg, #fff9c4, #ffe082); border: 3px solid var(--primary-color); border-radius: 15px; padding: clamp(20px, 5vw, 30px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <div style="position: absolute; top: 10px; right: 15px; background: var(--primary-color); color: white; padding: 5px 12px; border-radius: 20px; font-size: clamp(0.8rem, 2vw, 0.9rem); font-weight: 700;">🔥 熱門</div>
-                                <h3 style="color: var(--text-color); font-size: clamp(1.3rem, 3.2vw, 1.6rem); margin-bottom: 10px; font-weight: 700;">爆款流量 AI 方案</h3>
-                                <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">適合想要快速打造爆款內容的創作者</p>
-                                <ul style="color: var(--text-secondary); margin-bottom: 20px; padding-left: 20px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.6;">
-                                    <li>🎯 爆款流量密碼解析系統</li>
-                                    <li>📝 從 0 開始腳本創作教學</li>
-                                    <li>🔥 個性化內容策略制定</li>
-                                    <li>📈 持續優化與效果追蹤</li>
-                                    <li>🎓 專業一對一指導</li>
-                                </ul>
-                                <div style="text-align: center; margin-top: 20px;">
-                                    <p style="font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-secondary); margin-bottom: 15px; font-style: italic;">專屬定制價格，根據需求量身報價</p>
-                                    <button style="background: var(--primary-color); color: white; border: none; padding: clamp(12px, 3vw, 15px) clamp(25px, 6vw, 30px); border-radius: 25px; font-size: clamp(1rem, 2.5vw, 1.1rem); font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); width: 100%; max-width: 200px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(255, 193, 7, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(255, 193, 7, 0.3)'" onclick="window.open('https://www.aijob.com.tw/', '_blank')">查看方案價格</button>
-                                </div>
-                            </div>
-                            
-                            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); border-radius: 15px; padding: clamp(20px, 5vw, 30px); position: relative; overflow: hidden; width: 100%; box-sizing: border-box;">
-                                <h3 style="color: var(--text-color); font-size: clamp(1.3rem, 3.2vw, 1.6rem); margin-bottom: 10px; font-weight: 700;">企業級爆款流量方案</h3>
-                                <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.5;">適合企業品牌和大型團隊</p>
-                                <ul style="color: var(--text-secondary); margin-bottom: 20px; padding-left: 20px; font-size: clamp(0.9rem, 2.2vw, 1rem); line-height: 1.6;">
-                                    <li>🚀 完整爆款流量生態系統</li>
-                                    <li>👥 團隊協作內容創作平台</li>
-                                    <li>📊 深度數據分析與洞察</li>
-                                    <li>🎯 品牌專屬流量策略</li>
-                                    <li>🔧 系統整合與 API 服務</li>
-                                    <li>📞 24/7 專業技術支援</li>
-                                </ul>
-                                <div style="text-align: center; margin-top: 20px;">
-                                    <p style="font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-secondary); margin-bottom: 15px; font-style: italic;">企業級定制方案，專業顧問一對一諮詢</p>
-                                    <button style="background: var(--text-color); color: white; border: none; padding: clamp(12px, 3vw, 15px) clamp(25px, 6vw, 30px); border-radius: 25px; font-size: clamp(1rem, 2.5vw, 1.1rem); font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); width: 100%; max-width: 200px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0, 0, 0, 0.2)'" onclick="window.open('https://www.aijob.com.tw/', '_blank')">查看方案價格</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; margin: 30px 0; padding: 0 15px;">
-                        <button id="back-to-main-customize" style="display: inline-block; background: var(--primary-color); color: white; padding: clamp(12px, 3vw, 15px) clamp(25px, 6vw, 30px); border: none; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: clamp(1rem, 2.5vw, 1.1rem); cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3); width: auto; max-width: 200px;">返回主頁</button>
-                    </div>
-                </div>
-            `;
-            
-            // 插入進階客製化內容
-            document.body.insertAdjacentHTML('beforeend', customizationContent);
-            
-            // 添加返回按鈕事件
-            document.getElementById('back-to-main-customize').addEventListener('click', function() {
-                document.querySelector('.customization-container').remove();
-                document.querySelector('.main-content').style.display = 'block';
-            });
-        }
-
-        // 平滑滾動效果
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
     </script>
-
 </body>
 </html>
-
