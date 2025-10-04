@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AI 文案／腳本助手 · v4.1</title>
   <!--
-    v4.1 變更：
-    1) 全站白底 + 黃色品牌主色的 Light UI（AA 對比、可讀性提升）。
-    2) 「導出文案」改為輸出 .doc（RTF 格式，Word 原生可開啟且不跳錯）。
-    3) 前端增加請求逾時/取消與更明顯的載入狀態，為後端串流預留 hook。
+    RWD & Mobile UX hotfix:
+    - 行動版單欄排版、按鈕/表單 16px 以上避免 iOS 自動放大
+    - 點擊高度 >= 44px、避免溢出、增加可讀性
+    - 其餘結構與功能不變
   -->
   <style>
     :root{
@@ -26,8 +26,13 @@
       --shadow:0 6px 18px rgba(0,0,0,.06);
       --focus: 0 0 0 3px rgba(246,199,68,.35);
     }
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
-      font-family:"Noto Sans TC",system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";}
+    html,body{
+      margin:0;padding:0;background:var(--bg);color:var(--text);
+      font-family:"Noto Sans TC",system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";
+      -webkit-text-size-adjust:100%; /* 避免 iOS 亂調整文字比例 */
+    }
+    *{box-sizing:border-box}
+    img,video{max-width:100%;height:auto}
     .wrap{max-width:1200px;margin:40px auto;padding:0 20px;}
     header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
     .brand{display:flex;gap:12px;align-items:center;}
@@ -37,28 +42,33 @@
     .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
     .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;}
     .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-    .btn{background:linear-gradient(180deg, #ffe08b 0%, var(--primary) 60%, var(--primary-600) 100%);
-      color:#2b2100;border:none;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;
-      box-shadow:0 6px 16px rgba(246,199,68,.28);transition:transform .06s ease}
+    .btn{
+      background:linear-gradient(180deg, #ffe08b 0%, var(--primary) 60%, var(--primary-600) 100%);
+      color:#2b2100;border:none;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;
+      box-shadow:0 6px 16px rgba(246,199,68,.28);transition:transform .06s ease;
+      min-height:44px; /* 手機可點性 */
+    }
     .btn:hover{transform:translateY(-1px)}
     .btn:focus{outline:none;box-shadow:var(--focus)}
-    .btn-outline{background:#fff;border:1px solid var(--border);color:var(--text);box-shadow:none}
+    .btn.btn-block{width:100%} /* 手機版可用 */
+    .btn-outline{background:#fff;border:1px solid var(--border);color:#151515;box-shadow:none}
     .hint{background:var(--primary-100);border:1px dashed #f1cc63;padding:8px 10px;border-radius:12px;color:#6b4d00}
     input[type="text"], textarea, select{
       width:100%;background:#fff;border:1px solid var(--border);color:var(--text);
-      border-radius:12px;padding:12px;font-size:14px;outline:none;
+      border-radius:12px;padding:12px;font-size:16px; /* 16px 防 iOS 自動縮放 */
+      outline:none;min-height:44px; /* 手機可點性 */
     }
     input:focus, textarea:focus, select:focus{box-shadow:var(--focus)}
-    textarea{min-height:84px;resize:vertical}
+    textarea{min-height:92px;resize:vertical}
 
     /* modal */
     .modal{position:fixed;inset:0;background:rgba(17,24,39,.35);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50;}
     .modal.active{display:flex;}
     .modal-card{width:min(980px,96vw);max-height:90vh;display:flex;flex-direction:column;gap:14px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:16px;}
     .modal-header{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px 2px;border-bottom:1px solid var(--border)}
-    .badge{padding:4px 10px;border-radius:999px;background:#f3f4f6;border:1px solid var(--border);color:#111827;font-size:12px}
+    .badge{padding:6px 10px;border-radius:999px;background:#f3f4f6;border:1px solid var(--border);color:#111827;font-size:12px}
     .chat{flex:1;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
-    .bubble{max-width:80%;padding:10px 12px;border-radius:14px;line-height:1.6;box-shadow:0 1px 6px rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;border:1px solid var(--border);}
+    .bubble{max-width:80%;padding:12px 14px;border-radius:14px;line-height:1.7;box-shadow:0 1px 6px rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;border:1px solid var(--border);}
     .ai{align-self:flex-start;background:#fff}
     .me{align-self:flex-end;background:#fff7c6}
     .chatbar{display:flex;gap:10px;align-items:center}
@@ -73,11 +83,36 @@
     .history-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
     .history-item{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer}
     .history-item:hover{border-color:#d7d7db}
+
     /* customization center */
     .customization-container .content-section ul,
     .customization-container .content-section p,
     .customization-container .content-section h3 { text-align:center; }
     .footer-nav{margin-top:10px;display:flex;gap:10px;justify-content:flex-end}
+
+    /* ========== RWD：只在小螢幕調整，其他不變 ========== */
+    @media (max-width: 1200px){
+      .wrap{margin:24px auto;padding:0 16px}
+    }
+    @media (max-width: 1024px){
+      .grid{grid-template-columns:1fr;gap:16px}
+      .history-list{grid-template-columns:1fr}
+      header{flex-direction:column;align-items:flex-start;gap:10px}
+      h1{font-size:20px}
+      .muted{font-size:13px}
+    }
+    @media (max-width: 640px){
+      body{font-size:16px} /* 全站基準字級，避免手動縮放 */
+      .wrap{padding:0 14px}
+      .modal-card{width:96vw}
+      .bubble{max-width:92%}
+      .chatbar{gap:8px}
+      .btn{padding:12px 14px}
+      .row.stack-mobile{flex-direction:column;align-items:stretch}
+      /* 主要動作按鈕在手機上可單列滿版 */
+      #openCopyBtn,#openScriptBtn{flex:1}
+      .btn-mobile-block{width:100%}
+    }
   </style>
 </head>
 <body>
@@ -107,9 +142,9 @@
         <div class="row">
           <input id="topic" type="text" placeholder="輸入主題（例：新品上市廣告、品牌故事、30秒短影片推廣）" aria-label="主題輸入"/>
         </div>
-        <div class="row">
-          <button class="btn" id="openCopyBtn" aria-haspopup="dialog">📝 生成文案</button>
-          <button class="btn" id="openScriptBtn" aria-haspopup="dialog">🎬 生成腳本</button>
+        <div class="row stack-mobile">
+          <button class="btn btn-mobile-block" id="openCopyBtn" aria-haspopup="dialog">📝 生成文案</button>
+          <button class="btn btn-mobile-block" id="openScriptBtn" aria-haspopup="dialog">🎬 生成腳本</button>
           <span class="muted">※ 超過 300 字將提示簡化內容</span>
         </div>
         <div class="row" style="margin-top:14px">
@@ -120,7 +155,7 @@
 
       <!-- Right: History -->
       <section class="card" aria-label="創作歷史">
-        <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
           <h2 style="margin:4px 0 12px">查看創作歷史</h2>
           <button class="btn btn-outline" id="refreshHistory">重新整理</button>
         </div>
@@ -295,5 +330,6 @@ byId("refreshHistory").addEventListener("click", renderHistory); renderHistory()
 </script>
 </body>
 </html>
+
 
 
