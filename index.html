@@ -3,59 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI 文案／腳本助手 · v4</title>
+  <title>AI 文案／腳本助手 · v4.1</title>
+  <!--
+    v4.1 變更：
+    1) 全站白底 + 黃色品牌主色的 Light UI（AA 對比、可讀性提升）。
+    2) 「導出文案」改為輸出 .doc（RTF 格式，Word 原生可開啟且不跳錯）。
+    3) 前端增加請求逾時/取消與更明顯的載入狀態，為後端串流預留 hook。
+  -->
   <style>
     :root{
-      --bg:#0e0e0f;
-      --card:#141416;
-      --muted:#a7a7ad;
-      --text:#f6f6f7;
-      --primary:#f6c744; /* 黃金色 */
-      --accent:#ffe799;
-      --shadow:0 8px 24px rgba(0,0,0,.35);
+      --bg:#ffffff;
+      --surface:#ffffff;
+      --surface-2:#fafafa;
+      --border:#e6e6ea;
+      --text:#1f2328;
+      --muted:#666a70;
+      --primary:#f6c744;
+      --primary-600:#e7b000;
+      --primary-100:#fff7d6;
+      --accent:#111827;
       --radius:16px;
+      --shadow:0 6px 18px rgba(0,0,0,.06);
+      --focus: 0 0 0 3px rgba(246,199,68,.35);
     }
-    html,body{margin:0;padding:0;background:linear-gradient(180deg,#0c0c0d 0%, #111113 100%);font-family:"Noto Sans TC",system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";color:var(--text);}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+      font-family:"Noto Sans TC",system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";}
     .wrap{max-width:1200px;margin:40px auto;padding:0 20px;}
     header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
     .brand{display:flex;gap:12px;align-items:center;}
-    .logo{width:42px;height:42px;border-radius:12px;background:radial-gradient(circle at 30% 30%, #fff6d3, #f6c744 40%, #8d6a00 100%);box-shadow:inset 0 0 16px rgba(255,255,255,.35), var(--shadow);}
+    .logo{width:42px;height:42px;border-radius:12px;background:radial-gradient(circle at 30% 30%, #fff6d3, #f6c744 40%, #b48600 100%);box-shadow:inset 0 0 10px rgba(255,255,255,.6), 0 1px 0 rgba(0,0,0,.05);}
     h1{font-size:22px;margin:0}
-    .card{background:var(--card);border:1px solid #1f1f22;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
+    .muted{color:var(--muted);font-size:13px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
     .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;}
     .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-    .btn{background:linear-gradient(180deg, #ffe08b 0%, var(--primary) 60%, #e7b000 100%);color:#2b2100;border:none;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;box-shadow:0 6px 16px rgba(246,199,68,.28);transition:transform .06s ease}
+    .btn{background:linear-gradient(180deg, #ffe08b 0%, var(--primary) 60%, var(--primary-600) 100%);
+      color:#2b2100;border:none;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;
+      box-shadow:0 6px 16px rgba(246,199,68,.28);transition:transform .06s ease}
     .btn:hover{transform:translateY(-1px)}
-    .btn-outline{background:transparent;border:1px solid #2a2a2e;color:var(--text)}
-    .muted{color:var(--muted);font-size:13px}
+    .btn:focus{outline:none;box-shadow:var(--focus)}
+    .btn-outline{background:#fff;border:1px solid var(--border);color:var(--text);box-shadow:none}
+    .hint{background:var(--primary-100);border:1px dashed #f1cc63;padding:8px 10px;border-radius:12px;color:#6b4d00}
     input[type="text"], textarea, select{
-      width:100%;background:#101013;border:1px solid #232326;color:var(--text);
+      width:100%;background:#fff;border:1px solid var(--border);color:var(--text);
       border-radius:12px;padding:12px;font-size:14px;outline:none;
     }
+    input:focus, textarea:focus, select:focus{box-shadow:var(--focus)}
     textarea{min-height:84px;resize:vertical}
+
     /* modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50;}
+    .modal{position:fixed;inset:0;background:rgba(17,24,39,.35);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50;}
     .modal.active{display:flex;}
-    .modal-card{width:min(980px,96vw);max-height:90vh;display:flex;flex-direction:column;gap:14px;background:#121214;border:1px solid #29292e;border-radius:18px;box-shadow:var(--shadow);padding:16px;}
-    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px 2px;border-bottom:1px solid #1e1e22}
-    .badge{padding:4px 10px;border-radius:999px;background:#2b2b2f;border:1px solid #3a3a41;color:#d6d6db;font-size:12px}
-    .chat{flex:1;overflow:auto;background:#0e0e10;border:1px solid #1c1c20;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
-    .bubble{max-width:80%;padding:10px 12px;border-radius:14px;line-height:1.55;box-shadow:0 2px 10px rgba(0,0,0,.25);white-space:pre-wrap;word-break:break-word;}
-    .ai{align-self:flex-start;background:#161618;border:1px solid #2a2a2e}
-    .me{align-self:flex-end;background:linear-gradient(180deg,#ffe9a6,#f6c744);color:#332400;border:1px solid #e4b72d}
+    .modal-card{width:min(980px,96vw);max-height:90vh;display:flex;flex-direction:column;gap:14px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:16px;}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px 2px;border-bottom:1px solid var(--border)}
+    .badge{padding:4px 10px;border-radius:999px;background:#f3f4f6;border:1px solid var(--border);color:#111827;font-size:12px}
+    .chat{flex:1;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+    .bubble{max-width:80%;padding:10px 12px;border-radius:14px;line-height:1.6;box-shadow:0 1px 6px rgba(0,0,0,.06);white-space:pre-wrap;word-break:break-word;border:1px solid var(--border);}
+    .ai{align-self:flex-start;background:#fff}
+    .me{align-self:flex-end;background:#fff7c6}
     .chatbar{display:flex;gap:10px;align-items:center}
     .chatbar input{flex:1}
-    .danger{color:#ffb4b4}
-    .link{color:#f6c744;text-decoration:none}
+    .loading{display:none;gap:8px;align-items:center;color:#6b4d00}
+    .loading.on{display:flex}
+    .dot{width:6px;height:6px;border-radius:50%;background:#e2b100;animation:blink 1s infinite ease-in-out}
+    .dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+    @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
     /* history */
     .history-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-    .history-item{background:#101012;border:1px solid #232329;border-radius:12px;padding:12px;cursor:pointer}
-    .history-item:hover{border-color:#34343a}
+    .history-item{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer}
+    .history-item:hover{border-color:#d7d7db}
     /* customization center */
     .customization-container .content-section ul,
     .customization-container .content-section p,
     .customization-container .content-section h3 { text-align:center; }
-    /* sticky footer button */
     .footer-nav{margin-top:10px;display:flex;gap:10px;justify-content:flex-end}
   </style>
 </head>
@@ -63,15 +84,15 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <div class="logo"></div>
+        <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>AI 文案 / 腳本助手</h1>
-          <div class="muted">保持原有風格 · Gemini 多輪對話 v4</div>
+          <div class="muted">白色主題 · 黃色重點 · Gemini 多輪對話 v4.1</div>
         </div>
       </div>
-      <div class="row">
-        <label class="muted">使用者等級</label>
-        <select id="userLevel">
+      <div class="row" role="group" aria-label="使用者等級">
+        <label class="muted" for="userLevel">使用者等級</label>
+        <select id="userLevel" aria-label="使用者等級選單">
           <option value="beginner">初學者</option>
           <option value="intermediate">中級用戶</option>
           <option value="advanced">進階用戶</option>
@@ -81,39 +102,40 @@
 
     <div class="grid">
       <!-- Left: Creator -->
-      <section class="card">
+      <section class="card" aria-label="創作面板">
         <h2 style="margin:4px 0 12px">創作面板</h2>
         <div class="row">
-          <input id="topic" type="text" placeholder="輸入主題（例：新品上市廣告、品牌故事、30秒短影片推廣）"/>
+          <input id="topic" type="text" placeholder="輸入主題（例：新品上市廣告、品牌故事、30秒短影片推廣）" aria-label="主題輸入"/>
         </div>
         <div class="row">
-          <button class="btn" id="openCopyBtn">📝 生成文案</button>
-          <button class="btn" id="openScriptBtn">🎬 生成腳本</button>
+          <button class="btn" id="openCopyBtn" aria-haspopup="dialog">📝 生成文案</button>
+          <button class="btn" id="openScriptBtn" aria-haspopup="dialog">🎬 生成腳本</button>
           <span class="muted">※ 超過 300 字將提示簡化內容</span>
         </div>
         <div class="row" style="margin-top:14px">
-          <textarea id="notes" placeholder="（選填）補充重點、產品特點、目標族群、語氣偏好⋯⋯"></textarea>
+          <textarea id="notes" placeholder="（選填）補充重點、產品特點、目標族群、語氣偏好⋯⋯" aria-label="備註輸入"></textarea>
         </div>
+        <div class="hint" style="margin-top:10px">UX 提醒：主動提示讓新手知道下一步，降低空白頁焦慮。</div>
       </section>
 
       <!-- Right: History -->
-      <section class="card">
+      <section class="card" aria-label="創作歷史">
         <div style="display:flex;align-items:center;justify-content:space-between">
           <h2 style="margin:4px 0 12px">查看創作歷史</h2>
           <button class="btn btn-outline" id="refreshHistory">重新整理</button>
         </div>
-        <div id="history" class="history-list"></div>
+        <div id="history" class="history-list" aria-live="polite"></div>
         <div class="footer-nav">
-          <a class="link" href="https://aijobvideobackend.zeabur.app/db-visual" target="_blank">📊 查看資料庫可視化</a>
+          <a class="btn btn-outline" href="https://aijobvideobackend.zeabur.app/db-visual" target="_blank" rel="noopener">📊 資料庫可視化</a>
         </div>
       </section>
     </div>
 
-    <!-- Customization area placeholder (centered by CSS) -->
+    <!-- Customization area -->
     <section class="card customization-container" style="margin-top:20px">
       <h2 style="margin-top:0">進階客製化</h2>
       <div class="content-section">
-        <p class="muted">方案內容已置中顯示（維持原風格）。</p>
+        <p class="muted">方案內容已置中顯示（維持品牌黃重點配色）。</p>
         <ul style="list-style:none;padding:0;margin:6px 0">
           <li>・品牌語氣校準</li>
           <li>・題材結構顧問</li>
@@ -124,7 +146,7 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal" id="modal">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
       <div class="modal-header">
         <div class="row">
@@ -133,10 +155,11 @@
         </div>
         <button class="btn btn-outline" id="closeModal">關閉</button>
       </div>
-      <div id="modalDesc" class="muted" style="padding:6px 2px 10px">
-        <!-- dynamic guide text -->
+      <div id="modalDesc" class="muted" style="padding:6px 2px 6px">
+        <!-- dynamic guide -->
       </div>
-      <div id="chat" class="chat"></div>
+      <div class="loading" id="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span> 正在思考…</div>
+      <div id="chat" class="chat" aria-live="polite"></div>
       <div class="chatbar">
         <input id="chatInput" type="text" placeholder="輸入你的想法或回覆，按 Enter 送出"/>
         <button class="btn" id="sendBtn">送出</button>
@@ -146,28 +169,14 @@
   </div>
 
 <script>
-/** =========================
- *  Utilities & State
- *  ========================= */
 const $ = (sel)=>document.querySelector(sel);
 const byId = (id)=>document.getElementById(id);
 const apiEndpoint = "https://aijobvideobackend.zeabur.app/generate";
-const userId = (()=>{
-  const key="aijob_user_id";
-  let v = localStorage.getItem(key);
-  if(!v){ v = 'u_' + Math.random().toString(36).slice(2); localStorage.setItem(key, v); }
-  return v;
-})();
-let currentAction = "copywriting"; // or "scriptwriting"
-let messages = []; // chat history for API
-let lastAiDraft = ""; // final AI result to export
-let chatLock = false;
+const userId = (()=>{ const key="aijob_user_id"; let v=localStorage.getItem(key); if(!v){ v='u_'+Math.random().toString(36).slice(2); localStorage.setItem(key,v);} return v; })();
+let currentAction="copywriting", messages=[], lastAiDraft="", chatLock=false, controller=null;
 
-/** =========================
- *  PDF-based Greetings (from 短视频.pdf)
- *  ========================= */
+/* Greetings */
 function getGreeting(level, action){
-  // action: copywriting | scriptwriting
   const postfix = action === "scriptwriting" ? "腳本" : "文案";
   if(level === "beginner"){
     return `嗨👋 歡迎來到你的短影片創作助手～
@@ -180,251 +189,111 @@ function getGreeting(level, action){
 先想想你這次想做的是「流量型」還是「變現型」？
 我可以幫你設計節奏（開頭金句－情節轉折－結尾收鉤），也能協助設定畫面調性與人物視角。`;
   }
-  // advanced
   return `歡迎回來，創作夥伴🔥
 今天我們要從哪個角度出發？敘事？對比？還是想挑戰反差法？
 你說一個方向或想傳達的情緒，我就幫你構出完整節奏：
 開場鉤子 → 觀點展開 → 情緒峰值 → 結尾收勢。`;
 }
 
-/** =========================
- *  History (localStorage mirror)
- *  ========================= */
-const HIST_KEY = "aijob_history";
-function loadHistory(){
-  try{ return JSON.parse(localStorage.getItem(HIST_KEY) || "[]"); }catch{ return []; }
-}
-function saveHistory(item){
-  const list = loadHistory();
-  list.unshift(item);
-  localStorage.setItem(HIST_KEY, JSON.stringify(list.slice(0, 50)));
-}
+/* History */
+const HIST_KEY="aijob_history";
+function loadHistory(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY)||"[]"); }catch{ return []; } }
+function saveHistory(item){ const list=loadHistory(); list.unshift(item); localStorage.setItem(HIST_KEY, JSON.stringify(list.slice(0,50))); }
 function renderHistory(){
-  const list = loadHistory();
-  const container = byId("history");
-  if(!list.length){
-    container.innerHTML = '<div class="muted">目前沒有歷史紀錄。</div>';
-    return;
-  }
+  const list=loadHistory(), container=byId("history");
+  if(!list.length){ container.innerHTML='<div class="muted">目前沒有歷史紀錄。</div>'; return; }
   container.innerHTML = list.map((it, idx)=>{
-    const date = new Date(it.ts).toLocaleString('zh-TW');
-    const tag = it.action === "copywriting" ? "📝 文案" : "🎬 腳本";
-    return `<div class="history-item" data-idx="${idx}">
+    const date=new Date(it.ts).toLocaleString('zh-TW'); const tag=it.action==="copywriting"?"📝 文案":"🎬 腳本";
+    return `<div class="history-item" data-idx="${idx}" tabindex="0" role="button" aria-label="查看歷史 ${tag}">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <strong>${tag}</strong><span class="badge">${it.user_level}</span>
       </div>
-      <div class="muted">主題：${escapeHtml(it.topic || "（未填）")}</div>
+      <div class="muted">主題：${escapeHtml(it.topic||"（未填）")}</div>
       <div class="muted" style="margin-top:6px">${date}</div>
     </div>`;
   }).join("");
   container.querySelectorAll(".history-item").forEach(el=>{
     el.addEventListener("click", ()=>{
-      const idx = Number(el.getAttribute("data-idx"));
-      const list = loadHistory();
-      const item = list[idx];
+      const idx=Number(el.getAttribute("data-idx")), list=loadHistory(), item=list[idx];
       openModal(item.action);
-      setTimeout(()=>{
-        appendAi(`歷史創作內容（${item.user_level}）：\n\n${item.result || "（無內容）"}`);
-      }, 50);
+      setTimeout(()=>{ appendAi(`歷史創作內容（${item.user_level}）：\n\n${item.result || "（無內容）"}`); }, 50);
     });
   });
 }
 
-/** =========================
- *  Chat UI
- *  ========================= */
-const modal = byId("modal");
-const chat = byId("chat");
+/* Chat UI */
+const modal=byId("modal"), chat=byId("chat");
 function openModal(action){
-  currentAction = action;
-  const level = byId("userLevel").value;
-  byId("modalBadge").textContent = level === "beginner" ? "初學者" : (level === "intermediate" ? "中級用戶" : "進階用戶");
-  byId("modalTitle").textContent = action === "scriptwriting" ? "AI 互動創作（腳本）" : "AI 互動創作（文案）";
-
-  // Guide text
-  let guide = "";
-  if(action === "copywriting"){
-    guide = "💡 教學引導：請輸入主題，如「新品上市廣告」「品牌故事」。我會依據你的等級套用合適的結構與語氣。";
-  }else{
-    guide = "🎬 引導說明：請描述影片方向或角色，例「30秒短影片推廣」「開箱腳本」。我會幫你設計節奏與鏡頭感。";
-  }
-  byId("modalDesc").textContent = guide;
-
-  // reset chat
-  chat.innerHTML = "";
-  messages = [];
-  lastAiDraft = "";
-  // greeting
-  const greet = getGreeting(level, action);
-  appendAi(greet);
-
+  currentAction=action;
+  const level=byId("userLevel").value;
+  byId("modalBadge").textContent = level==="beginner"?"初學者":(level==="intermediate"?"中級用戶":"進階用戶");
+  byId("modalTitle").textContent = action==="scriptwriting"?"AI 互動創作（腳本）":"AI 互動創作（文案）";
+  byId("modalDesc").textContent = action==="copywriting"
+    ? "💡 教學引導：請輸入主題，如「新品上市廣告」「品牌故事」。我會依據你的等級套用合適的結構與語氣。"
+    : "🎬 引導說明：請描述影片方向或角色，例「30秒短影片推廣」「開箱腳本」。我會幫你設計節奏與鏡頭感。";
+  chat.innerHTML=""; messages=[]; lastAiDraft="";
+  appendAi(getGreeting(level, action));
   modal.classList.add("active");
 }
-byId("openCopyBtn").addEventListener("click", ()=>{
-  if(!validateTopic()){ return; }
-  openModal("copywriting");
-});
-byId("openScriptBtn").addEventListener("click", ()=>{
-  if(!validateTopic()){ return; }
-  openModal("scriptwriting");
-});
+byId("openCopyBtn").addEventListener("click", ()=>{ if(!validateTopic()) return; openModal("copywriting"); });
+byId("openScriptBtn").addEventListener("click", ()=>{ if(!validateTopic()) return; openModal("scriptwriting"); });
 byId("closeModal").addEventListener("click", ()=> modal.classList.remove("active"));
 
-function appendAi(text){
-  const el = document.createElement("div");
-  el.className = "bubble ai";
-  el.textContent = text;
-  chat.appendChild(el);
-  chat.scrollTop = chat.scrollHeight;
-}
-function appendMe(text){
-  const el = document.createElement("div");
-  el.className = "bubble me";
-  el.textContent = text;
-  chat.appendChild(el);
-  chat.scrollTop = chat.scrollHeight;
-}
+function appendAi(text){ const el=document.createElement("div"); el.className="bubble ai"; el.textContent=text; chat.appendChild(el); chat.scrollTop=chat.scrollHeight; }
+function appendMe(text){ const el=document.createElement("div"); el.className="bubble me"; el.textContent=text; chat.appendChild(el); chat.scrollTop=chat.scrollHeight; }
 
-function validateTopic(){
-  const v = byId("topic").value.trim();
-  if(!v){ alert("請先輸入主題"); return false; }
-  if(v.length > 300){ alert("輸入內容過長，請簡化後再試。"); return false; }
-  return true;
-}
+function validateTopic(){ const v=byId("topic").value.trim(); if(!v){ alert("請先輸入主題"); return false; } if(v.length>300){ alert("輸入內容過長，請簡化後再試。"); return false; } return true; }
 
-/** =========================
- *  Sending / API
- *  ========================= */
+/* Send (timeout & abort) */
 async function sendMessage(){
   if(chatLock) return;
-  const input = byId("chatInput");
-  const text = input.value.trim();
-  if(!text) return;
-  if(text.length > 300){
-    alert("輸入內容過長，請簡化後再試。");
-    return;
-  }
-  input.value = "";
-  appendMe(text);
-  chatLock = true;
-
-  // compose messages
+  const input=byId("chatInput"); const text=input.value.trim(); if(!text) return; if(text.length>300){ alert("輸入內容過長，請簡化後再試。"); return; }
+  input.value=""; appendMe(text); chatLock=true; byId("loading").classList.add("on");
   messages.push({ role:"user", content:text });
 
-  // payload
-  const payload = {
-    user_id: userId,
-    user_level: byId("userLevel").value,
-    topic: byId("topic").value.trim(),
-    action: currentAction,
-    notes: byId("notes").value.trim(),
-    messages: messages
-  };
+  const payload={ user_id:userId, user_level:byId("userLevel").value, topic:byId("topic").value.trim(), action:currentAction, notes:byId("notes").value.trim(), messages:messages };
+
+  if (controller) controller.abort(); controller=new AbortController(); const id=setTimeout(()=>controller.abort(), 10000);
 
   try{
-    const res = await fetch(apiEndpoint, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(payload)
-    });
-    if(!res.ok) throw new Error("Network response was not ok");
-    const data = await res.json();
-    const aiReply = data && data.message && (data.message.content || data.message.text) ? (data.message.content || data.message.text) : "（無回應內容）";
-
-    messages.push({ role:"assistant", content: aiReply });
-    appendAi(aiReply);
-
-    // Heuristic: store latest non-trivial AI reply as draft
-    if(aiReply && aiReply.length > 10){
-      lastAiDraft = aiReply;
-    }
-  }catch(err){
-    console.error(err);
-    appendAi("⚠️ 系統繁忙或服務失敗，請稍後再試。若輸入過長，建議分段生成。");
-  }finally{
-    chatLock = false;
-  }
+    const res=await fetch(apiEndpoint,{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload), signal:controller.signal });
+    clearTimeout(id);
+    let rawText=await res.text(); let data; try{ data=JSON.parse(rawText);}catch{ data=null; }
+    let aiReply="（無回應內容）";
+    if(data){ aiReply=data?.message?.content ?? data?.message?.text ?? data?.reply ?? (typeof data==="string"?data:""); }
+    else { aiReply=rawText?.slice(0,800)||"（無回應內容）"; }
+    messages.push({ role:"assistant", content:aiReply }); appendAi(aiReply); if(aiReply && aiReply.length>10){ lastAiDraft=aiReply; }
+  }catch(err){ appendAi("⚠️ 逾時或服務繁忙，請稍後再試（已自動取消請求）。"); console.error(err); }
+  finally{ byId("loading").classList.remove("on"); chatLock=false; }
 }
 byId("sendBtn").addEventListener("click", sendMessage);
-byId("chatInput").addEventListener("keydown", (e)=>{
-  if(e.key === "Enter" && !e.shiftKey){
-    e.preventDefault();
-    sendMessage();
-  }
-});
+byId("chatInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendMessage(); }});
 
-/** =========================
- *  Export to Word (.doc) — labeled as .docx for convenience
- *  (For broad compatibility without external libs)
- *  ========================= */
+/* Export RTF -> .doc */
 function exportWord(){
-  // prefer lastAiDraft; fallback to concatenated AI replies
-  let content = lastAiDraft.trim();
-  if(!content){
-    const aiAll = messages.filter(m=>m.role==="assistant").map(m=>m.content).join("\n\n");
-    content = aiAll || "（目前沒有可導出的AI生成內容）";
-  }
-
-  const title = "短影片文案草稿";
-  const topic = (byId("topic").value.trim() || "未命名").replace(/[\\/:*?"<>|]+/g, "_");
-  const html = `
-    <html xmlns:o='urn:schemas-microsoft-com:office:office'
-          xmlns:w='urn:schemas-microsoft-com:office:word'
-          xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>${title}</title>
-      <style>
-        @page { size: 21cm 29.7cm; margin: 2cm; }
-        body { font-family: "Noto Sans TC", "Microsoft JhengHei", Arial; line-height:1.7; }
-        h1 { font-size:22pt; }
-        p  { font-size:12pt; white-space:pre-wrap; }
-      </style>
-    </head>
-    <body>
-      <h1>${title}</h1>
-      <p><strong>主題：</strong>${escapeHtml(topic)}</p>
-      <hr/>
-      <p>${escapeHtml(content)}</p>
-    </body></html>
-  `;
-
-  // Use .doc for compatibility but name as .docx per request.
-  const blob = new Blob(['\ufeff', html], { type: 'application/msword;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `短影片文案_${topic}.docx`;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>{
-    URL.revokeObjectURL(a.href);
-    a.remove();
-  }, 1000);
-
-  // save to local history
-  saveHistory({
-    ts: Date.now(),
-    user_level: byId("userLevel").value,
-    topic: byId("topic").value.trim(),
-    action: currentAction,
-    result: content
-  });
+  let content=(lastAiDraft || messages.filter(m=>m.role==="assistant").map(m=>m.content).join("\n\n") || "").trim();
+  if(!content){ alert("目前沒有可導出的AI生成內容"); return; }
+  const esc=s=>String(s).replace(/\\/g,'\\\\').replace(/{/g,'\\{').replace(/}/g,'\\}').replace(/\n/g,'\\par ');
+  const title="短影片文案草稿"; const topic=(byId("topic").value.trim()||"未命名").replace(/[\\/:*?"<>|]+/g,"_");
+  const rtf=`{\\rtf1\\ansi\\deff0
+{\\fonttbl{\\f0 Arial;}{\\f1 MingLiU;}{\\f2 PMingLiU;}{\\f3 Microsoft JhengHei;}}
+\\fs44 \\b ${esc(title)} \\b0\\par
+\\fs24 \\b 主題：\\b0 ${esc(topic)}\\par
+\\par
+${esc(content)}
+}`;
+  const blob=new Blob([rtf],{type:"application/rtf"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`短影片文案_${topic}.doc`; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  saveHistory({ ts:Date.now(), user_level:byId("userLevel").value, topic:byId("topic").value.trim(), action:currentAction, result:content });
 }
 byId("exportBtn").addEventListener("click", exportWord);
 
-/** =========================
- *  Helpers
- *  ========================= */
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, s=>({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  })[s]);
-}
-
-/** =========================
- *  History init
- *  ========================= */
-byId("refreshHistory").addEventListener("click", renderHistory);
-renderHistory();
+/* Helpers & Init */
+function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+byId("refreshHistory").addEventListener("click", renderHistory); renderHistory();
 </script>
 </body>
 </html>
+
 
