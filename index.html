@@ -426,7 +426,7 @@
       body: JSON.stringify({ user_id, session_id, messages, previous_segments, remember })
     });
     const json = await res.json().catch(()=>({ error:'invalid_json' }));
-    if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); }
+    if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); } // ← 404/其它會走到這，UI 顯示 ❌ 錯誤：HTTP 404
     return json;
   }
 
