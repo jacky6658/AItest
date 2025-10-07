@@ -25,7 +25,7 @@
      - 768–1199px：上下堆疊（上：聊天，下：結果）
      - <768px：單欄，工具列收合為底部抽屜
 
-  ▶ 後端 API（目前僅 /generate_script 可用；其它有 404 會自動降級）：
+  ▶ 後端 API（不可變更）：
      POST /chat_generate (Body: { user_id?, session_id?, messages:[{role,content}], previous_segments?, remember? })
      POST /feedback      (Body: { user_id?, kind:"thumbs_up"|"thumbs_down", note? })
      POST /update_prefs  (Body: { user_id?, prefs:{ tone?, language?, writing_style?, max_length? } })
@@ -341,7 +341,7 @@
   <section id="page-guide" class="container" style="display:none; padding-top:16px">
     <article class="card" style="margin-bottom:12px">
       <h3>工作原理與隱私</h3>
-      <p>你輸入的主題與需求會透過 <code>/chat_generate</code> 送給後端 LLM，由模型推理行業與爆款要素並產出腳本或文案。若後端尚未實作該路由，前端會自動降級呼叫 <code>/generate_script</code> 以維持可用。</p>
+      <p>你輸入的主題與需求會透過 <code>/chat_generate</code> 送給後端 LLM，由模型推理行業與爆款要素並產出腳本或文案。僅在勾選「記住」時才會攜帶 <code>remember: true</code>。</p>
     </article>
     <article class="card" style="margin-bottom:12px">
       <h3>如何讓效果更好</h3>
@@ -403,14 +403,6 @@
   // ================================
   // === API 區（勿改） ===
   // ================================
-  // 🔧 change: 新增通用 fetch 包裝，方便抓到 404 自動降級
-  async function safeFetchJSON(url, options){
-    const res = await fetch(url, options);
-    let json = null;
-    try{ json = await res.json(); } catch{ json = null; }
-    return { res, json };
-  }
-
   async function apiChatGenerate({ user_id, session_id, messages, previous_segments, remember }){
     if(MOCK_MODE){
       // 模擬：根據最後一則使用者訊息產生假結果
@@ -418,7 +410,7 @@
       const segs = [
         { start_sec:0, end_sec:5, type:'hook', camera:'CU', dialog:`開場鉤子：${last.slice(0,20)}…`, visual:'快速剪輯+動態字幕', cta:'' },
         { start_sec:5, end_sec:12, type:'value', camera:'MS', dialog:'三個重點說明', visual:'對焦產品/數據圖', cta:'' },
-        { start_sec:12, end_sec:20, type:'cta', camera:'WS', dialog:'行動呼籲口播', visual:'大字卡+Logo', cta:'點連結領取' }
+        { start_sec:12, end_sec:20, type:'cta', camera:'WS', dialog:'行動呼籲口播', visual:'大字卡+Logo', cta:'點擊連結領取' }
       ];
       const copy = {
         main_copy: `主貼文：${last}\n帶出賣點與承諾。`,
@@ -429,67 +421,47 @@
       await new Promise(r=>setTimeout(r,600));
       return { session_id: session_id || 'mock-session', assistant_message: '這是模擬回覆：已依你的需求產生初稿喔。', segments: segs, copy };
     }
-
-    // 先嘗試新路由
-    // 🔧 change: 使用 safeFetchJSON，若 404 則降級到 /generate_script
-    const { res, json } = await safeFetchJSON(`${API_BASE}/chat_generate`,{
+    const res = await fetch(`${API_BASE}/chat_generate`,{
       method:'POST', headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ user_id, session_id, messages, previous_segments, remember })
     });
-
-    if(res.status === 404){
-      // 🔧 change: 自動降級：用最後一則 user 訊息呼叫舊的 /generate_script
-      const lastUserMsg = (messages||[]).slice().reverse().find(m=>m.role==='user')?.content || '';
-      const r = await safeFetchJSON(`${API_BASE}/generate_script`,{
-        method:'POST', headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({ user_input: lastUserMsg, previous_segments })
-      });
-      if(!r.res.ok){ throw new Error(r.json?.error || `HTTP ${r.res.status}`); }
-      return {
-        session_id: session_id || '',
-        assistant_message: '（以舊流程產生的片段，後端尚未提供 /chat_generate）',
-        segments: Array.isArray(r.json?.segments)? r.json.segments : [],
-        copy: null
-      };
-    }
-
+    const json = await res.json().catch(()=>({ error:'invalid_json' }));
     if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); }
-    return json || {};
+    return json;
   }
 
   async function apiFeedback({ user_id, kind, note }){
     if(MOCK_MODE){ await new Promise(r=>setTimeout(r,200)); return { ok:true }; }
-    const { res, json } = await safeFetchJSON(`${API_BASE}/feedback`,{
+    const res = await fetch(`${API_BASE}/feedback`,{
       method:'POST', headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ user_id, kind, note })
     });
-    // 🔧 change: 沒有路由時當作 no-op 成功
-    if(res.status === 404) return { ok:true, downgraded:true };
+    const json = await res.json().catch(()=>({ error:'invalid_json' }));
     if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); }
-    return json || { ok:true };
+    return json;
   }
 
   async function apiUpdatePrefs({ user_id, prefs }){
     if(MOCK_MODE){ await new Promise(r=>setTimeout(r,200)); return { ok:true }; }
-    const { res, json } = await safeFetchJSON(`${API_BASE}/update_prefs`,{
+    const res = await fetch(`${API_BASE}/update_prefs`,{
       method:'POST', headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ user_id, prefs })
     });
-    // 🔧 change: 沒有路由時當作 no-op 成功
-    if(res.status === 404) return { ok:true, downgraded:true };
+    const json = await res.json().catch(()=>({ error:'invalid_json' }));
     if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); }
-    return json || { ok:true };
+    return json;
   }
 
   async function apiGenerateScript({ user_input, previous_segments }){
     if(MOCK_MODE){ await new Promise(r=>setTimeout(r,400)); return { segments:[{start_sec:0,end_sec:10,type:'hook',camera:'CU',dialog:'模擬舊流程片段',visual:'素材拼接',cta:''}] };
     }
-    const { res, json } = await safeFetchJSON(`${API_BASE}/generate_script`,{
+    const res = await fetch(`${API_BASE}/generate_script`,{
       method:'POST', headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ user_input, previous_segments })
     });
+    const json = await res.json().catch(()=>({ error:'invalid_json' }));
     if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); }
-    return json || {};
+    return json;
   }
   // === API 區結束 ===
 
@@ -561,7 +533,7 @@
     div.innerHTML = `<div class="meta">${role} · ${fmtTS()}</div><div>${escapeHTML(content)}</div>`;
     el.appendChild(div); el.scrollTop = el.scrollHeight;
   }
-  function escapeHTML(s){ return s.replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;","">":"&gt;","\"":"&quot;"}[c])); }
+  function escapeHTML(s){ return s.replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
 
   // 渲染腳本分段
   const segmentsWrap = document.getElementById('segmentsWrap');
@@ -850,4 +822,3 @@
 </script>
 </body>
 </html>
-
