@@ -146,18 +146,20 @@
         <div class="hero-title">選擇你的任務</div>
         <div class="hero-sub">輸入主題→AI 推理行業爆款要素→與你對話共創。介面簡約、行動友善。</div>
       </div>
+
       <div class="grid-cards">
         <article class="card">
-          <h3>生成「腳本」</h3>
-          <p>時間軸（秒數）＋台詞＋畫面感＋鏡位 camera＋CTA。支援卡片、時間軸檢視與微調。</p>
+          <h3>與 AI 討論「腳本」</h3>
+          <p>用對話快速修正：秒數時間軸＋對白＋畫面建議＋鏡位＋CTA；支援卡片檢視、時間軸與微調。</p>
           <div class="actions">
             <button class="btn primary" data-go="script">開始腳本模式</button>
             <button class="btn ghost" data-go="guide">看操作說明</button>
           </div>
         </article>
+
         <article class="card">
-          <h3>生成「文案」</h3>
-          <p>主貼文、備選開頭、Hashtags 與 CTA；可一鍵複製、匯出 Word。</p>
+          <h3>與 AI 討論「文案」</h3>
+          <p>產出主貼文、開頭金句、Hashtags 與 CTA；可一鍵複製或匯出，適合 IG／FB／LinkedIn／YouTube 說明文字。</p>
           <div class="actions">
             <button class="btn primary" data-go="copy">開始文案模式</button>
             <button class="btn ghost" data-go="guide">看操作說明</button>
@@ -165,11 +167,16 @@
         </article>
       </div>
 
+      <!-- MVP 一鍵示範 -->
       <details class="card" style="margin:0">
-        <summary style="cursor:pointer; font-weight:700">進階：舊流程（/generate_script 測試）</summary>
+        <summary style="cursor:pointer; font-weight:700">⚡ 一鍵快速生成（展示用）</summary>
+        <p style="margin:8px 0 0; color:#475569">
+          不想一步步對話？用「一鍵快速生成」直接出一版可用草稿，再用上方模式微調。這個流程特別適合：
+          <br>．第一次嘗試、需要立刻看到成果的人<br>．要快速丟給同事或客戶看的初稿
+        </p>
         <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap">
-          <input id="adv-input" type="text" placeholder="輸入一句需求…" style="flex:1; min-width:260px; padding:10px; border:1px solid var(--border); border-radius:10px" />
-          <button class="btn" id="adv-run">呼叫 /generate_script</button>
+          <input id="adv-input" type="text" placeholder="輸入一句需求（例：健身品牌 Reels 30 秒、強調活力）" style="flex:1; min-width:260px; padding:10px; border:1px solid var(--border); border-radius:10px" />
+          <button class="btn" id="adv-run">一鍵產生腳本</button>
         </div>
         <pre id="adv-out" class="muted" style="white-space:pre-wrap; margin-top:10px"></pre>
       </details>
@@ -191,10 +198,11 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">聊天協作（腳本）</div>
-          <button class="toggle-settings" id="toggleSettingsScript" aria-expanded="true"><span class="chev">▾</span> ⚙️ 設定</button>
+          <!-- 預設隱藏：aria-expanded=false + 包裝加 collapsed -->
+          <button class="toggle-settings" id="toggleSettingsScript" aria-expanded="false"><span class="chev">▾</span> ⚙️ 設定</button>
         </div>
         <div class="panel-head" id="settingsScriptWrap" style="border-top:0; border-bottom:1px solid var(--border);">
-          <div class="settings" id="settingsScript">
+          <div class="settings collapsed" id="settingsScript">
             <div class="field"><span class="muted">user_id</span><input id="userId" type="text" /></div>
             <div class="field"><span class="muted">tone</span>
               <select id="toneSel"><option value="neutral">neutral</option><option>friendly</option><option>energetic</option><option>professional</option></select>
@@ -252,10 +260,11 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">聊天協作（文案）</div>
-          <button class="toggle-settings" id="toggleSettingsCopy" aria-expanded="true"><span class="chev">▾</span> ⚙️ 設定</button>
+          <!-- 預設隱藏 -->
+          <button class="toggle-settings" id="toggleSettingsCopy" aria-expanded="false"><span class="chev">▾</span> ⚙️ 設定</button>
         </div>
         <div class="panel-head" id="settingsCopyWrap" style="border-top:0; border-bottom:1px solid var(--border);">
-          <div class="settings" id="settingsCopy">
+          <div class="settings collapsed" id="settingsCopy">
             <div class="field"><span class="muted">user_id</span><input id="userId2" type="text" /></div>
             <div class="field"><span class="muted">tone</span>
               <select id="toneSel2"><option value="neutral">neutral</option><option>friendly</option><option>energetic</option><option>professional</option></select>
@@ -276,11 +285,11 @@
           <div id="chatCopy" class="chat-scroll"></div>
           <div class="chips" id="chipsCopy">
             <span class="muted">快速模板：</span>
-            <button class="chip" data-insert="行業: 健身｜平台: IG｜受眾: 男性視角｜語氣: 活力｜CTA: 追蹤 + 點連結">健身·IG·品牌</button>
-            <button class="chip" data-insert="行業: 旅遊｜平台: TikTok｜受眾: 年輕族群｜語氣: 輕快｜CTA: 看更多行程">旅遊·TikTok·導流</button>
-            <button class="chip" data-insert="行業: B2B SaaS｜平台: LinkedIn｜受眾: 企業決策者｜語氣: 專業｜CTA: 下載白皮書">B2B SaaS·LinkedIn·Leads</button>
+            <button class="chip" data-insert="主題: 入魂馬卡嗆嗆錠｜受眾: 男性視角｜平台: IG｜語氣: 活力｜CTA: 追蹤 + 點連結">健身·IG·品牌</button>
+            <button class="chip" data-insert="主題: 週末輕旅行｜受眾: 年輕族群｜平台: TikTok｜語氣: 輕快｜CTA: 看更多行程">旅遊·TikTok·導流</button>
+            <button class="chip" data-insert="主題: SaaS 白皮書｜受眾: 企業決策者｜平台: LinkedIn｜語氣: 專業｜CTA: 下載白皮書">B2B SaaS·LinkedIn·Leads</button>
           </div>
-          <!-- 新增：文案主題欄位（topic） -->
+          <!-- 文案主題欄位（topic） -->
           <div style="display:flex; gap:8px; padding:8px 10px; border-top:1px solid var(--border); background:#fff; align-items:center;">
             <input id="topicCopy" placeholder="主題（產品/服務/活動名稱，例如：入魂馬卡嗆嗆錠）" style="flex:1; padding:10px; border:1px solid var(--border); border-radius:12px; font-size:16px;" />
           </div>
@@ -309,27 +318,57 @@
     </div>
   </section>
 
+  <!-- 說明/指南頁：換成你提供的四大區塊 -->
   <section id="page-guide" class="container" style="display:none; padding-top:16px">
     <article class="card" style="margin-bottom:12px">
-      <h3>工作原理與隱私</h3>
-      <p>輸入會送到 <code>/chat_generate</code>，並依 <b>mode</b> 生成腳本或文案。勾選「記住」才會攜帶 <code>remember:true</code>。</p>
+      <h3>🧠 兩種模式的用途</h3>
+      <p>依你的需求選擇「腳本模式」或「文案模式」。兩者都能用對話微調，越聊越準。</p>
     </article>
+
     <article class="card" style="margin-bottom:12px">
-      <h3>如何讓效果更好</h3>
+      <h3>📜 腳本模式</h3>
+      <p><b>適合</b>想製作【Reels／短影音腳本】的使用者。輸入主題、受眾、目標（導流／銷售／品牌曝光），系統會自動生成：</p>
       <ul>
-        <li>腳本：行業、平台（Reels/Shorts/TikTok）、時長（秒）、目標與主題。</li>
-        <li>文案：平台（IG/FB/LinkedIn/小紅書…）、受眾、語氣、CTA，並填寫「主題」。</li>
+        <li>🎤 可直接對鏡頭念的【對白】</li>
+        <li>📽 對應的【畫面建議】</li>
+        <li>🧱 按照時間區間分段（開場 Hook → 主體 → 收尾 CTA）</li>
       </ul>
+      <p><b>最適合：</b>想快速產出影片腳本、規劃畫面與對白、需要節奏結構（Hook／Value／CTA）的短影音素材。</p>
     </article>
-    <article class="card">
-      <h3>常見錯誤</h3>
+
+    <article class="card" style="margin-bottom:12px">
+      <h3>✍️ 文案模式</h3>
+      <p><b>適合</b>想產出【貼文／簡介／行銷文案】的使用者。輸入主題與需求，系統會幫你生成：</p>
       <ul>
-        <li><b>輸入太短</b>：請按建議格式補齊欄位。</li>
-        <li><b>500/超時</b>：伺服器忙碌，稍後重試或縮短訊息。</li>
+        <li>📢 貼文主文／開頭金句</li>
+        <li>🧠 段落架構（引起興趣 → 說明價值 → 行動呼籲）</li>
+        <li>📝 適合搭配 IG／FB／LinkedIn／YouTube Shorts 的說明文字</li>
+      </ul>
+      <p><b>最適合：</b>需要貼文文案、直播介紹、廣告文案；不需要分鏡頭但想快速產出有說服力文字內容的使用者。</p>
+    </article>
+
+    <article class="card" style="margin-bottom:12px">
+      <h3>🪄 使用小技巧</h3>
+      <ul>
+        <li>🎯 目標：導流／銷售／品牌曝光</li>
+        <li>🧑‍🤝‍🧑 受眾：你要對誰說話</li>
+        <li>📝 主題或商品</li>
+        <li>⏱ 時長或篇幅（例：30 秒 Reels、60 秒教學片）</li>
+      </ul>
+      <p>想要更多段落或細節，可在主題後加上提示，例如：「請產出三段主體內容」、「畫面描述要更豐富」。</p>
+    </article>
+
+    <article class="card">
+      <h3>⚡ 常見問題</h3>
+      <ul>
+        <li>❌ 沒有內容？ → 請確認你有清楚輸入主題／目標／受眾。</li>
+        <li>🕒 產出太慢？ → 可能是輸入過長，建議簡化再嘗試。</li>
+        <li>📌 想更接近品牌語氣？ → 在輸入中加入「語氣描述」（例：幽默／權威／口語／熱血）。</li>
       </ul>
     </article>
   </section>
 
+  <!-- 手機底部抽屜 -->
   <div class="drawer" id="drawer">
     <button class="btn small" data-act="copyAll">複製全部</button>
     <button class="btn small" data-act="clear">清空</button>
@@ -373,7 +412,7 @@
           assistant_message: '這是模擬文案：已依你的需求產生初稿。',
           segments:[],
           copy:{
-            main_copy:`主貼文：${last}（主題：${payload.topic||'—'}）\n精神回歸！⚡️ 今天就行動！`,
+            main_copy:`主貼文：${payload.topic ? `【${payload.topic}】` : ''}${last}\n精神回歸！⚡️ 今天就行動！`,
             alternates:['🔥 今天就開始','💡 其實只要這樣做','👉 你也可以'],
             hashtags:['#行銷','#AI','#文案','#社群經營'],
             cta:'立即點連結 🔗',
@@ -426,7 +465,7 @@
     });
   }
 
-  // ===== 設定 =====
+  // ===== 設定（預設隱藏，點按鈕展開） =====
   const userIdInput = document.getElementById('userId');
   const userIdInput2 = document.getElementById('userId2');
   userIdInput.value = state.userId; userIdInput2.value = state.userId;
@@ -443,8 +482,14 @@
   };
 
   function bindToggle(btnId, settingsId){
-    const btn=document.getElementById(btnId), wrap=document.getElementById(settingsId+'Wrap')||document.getElementById(settingsId), box=document.getElementById(settingsId);
-    btn.onclick=()=>{ const ex=btn.getAttribute('aria-expanded')==='true'; btn.setAttribute('aria-expanded',String(!ex)); (box||wrap).classList.toggle('collapsed',ex); };
+    const btn=document.getElementById(btnId),
+          box=document.getElementById(settingsId);
+    btn.onclick=()=>{
+      const ex = btn.getAttribute('aria-expanded')==='true';
+      btn.setAttribute('aria-expanded', String(!ex));
+      box.classList.toggle('collapsed', ex===false ? false : true); // 直接切換
+      if(box.classList.contains('collapsed')){ box.classList.add('collapsed'); } else { box.classList.remove('collapsed'); }
+    };
   }
   bindToggle('toggleSettingsScript','settingsScript');
   bindToggle('toggleSettingsCopy','settingsCopy');
@@ -465,7 +510,7 @@
   function appendMsg(el, role, content){
     const div=document.createElement('div'); div.className='msg ' + (role==='user'?'user':''); div.innerHTML=`<div class="meta">${role} · ${fmtTS()}</div><div>${escapeHTML(content)}</div>`; el.appendChild(div); el.scrollTop=el.scrollHeight;
   }
-  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;"," >":"&gt;","\"":"&quot;"}[c])); }
 
   const segmentsWrap=document.getElementById('segmentsWrap');
   function renderSegments(){
@@ -560,7 +605,6 @@
     const btn = isScript? document.getElementById('sendScript') : document.getElementById('sendCopy');
     const old = btn.textContent; btn.disabled=true; btn.textContent='生成中…';
 
-    // payload：關鍵！腳本/文案用 mode 分流；copy 帶 topic；copy 的 previous_segments 清空
     const payload = {
       user_id: state.userId,
       session_id: isScript ? state.sessionIdScript : state.sessionIdCopy,
@@ -590,13 +634,16 @@
     }
   }
 
-  // 舊流程測試
+  // 一鍵快速生成（示範）
   document.getElementById('adv-run').onclick = async()=>{
     const out=document.getElementById('adv-out');
     const text=document.getElementById('adv-input').value.trim(); if(!text) return;
-    out.textContent='呼叫中…';
-    try{ const r=await apiGenerateScript({ user_input:text, previous_segments: state.segments }); out.textContent=JSON.stringify(r,null,2); if(r.segments){ state.segments=r.segments; renderSegments(); } }
-    catch(e){ out.textContent=`錯誤：${e.message}`; }
+    out.textContent='生成中…';
+    try{
+      const r=await apiGenerateScript({ user_input:text, previous_segments: state.segments });
+      out.textContent=JSON.stringify(r,null,2);
+      if(r.segments){ state.segments=r.segments; renderSegments(); }
+    }catch(e){ out.textContent=`錯誤：${e.message}`; }
   };
 
   // 匯出 Word（前端本地）
