@@ -91,8 +91,11 @@
       display:grid; grid-template-columns:7fr 5fr; gap:16px; padding:16px;
     }
     .panel{ background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
-    .panel-head{ padding:12px 14px; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
-    .panel-title{ font-weight:800; }
+    .panel-head{
+      padding:12px 14px; border-bottom:1px solid var(--border);
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+    }
+    .panel-title{ font-weight:800; display:flex; align-items:center; gap:8px; }
 
     /* 設定區（左上） */
     .settings{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
@@ -101,6 +104,19 @@
       border:none; background:transparent; outline:none; padding:4px; min-width:90px; font-size:14px;
     }
     .settings .check{ display:flex; align-items:center; gap:6px; }
+    .settings.collapsed{ display:none; }  /* ← 可隱藏 */
+
+    /* 設定切換按鈕 */
+    .toggle-settings{
+      margin-left:auto;
+      border:1px solid var(--border);
+      background:#fff;
+      padding:6px 10px; border-radius:10px; cursor:pointer; font-weight:700; font-size:13px;
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    .toggle-settings:hover{ box-shadow:var(--shadow); }
+    .chev{ display:inline-block; transition:transform .2s ease; }
+    .toggle-settings[aria-expanded="false"] .chev{ transform:rotate(-90deg); }
 
     /* 對話區 */
     .chat-wrap{ display:flex; flex-direction:column; height:62vh; }
@@ -232,22 +248,28 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">聊天協作（腳本）</div>
-          <div class="settings">
+          <button class="toggle-settings" id="toggleSettingsScript" aria-expanded="true" aria-controls="settingsScript">
+            <span class="chev">▾</span> ⚙️ 設定
+          </button>
+        </div>
+        <div class="panel-head" id="settingsScriptWrap" style="border-top:0; border-bottom:1px solid var(--border);">
+          <div class="settings" id="settingsScript">
             <div class="field"><span class="muted">user_id</span><input id="userId" type="text" /></div>
             <div class="field"><span class="muted">tone</span>
               <select id="toneSel"><option value="neutral">neutral</option><option>friendly</option><option>energetic</option><option>professional</option></select>
             </div>
-            <div class="field"><span class="muted">language</span>
+            <div class="field"><span class="muted">lang</span>
               <select id="langSel"><option value="zh-TW">zh-TW</option><option value="zh-CN">zh-CN</option><option value="en">en</option></select>
             </div>
             <div class="field"><span class="muted">style</span>
               <select id="styleSel"><option value="concise">concise</option><option value="storytelling">storytelling</option><option value="educational">educational</option></select>
             </div>
             <div class="field"><span class="muted">max_len</span><input id="lenSel" type="number" min="200" max="2000" step="50" value="800" /></div>
-            <label class="check"><input type="checkbox" id="rememberChk" /> 記住這件事</label>
+            <label class="check"><input type="checkbox" id="rememberChk" /> 記住</label>
             <button class="btn small" id="btn-save-prefs">更新偏好</button>
           </div>
         </div>
+
         <div class="chat-wrap">
           <div id="chatScript" class="chat-scroll"></div>
           <div class="chips" id="chipsScript">
@@ -262,11 +284,12 @@
           </div>
         </div>
       </div>
+
       <!-- 右：腳本結果 -->
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">腳本分段 / 時間軸</div>
-          <div class="settings">
+          <div class="settings" style="gap:8px">
             <button class="btn small" id="copyAllScript">複製全部</button>
             <button class="btn small" id="clearScript">清空</button>
             <button class="btn small ok" id="thumbUpScript">👍</button>
@@ -289,12 +312,17 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">聊天協作（文案）</div>
-          <div class="settings">
+          <button class="toggle-settings" id="toggleSettingsCopy" aria-expanded="true" aria-controls="settingsCopy">
+            <span class="chev">▾</span> ⚙️ 設定
+          </button>
+        </div>
+        <div class="panel-head" id="settingsCopyWrap" style="border-top:0; border-bottom:1px solid var(--border);">
+          <div class="settings" id="settingsCopy">
             <div class="field"><span class="muted">user_id</span><input id="userId2" type="text" /></div>
             <div class="field"><span class="muted">tone</span>
               <select id="toneSel2"><option value="neutral">neutral</option><option>friendly</option><option>energetic</option><option>professional</option></select>
             </div>
-            <div class="field"><span class="muted">language</span>
+            <div class="field"><span class="muted">lang</span>
               <select id="langSel2"><option value="zh-TW">zh-TW</option><option value="zh-CN">zh-CN</option><option value="en">en</option></select>
             </div>
             <div class="field"><span class="muted">style</span>
@@ -305,6 +333,7 @@
             <button class="btn small" id="btn-save-prefs2">更新偏好</button>
           </div>
         </div>
+
         <div class="chat-wrap">
           <div id="chatCopy" class="chat-scroll"></div>
           <div class="chips" id="chipsCopy">
@@ -319,11 +348,12 @@
           </div>
         </div>
       </div>
+
       <!-- 右：文案結果 -->
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">文案模組</div>
-          <div class="settings">
+          <div class="settings" style="gap:8px">
             <button class="btn small" id="copyAllCopy">複製全部</button>
             <button class="btn small" id="clearCopy">清空</button>
             <button class="btn small ok" id="thumbUpCopy">👍</button>
@@ -501,6 +531,19 @@
     return { tone: val(t), language: val(l), writing_style: val(s), max_length: parseInt(val(m)||600,10) };
   }
   const val = sel=>document.querySelector(sel).value;
+
+  // 設定收合/展開
+  function bindToggle(btnId, settingsId){
+    const btn = document.getElementById(btnId);
+    const settings = document.getElementById(settingsId);
+    btn.addEventListener('click', ()=>{
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      settings.classList.toggle('collapsed', expanded);
+    });
+  }
+  bindToggle('toggleSettingsScript','settingsScript');
+  bindToggle('toggleSettingsCopy','settingsCopy');
 
   // 送出（腳本）
   const sendBtnScript = document.getElementById('sendScript');
@@ -701,7 +744,7 @@
     appendMsg(chatEl,'user',text);
     input.value='';
 
-    // 準備 messages（僅送最後 20 則，含 system 提示可自行加入）
+    // 準備 messages（僅送最後 20 則）
     const messages = (isScript?state.messagesScript:state.messagesCopy).slice(-20).map(m=>({ role:m.role, content:m.content }));
 
     // UI loading
@@ -822,3 +865,4 @@
 </script>
 </body>
 </html>
+
