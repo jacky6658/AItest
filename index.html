@@ -65,7 +65,11 @@
     }
     .topbar-inner{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 16px; }
     .brand{ display:flex; align-items:center; gap:10px; font-weight:700; }
-    .brand .dot{ width:10px; height:10px; background:var(--primary); border-radius:50%; box-shadow:0 0 0 4px rgba(37,99,235,0.2); }
+    /* 新：把小圓點換成 logo 圖片 */
+    .brand .logo{
+      width:18px; height:18px; border-radius:4px; object-fit:cover;
+      box-shadow:0 0 0 3px rgba(37,99,235,0.15);
+    }
     .tabs{ display:flex; gap:8px; flex-wrap:wrap; }
     .tab{
       padding:8px 12px; border:1px solid var(--border); border-radius:999px; background:#fff; color:var(--text);
@@ -174,6 +178,19 @@
     details.adv{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
     details.adv summary{ cursor:pointer; font-weight:700; }
 
+    /* ====== 新增：全站 Footer、聯繫按鈕 ====== */
+    .site-footer{
+      border-top:1px solid var(--border);
+      margin-top:24px;
+      background:#fff;
+    }
+    .contact-links{
+      display:flex; gap:8px; flex-wrap:wrap; padding:12px 0;
+    }
+    .copyright{
+      color:var(--text-muted); font-size:14px; padding:6px 0 14px 0;
+    }
+
     /* RWD */
     @media (min-width: 880px){ .grid-cards{ grid-template-columns: repeat(2,1fr); } }
     @media (min-width: 1200px){ .hero-title{ font-size:32px; } }
@@ -192,7 +209,12 @@
 <body>
   <div class="topbar">
     <div class="topbar-inner container">
-      <div class="brand"><span class="dot"></span>AI短影音顧問｜AIJob智能</div>
+      <!-- 新：以圖片取代藍色圓點 -->
+      <div class="brand">
+        <img class="logo" alt="AIJob logo"
+             src="https://static.wixstatic.com/media/9705bb_4edf6b22c58f4275bc9bae42891acb49~mv2.png"/>
+        AI短影音顧問｜AIJob智能
+      </div>
       <div class="tabs">
         <button class="tab active" data-page="home">首頁</button>
         <button class="tab" data-page="script">腳本模式</button>
@@ -338,12 +360,12 @@
           <div id="chatCopy" class="chat-scroll"></div>
           <div class="chips" id="chipsCopy">
             <span class="muted">快速模板：</span>
-            <button class="chip" data-insert="行業: 健身｜平台: IG Reels｜時長: 30秒｜目標: 品牌記憶｜主題: 30天挑戰">健身·30秒·品牌</button>
-            <button class="chip" data-insert="行業: 旅遊｜平台: TikTok｜時長: 60秒｜目標: 導流｜主題: 秘境推薦">旅遊·60秒·導流</button>
-            <button class="chip" data-insert="行業: B2B SaaS｜平台: LinkedIn｜時長: 60秒｜目標: 潛在客戶｜主題: 省時自動化">B2B SaaS·客戶</button>
+            <button class="chip" data-insert="行業: 健身｜平台: IG｜目標: 品牌記憶｜CTA: 追蹤 + 點連結">健身·IG·品牌</button>
+            <button class="chip" data-insert="行業: 旅遊｜平台: TikTok｜目標: 導流｜CTA: 看更多行程">旅遊·TikTok·導流</button>
+            <button class="chip" data-insert="行業: B2B SaaS｜平台: LinkedIn｜目標: 生成潛在客戶｜CTA: 下載白皮書">B2B SaaS·LinkedIn·Leads</button>
           </div>
           <div class="inputbar">
-            <textarea id="inputCopy" placeholder="輸入主題/受眾/平台/語氣…"></textarea>
+            <textarea id="inputCopy" placeholder="輸入主題/受眾/平台/語氣/CTA…（Enter 送出，Shift+Enter 換行）"></textarea>
             <button class="btn primary" id="sendCopy">送出</button>
           </div>
         </div>
@@ -376,7 +398,7 @@
     <article class="card" style="margin-bottom:12px">
       <h3>如何讓效果更好</h3>
       <ul>
-        <li>明確告知：行業、平台（Reels/Shorts/TikTok…）、時長（15/30/60秒）、目標（導流/購買/品牌）。</li>
+        <li>明確告知：行業、平台（Reels/Shorts/TikTok…）或社群平台（IG/FB/LinkedIn…）、時長或貼文篇幅、目標（導流/購買/品牌/名單）。</li>
         <li>提供產品/服務賣點、主要受眾、預算與口播/字幕需求。</li>
         <li>多輪對話微調：可要求增加開場鉤子、節奏、收尾 CTA。</li>
       </ul>
@@ -401,6 +423,21 @@
   </div>
 
   <div id="toast" class="toast">已複製</div>
+
+  <!-- ====== 新增：全站 Footer（所有分頁皆顯示） ====== -->
+  <footer class="site-footer">
+    <div class="container">
+      <!-- 首頁獨顯的聯繫按鈕列：切頁時用 JS 切換顯示 -->
+      <div id="contactLinks" class="contact-links" style="display:none">
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/E49kA8">LINE 官方帳號</a>
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
+        <a class="btn small" target="_blank" href="https://discord.gg/Dzm2P7rHyg">Discord 社群</a>
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">行銷自動化課程</a>
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">YouTube</a>
+      </div>
+      <div class="copyright">© 2025 AIJobSchool 版權所有</div>
+    </div>
+  </footer>
 
 <script>
   // ================================
@@ -456,7 +493,7 @@
       body: JSON.stringify({ user_id, session_id, messages, previous_segments, remember })
     });
     const json = await res.json().catch(()=>({ error:'invalid_json' }));
-    if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); } // ← 404/其它會走到這，UI 顯示 ❌ 錯誤：HTTP 404
+    if(!res.ok){ throw new Error(json?.error || `HTTP ${res.status}`); } // ← 404/其它會走到這
     return json;
   }
 
@@ -507,6 +544,9 @@
       document.getElementById(`page-${p}`).style.display = (p===name)?'block':'none';
       document.querySelector(`.tab[data-page="${p}"]`).classList.toggle('active', p===name);
     });
+    // 新：首頁顯示聯繫按鈕，其它頁隱藏
+    const links = document.getElementById('contactLinks');
+    if(links) links.style.display = (name==='home') ? 'flex' : 'none';
   }
 
   // 初始 user_id
@@ -561,7 +601,7 @@
   sendBtnCopy.onclick = ()=> sendChat('copy');
   inputCopy.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat('copy'); } });
 
-  // 快速模板 chips
+  // 快速模板 chips（文案模板已改為平台/目標/CTA）
   document.getElementById('chipsScript').addEventListener('click',e=>{
     if(e.target.classList.contains('chip')){ inputScript.value = e.target.dataset.insert; inputScript.focus(); }
   });
@@ -590,7 +630,6 @@
       return;
     }
     state.segments.forEach((s,idx)=>{
-      // 若秒數不存在，進行暫分配（5–10秒）
       if(s.start_sec==null||s.end_sec==null){ const base = (idx*6); s.start_sec = base; s.end_sec = base+6; }
       const card = document.createElement('div');
       card.className = 'segment-card';
@@ -657,7 +696,7 @@
   function renderCopy(){
     copyWrap.innerHTML='';
     if(!state.copy){
-      const empty = document.createElement('div'); empty.className='copy-card muted'; empty.textContent='尚無文案。請描述平台/受眾/語氣/目標。'; copyWrap.appendChild(empty); return;
+      const empty = document.createElement('div'); empty.className='copy-card muted'; empty.textContent='尚無文案。請描述平台/受眾/語氣/目標/CTA。'; copyWrap.appendChild(empty); return;
     }
     const { main_copy, alternates=[], hashtags=[], cta='' } = state.copy;
     const main = document.createElement('div');
@@ -739,28 +778,22 @@
 
     const text = (input.value||'').trim(); if(!text){ showToast('請先輸入內容'); return; }
 
-    // 新增使用者訊息
     (isScript?state.messagesScript:state.messagesCopy).push({ role:'user', content:text, ts:Date.now() });
     appendMsg(chatEl,'user',text);
     input.value='';
 
-    // 準備 messages（僅送最後 20 則）
     const messages = (isScript?state.messagesScript:state.messagesCopy).slice(-20).map(m=>({ role:m.role, content:m.content }));
 
-    // UI loading
     const btn = isScript? sendBtnScript : sendBtnCopy; const oldLabel = btn.textContent; btn.disabled=true; btn.textContent='生成中…';
 
     try{
       const resp = await apiChatGenerate({ user_id: state.userId, session_id: sessionId, messages, previous_segments: state.segments, remember });
-      // 保存 session_id
       if(isScript){ state.sessionIdScript = resp.session_id || state.sessionIdScript; } else { state.sessionIdCopy = resp.session_id || state.sessionIdCopy; }
 
-      // 顯示 assistant_message
       const assistant = resp.assistant_message || '(無回覆)';
       (isScript?state.messagesScript:state.messagesCopy).push({ role:'assistant', content:assistant, ts:Date.now() });
       appendMsg(chatEl,'assistant',assistant);
 
-      // 若回傳 segments / copy，渲染右側
       if(resp.segments && Array.isArray(resp.segments)){
         state.segments = resp.segments;
         renderSegments();
@@ -800,14 +833,12 @@
     parts.push(para(`輸出時間：${fmtTS()}`));
     parts.push(para(' '));
 
-    // 對話紀錄
     parts.push(h2('一、對話紀錄（腳本模式）'));
     state.messagesScript.forEach(m=>{ parts.push(para(`${m.role} | ${new Date(m.ts).toLocaleString()}\n${m.content}`)); });
     parts.push(para(' '));
     parts.push(h2('二、對話紀錄（文案模式）'));
     state.messagesCopy.forEach(m=>{ parts.push(para(`${m.role} | ${new Date(m.ts).toLocaleString()}\n${m.content}`)); });
 
-    // 腳本分段
     parts.push(para(' '));
     parts.push(h2('三、腳本分段'));
     if(state.segments?.length){
@@ -822,7 +853,6 @@
       parts.push(para('（無片段）'));
     }
 
-    // 文案模組
     parts.push(para(' '));
     parts.push(h2('四、文案模組'));
     if(state.copy){
@@ -859,10 +889,18 @@
   const mockBtn = document.getElementById('btn-toggle-mock');
   mockBtn.onclick = ()=>{ MOCK_MODE=!MOCK_MODE; mockBtn.textContent = `Mock: ${MOCK_MODE? 'On':'Off'}`; showToast(`Mock ${MOCK_MODE?'已開啟':'已關閉'}`); };
 
+  // 初始：顯示首頁的聯繫按鈕
+  (function init(){
+    // 頁面初始默認在首頁，顯示聯繫鈕
+    const links = document.getElementById('contactLinks');
+    if(links) links.style.display = 'flex';
+  })();
+
   // 初始渲染
   renderSegments();
   renderCopy();
 </script>
 </body>
 </html>
+
 
