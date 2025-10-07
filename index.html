@@ -3,57 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>短影音腳本產生器｜前端測試頁</title>
+  <title>短影音腳本產生器｜前端測試頁（亮色主題）</title>
   <style>
-    /* ====== 基礎樣式（不依賴任何外部框架）====== */
+    /* ====== 亮色主題（可直接調整變數換色）====== */
     :root{
-      --bg:#0f1220;
-      --panel:#14182b;
-      --panel-2:#1c2240;
-      --text:#e9ecf1;
-      --muted:#a9b0c3;
-      --primary:#6aa7ff;
-      --primary-2:#8bc6ff;
-      --accent:#b26dff;
-      --ok:#32d296;
-      --warn:#ffb100;
-      --danger:#ff5c7a;
-      --border:rgba(255,255,255,.08);
-      --card-shadow:0 8px 24px rgba(0,0,0,.25);
+      --bg:#f6f8fc;
+      --panel:#ffffff;
+      --panel-2:#f3f5f9;
+      --text:#1b2430;
+      --muted:#5f6b7a;
+      --primary:#0b66ff;
+      --primary-2:#4a8cff;
+      --accent:#7b3fff;
+      --ok:#17b26a;
+      --warn:#ff9f00;
+      --danger:#ff3366;
+      --border:rgba(16,24,40,.08);
+      --card-shadow:0 8px 24px rgba(16,24,40,.06);
       --radius:14px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; background:linear-gradient(180deg,#0c1020 0%, #0a0d18 100%);
-      color:var(--text); font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
+      margin:0;
+      background:linear-gradient(180deg,#f9fbff 0%, #eef2f8 100%);
+      color:var(--text);
+      font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
     }
     a{color:var(--primary)}
-    .container{
-      max-width:1200px; margin:28px auto; padding:0 16px;
-    }
-    header{
-      display:flex; align-items:center; gap:14px; margin-bottom:18px;
-    }
+    .container{ max-width:1200px; margin:28px auto; padding:0 16px; }
+
+    header{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
     .logo{
       width:42px; height:42px; border-radius:12px;
-      background: radial-gradient(120% 120% at 10% 10%, var(--primary), transparent 60%),
-                  radial-gradient(120% 120% at 90% 30%, var(--accent), transparent 60%),
-                  radial-gradient(120% 120% at 50% 90%, #00e3e3, transparent 60%);
-      box-shadow:0 6px 20px rgba(106,167,255,.35), inset 0 0 24px rgba(255,255,255,.06);
+      background:
+        radial-gradient(120% 120% at 10% 10%, var(--primary), transparent 60%),
+        radial-gradient(120% 120% at 90% 30%, var(--accent), transparent 60%),
+        radial-gradient(120% 120% at 50% 90%, #00c2c2, transparent 60%);
+      box-shadow:0 6px 20px rgba(11,102,255,.25), inset 0 0 24px rgba(255,255,255,.6);
     }
     h1{font-size:22px; margin:0}
     .sub{color:var(--muted); font-size:13px}
 
-    /* 布局 */
-    .grid{
-      display:grid; grid-template-columns: 1.1fr 1.2fr; gap:18px;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-    }
+    .grid{ display:grid; grid-template-columns: 1.1fr 1.2fr; gap:18px; }
+    @media (max-width:980px){ .grid{ grid-template-columns: 1fr; } }
 
-    /* 左側控制面板 */
     .panel{
       background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
       border:1px solid var(--border);
@@ -64,88 +58,76 @@
     .panel h2{margin:4px 0 12px; font-size:16px}
     label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
     textarea, input[type="text"]{
-      width:100%; color:var(--text); background:#0c1024; border:1px solid var(--border);
+      width:100%; color:var(--text); background:#fff; border:1px solid var(--border);
       border-radius:12px; padding:12px 12px; outline:none; resize:vertical; min-height:100px;
       transition:border-color .2s, box-shadow .2s;
     }
-    textarea:focus, input:focus{border-color:var(--primary); box-shadow:0 0 0 4px rgba(106,167,255,.15)}
+    textarea:focus, input:focus{border-color:var(--primary); box-shadow:0 0 0 4px rgba(11,102,255,.15)}
     .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .hint{font-size:12px; color:var(--muted); margin-top:6px}
 
-    /* 按鈕 */
     .btn{
       appearance:none; border:1px solid var(--border); color:var(--text);
-      background:linear-gradient(180deg,#1a2042,#161b36); padding:10px 14px; border-radius:12px;
-      cursor:pointer; transition:transform .05s ease, box-shadow .2s ease, border-color .2s ease;
+      background:#f7f9fc; padding:10px 14px; border-radius:12px; cursor:pointer;
+      transition:transform .05s ease, box-shadow .2s ease, border-color .2s ease, background .2s;
     }
-    .btn:hover{border-color:#2a314f}
+    .btn:hover{border-color:#c8d1e0; background:#eef2f8}
     .btn:active{transform:translateY(1px)}
     .btn-primary{
       background:linear-gradient(180deg, var(--primary), var(--primary-2));
-      color:#0b1020; border:none; font-weight:700; box-shadow:0 6px 16px rgba(107,168,255,.35);
+      color:#fff; border:none; font-weight:700; box-shadow:0 6px 16px rgba(11,102,255,.25);
     }
-    .btn-ghost{background:transparent}
-    .btn-danger{ background:linear-gradient(180deg,#ff7b94,#ff5c7a); border:none; color:#fff}
-    .btn-ok{ background:linear-gradient(180deg,#57e2b2,#32d296); border:none; color:#0a1312 }
+    .btn-ghost{background:#fff}
+    .btn-danger{ background:linear-gradient(180deg,#ff7b94,#ff3366); border:none; color:#fff}
+    .btn-ok{ background:linear-gradient(180deg,#47e0a3,#17b26a); border:none; color:#0a1312 }
     .btn-small{ padding:7px 10px; border-radius:10px; font-size:12px }
-
     .toolbar{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
 
-    /* 右側輸出與時間軸 */
     .cards{ display:grid; grid-template-columns: 1fr; gap:12px; }
     .card{
-      border:1px solid var(--border); border-radius:14px; background:#101633; padding:12px;
+      border:1px solid var(--border); border-radius:14px; background:#fff; padding:12px;
       position:relative; overflow:hidden;
     }
     .card .badge{
       position:absolute; top:10px; right:10px; font-size:11px; padding:4px 8px; border-radius:999px;
-      color:#0c1220; background:linear-gradient(180deg,#9fd1ff,#6aa7ff);
+      color:#fff; background:linear-gradient(180deg,#9fd1ff,#0b66ff);
       font-weight:700; letter-spacing:.3px;
     }
     .kv{ display:grid; grid-template-columns: 92px 1fr; gap:10px; }
-    .kv strong{ color:#cfe2ff; font-weight:700; font-size:13px }
-    .kv div{ padding:8px 10px; background:#0b1127; border:1px solid var(--border); border-radius:10px; min-height:40px; white-space:pre-wrap }
+    .kv strong{ color:#334155; font-weight:700; font-size:13px }
+    .kv div{ padding:8px 10px; background:#f7f9fc; border:1px solid var(--border); border-radius:10px; min-height:40px; white-space:pre-wrap }
     .actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
 
-    /* 時間軸 - 已接受段落（previous_segments） */
-    .timeline{
-      margin-top:12px; padding-left:4px; border-left:2px dashed #26305c;
-    }
+    .timeline{ margin-top:12px; padding-left:4px; border-left:2px dashed #d7deea; }
     .tl-item{
       position:relative; padding:10px 10px 10px 16px; margin:4px 0 8px;
-      background:#0d1330; border:1px solid var(--border); border-radius:12px;
+      background:#ffffff; border:1px solid var(--border); border-radius:12px;
     }
     .tl-item::before{
       content:""; position:absolute; left:-7px; top:14px; width:10px; height:10px; border-radius:50%;
-      background:var(--primary-2); box-shadow:0 0 0 4px rgba(139,198,255,.15);
+      background:var(--primary-2); box-shadow:0 0 0 4px rgba(74,140,255,.18);
     }
     .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
 
-    /* 狀態/載入 */
-    .status{
-      display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin-top:8px;
-    }
+    .status{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin-top:8px; }
     .dot{
       width:10px; height:10px; border-radius:50%;
-      background:linear-gradient(180deg,#9fd1ff,#6aa7ff); animation:pulse 1s infinite alternate ease-in-out;
-      box-shadow: 0 0 0 6px rgba(110,170,255,.15);
+      background:linear-gradient(180deg,#9fd1ff,#0b66ff); animation:pulse 1s infinite alternate ease-in-out;
+      box-shadow: 0 0 0 6px rgba(74,140,255,.15);
     }
-    @keyframes pulse{ to{ transform:scale(1.1); box-shadow: 0 0 0 10px rgba(110,170,255,.08);} }
+    @keyframes pulse{ to{ transform:scale(1.1); box-shadow: 0 0 0 10px rgba(74,140,255,.08);} }
 
-    /* 浮動通知 */
     .toast{
       position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
-      background:#0b1024; color:var(--text); border:1px solid var(--border);
+      background:#111827; color:#fff; border:1px solid rgba(255,255,255,.12);
       padding:10px 14px; border-radius:12px; box-shadow: var(--card-shadow);
       font-size:14px; display:none; z-index:9999;
     }
     .toast.show{ display:block; animation:fade .2s ease }
     @keyframes fade{ from{opacity:.0; transform:translate(-50%, 6px)} to{opacity:1; transform:translate(-50%, 0)} }
 
-    /* 小提示標籤 */
     .pill{ font-size:11px; color:#0b1020; background:linear-gradient(180deg,#ffd480,#ffb100); border-radius:999px; padding:2px 8px; font-weight:700 }
 
-    /* 響應式優化 */
     @media (max-width:560px){
       .kv{ grid-template-columns: 1fr; }
       .kv strong{ display:block; margin-top:6px }
@@ -153,7 +135,7 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container"><!-- ✅ 僅保留單一 container，避免重複 -->
     <header>
       <div class="logo" aria-hidden="true"></div>
       <div>
@@ -168,6 +150,7 @@
         <h2 id="input-panel-title">輸入與控制</h2>
         <label for="userInput">對話框（輸入短影片需求 / 修改建議）</label>
         <textarea id="userInput" placeholder="例：目標觀眾為上班族，30 秒 Reels，主題是「加班也能健身」，風格幽默、口語化。"></textarea>
+
         <div class="row" style="margin-top:10px">
           <button id="btnSend" class="btn btn-primary">送出給 /generate_script</button>
           <button id="btnNext" class="btn btn-ok" title="基於已接受的上一段，生成下一段">生成下一段</button>
@@ -182,9 +165,10 @@
           <button id="btnExport" class="btn btn-ghost btn-small">匯出 previous_segments.json</button>
           <button id="btnCopyAll" class="btn btn-ghost btn-small">複製所有段落文字</button>
         </div>
+
         <div class="hint">
-          備註：Request 僅送 <span class="mono">{"user_input": "...", "previous_segments": [...]}</span>；Response 僅讀
-          <span class="mono">{"segments":[...], "error":null}</span>。本頁不修改 URL 與結構。
+          Request：<span class="mono">{"user_input":"...", "previous_segments":[...]}</span><br/>
+          Response：<span class="mono">{"segments":[{type,camera,dialog,visual}], "error": null}</span>
         </div>
 
         <hr style="border-color:var(--border); margin:16px 0" />
@@ -210,14 +194,11 @@
 
   <script>
     /**
-     * =========================
      * 前端邏輯（純原生 JS）
-     * =========================
-     * 重點保證：
-     * 1) 僅呼叫 POST /generate_script
-     * 2) Request：{ user_input: string, previous_segments: Array<object> }
-     * 3) Response：{ segments: Array<{type,camera,dialog,visual}>, error: string|null }
-     * 4) 提供「編輯上一段並生成下一段」的流程（會直接修改 previous_segments[last]）。
+     * API 契約不變：
+     *   POST /generate_script
+     *   Request:  { user_input: string, previous_segments: Array<object> }
+     *   Response: { segments: Array<{type,camera,dialog,visual}>, error: string|null }
      */
 
     // ---- DOM 快取 ----
@@ -239,30 +220,22 @@
     /** @type {Array<{type:string,camera?:string,dialog?:string,visual?:string}>} */
     let previousSegments = [];
 
-    // ---- 工具：提示窗 ----
+    // ---- 小工具 ----
     function toast(msg, ms=1600){
       dom.toast.textContent = msg;
       dom.toast.classList.add('show');
       setTimeout(()=> dom.toast.classList.remove('show'), ms);
     }
-
-    // ---- 工具：更新狀態 ----
     function setStatus(text){ dom.statusText.textContent = text; }
-
-    // ---- 工具：HTML 轉義（避免 XSS）----
     function esc(s=''){ return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
 
-    // ---- UI：渲染右側卡片 ----
-    /**
-     * @param {Array<{type:string,camera?:string,dialog?:string,visual?:string}>} segments
-     */
+    // ---- 渲染：右側卡片 ----
     function renderCards(segments){
       if(!Array.isArray(segments) || !segments.length){
         dom.cards.innerHTML = `<div class="card"><div class="badge">提示</div>目前沒有可顯示的 segments。</div>`;
         return;
       }
       dom.cards.innerHTML = segments.map((seg, idx) => {
-        const title = esc(seg.type || `段落 ${idx+1}`);
         return `
         <article class="card">
           <div class="badge">${esc(seg.type || 'SEG')}</div>
@@ -283,7 +256,7 @@
       }).join('');
     }
 
-    // ---- UI：渲染左側時間軸（previous_segments）----
+    // ---- 渲染：左側時間軸 ----
     function renderTimeline(){
       if(!previousSegments.length){
         dom.timeline.innerHTML = `<div class="tl-item">尚未加入任何段落。先在右側選擇「加入時間軸」。</div>`;
@@ -306,13 +279,13 @@
           <div class="actions">
             <button class="btn btn-ghost btn-small" data-tl="copy" data-i="${i}">複製</button>
             <button class="btn btn-ghost btn-small" data-tl="remove" data-i="${i}">移除</button>
-            ${i===previousSegments.length-1 ? `<button class="btn btn-small" data-tl="save" data-i="${i}">保存此段修改</button>`:''}
+            ${i===previousSegments.length-1 ? `<button class="btn btn-small btn-primary" data-tl="save" data-i="${i}">保存此段修改</button>`:''}
           </div>
         </div>
       `).join('');
     }
 
-    // ---- 事件：右側卡片的按鈕（事件委派）----
+    // ---- 卡片事件 ----
     dom.cards.addEventListener('click', (e)=>{
       const btn = e.target.closest('button[data-act]');
       if(!btn) return;
@@ -324,25 +297,16 @@
       if(!seg) return;
 
       if(act === 'add'){
-        previousSegments.push(seg);
-        renderTimeline();
-        toast('已加入時間軸');
+        previousSegments.push(seg); renderTimeline(); toast('已加入時間軸');
       }else if(act === 'copy'){
-        const text = segmentToText(seg);
-        navigator.clipboard.writeText(text).then(()=> toast('已複製段落文字'));
+        navigator.clipboard.writeText(segmentToText(seg)).then(()=> toast('已複製段落文字'));
       }else if(act === 'fine'){
-        // 微調：彈窗編輯後加入
         openFineTune(seg).then(result=>{
-          if(result){
-            previousSegments.push(result);
-            renderTimeline();
-            toast('已加入（微調後）');
-          }
+          if(result){ previousSegments.push(result); renderTimeline(); toast('已加入（微調後）'); }
         });
       }
     });
 
-    // 從卡片節點擷取資料
     function extractSegmentFromCard(card){
       try{
         const type = card.querySelector('.badge')?.textContent?.trim() || 'SEG';
@@ -353,14 +317,8 @@
           dialog: kv[1]?.textContent ?? '',
           visual: kv[2]?.textContent ?? '',
         };
-      }catch(err){
-        console.error(err);
-        toast('解析卡片資料失敗');
-        return null;
-      }
+      }catch(err){ console.error(err); toast('解析卡片資料失敗'); return null; }
     }
-
-    // 段落轉純文字（便於複製）
     function segmentToText(seg){
       return `【${seg.type || '段落'}】
 鏡位：${seg.camera || ''}
@@ -368,26 +326,19 @@
 視覺：${seg.visual || ''}`;
     }
 
-    // ---- 事件：時間軸按鈕 ----
+    // ---- 時間軸事件 ----
     dom.timeline.addEventListener('click', (e)=>{
       const btn = e.target.closest('button[data-tl]');
       if(!btn) return;
       const i = +btn.dataset.i;
       const act = btn.dataset.tl;
-
       if(Number.isNaN(i) || !previousSegments[i]) return;
 
       if(act === 'copy'){
-        navigator.clipboard.writeText(segmentToText(previousSegments[i]))
-          .then(()=> toast('已複製時間軸段落'));
-      }
-      else if(act === 'remove'){
-        previousSegments.splice(i,1);
-        renderTimeline();
-        toast('已移除段落');
-      }
-      else if(act === 'save'){
-        // 讀取 contenteditable 的內容回寫
+        navigator.clipboard.writeText(segmentToText(previousSegments[i])).then(()=> toast('已複製時間軸段落'));
+      }else if(act === 'remove'){
+        previousSegments.splice(i,1); renderTimeline(); toast('已移除段落');
+      }else if(act === 'save'){
         const item = dom.timeline.querySelector(`.tl-item[data-i="${i}"]`);
         const camera = item.querySelector('[data-field="camera"]')?.textContent ?? '';
         const dialog = item.querySelector('[data-field="dialog"]')?.textContent ?? '';
@@ -397,45 +348,30 @@
       }
     });
 
-    // ---- 事件：送出到 /generate_script ----
-    dom.btnSend.addEventListener('click', async ()=>{
-      await callGenerate(dom.userInput.value.trim());
-    });
-
-    // ---- 事件：基於「上一段」生成下一段 ----
+    // ---- 送出至 /generate_script ----
+    dom.btnSend.addEventListener('click', async ()=>{ await callGenerate(dom.userInput.value.trim()); });
     dom.btnNext.addEventListener('click', async ()=>{
-      // 小幫手：若使用者沒輸入，就送出一段簡短指示
       const prompt = dom.userInput.value.trim() || '請基於上一段，延續同一主題生成下一段。';
       await callGenerate(prompt);
     });
-
-    // ---- 事件：清空 ----
     dom.btnClear.addEventListener('click', ()=>{
       dom.userInput.value = '';
       previousSegments = [];
-      renderTimeline();
-      dom.cards.innerHTML = '';
-      setStatus('已清空');
-      toast('已清空頁面狀態（僅前端）');
+      renderTimeline(); dom.cards.innerHTML = '';
+      setStatus('已清空'); toast('已清空頁面狀態（僅前端）');
     });
-
-    // ---- 事件：匯出 JSON ----
     dom.btnExport.addEventListener('click', ()=>{
       const blob = new Blob([JSON.stringify(previousSegments, null, 2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'previous_segments.json';
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = 'previous_segments.json';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     });
-
-    // ---- 事件：複製所有段落 ----
     dom.btnCopyAll.addEventListener('click', ()=>{
       const text = previousSegments.map(segmentToText).join('\n\n');
       navigator.clipboard.writeText(text || '（尚無段落）').then(()=> toast('已複製所有段落'));
     });
 
-    // ---- 呼叫 API（含可選 Mock 模式／逾時／退避重試）----
+    // ---- 呼叫 API（保留契約；含 Mock / 重試 / 逾時）----
     async function callGenerate(user_input){
       setStatus('處理中…');
       try{
@@ -443,23 +379,17 @@
         let data;
 
         if(dom.mockToggle.checked){
-          // 本地 Mock：不改動 API 結構
           await sleep(450);
           data = await mockGenerate(payload);
         }else{
           data = await callApiWithRetry('/generate_script', payload, 8000, 2);
         }
 
-        if(!data || typeof data !== 'object'){
-          throw new Error('Invalid JSON');
-        }
-        if(data.error){
-          throw new Error(data.error);
-        }
+        if(!data || typeof data !== 'object') throw new Error('Invalid JSON');
+        if(data.error) throw new Error(data.error);
+
         const segments = Array.isArray(data.segments) ? data.segments : [];
-        if(!segments.length){
-          toast('API 已回應，但沒有 segments。');
-        }
+        if(!segments.length) toast('API 已回應，但沒有 segments。');
         renderCards(segments);
         setStatus('完成');
       }catch(err){
@@ -469,7 +399,6 @@
       }
     }
 
-    // 具退避重試的 fetch（固定 POST/JSON；不更改 API 結構）
     async function callApiWithRetry(url, body, timeoutMs=8000, retry=2){
       let lastErr;
       for(let i=0;i<=retry;i++){
@@ -479,19 +408,12 @@
             headers:{ 'Content-Type':'application/json' },
             body: JSON.stringify(body),
           }, timeoutMs + i*2000);
-          if(!res.ok){
-            throw new Error('HTTP '+res.status);
-          }
+          if(!res.ok) throw new Error('HTTP '+res.status);
           return await res.json();
-        }catch(e){
-          lastErr = e;
-          await sleep(300 * (i+1));
-        }
+        }catch(e){ lastErr = e; await sleep(300 * (i+1)); }
       }
       throw lastErr;
     }
-
-    // fetch + 逾時
     function fetchWithTimeout(resource, options={}, timeout=8000){
       return new Promise((resolve, reject)=>{
         const id = setTimeout(()=> reject(new Error('Timeout')), timeout);
@@ -501,19 +423,14 @@
         );
       });
     }
-
     function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-    // ---- Mock API（本地測試。結構完全相同）----
+    // ---- 本地 Mock：結構完全相同 ----
     async function mockGenerate(req){
       const { user_input='', previous_segments=[] } = req || {};
-      // 依據是否已有上一段，回傳「片頭 / 場景 / 片尾」中的一種
       const step = previous_segments.length;
       const pickType = step===0 ? '片頭' : (step>=2 ? '片尾' : '場景');
-
-      // 小規則：把 user_input 融入台詞
       const short = (user_input||'').slice(0,30);
-
       return {
         segments: [{
           type: pickType,
@@ -523,7 +440,7 @@
           dialog: step===0 ? `你是否也曾這樣想過？${short} —— 今天，用 30 秒改變你的看法。`
                            : step===1 ? `重點只有一個：把難的變簡單。${short}，現在就開始。`
                            : `行動永遠比等待重要。現在，輪到你了。`,
-          visual: step===0 ? '字幕彈入：#加班也能健身；背景霓虹線條掃過 LOGO。'
+          visual: step===0 ? '字幕彈入：#加班也能健身；背景淡藍光線掃過 LOGO。'
                            : step===1 ? '快切 B-roll：鍵盤敲擊、手機定時器、杯中冰塊；節奏對齊拍點。'
                            : 'LOGO 收合、CTA 卡片滑入（左下角）；畫面加粒子光點。'
         }],
@@ -531,646 +448,10 @@
       };
     }
 
-    // ---- 微調彈窗（簡易版）----
-    function openFineTune(seg){
-      return new Promise(resolve=>{
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-          position:fixed; inset:0; background:rgba(6,8,20,.6); display:flex; align-items:center; justify-content:center; z-index:9998;
-        `;
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-          width:min(720px, 92vw); background:#0f1532; border:1px solid ${getComputedStyle(document.documentElement).getPropertyValue('--border')};
-          border-radius:16px; padding:16px; box-shadow:0 12px 40px rgba(0,0,0,.45); color:var(--text);
-        `;
-        modal.innerHTML = `
-          <h3 style="margin:0 0 10px">微調段落後加入</h3>
-          <div class="kv" style="margin-top:8px">
-            <strong>type</strong>
-            <div><input id="fine_type" type="text" value="${esc(seg.type||'')}" style="width:100%; padding:10px; border-radius:10px; background:#0b1127; border:1px solid var(--border); color:var(--text)"/></div>
-            <strong>camera</strong>
-            <div><textarea id="fine_camera" style="min-height:70px">${esc(seg.camera||'')}</textarea></div>
-            <strong>dialog</strong>
-            <div><textarea id="fine_dialog" style="min-height:70px">${esc(seg.dialog||'')}</textarea></div>
-            <strong>visual</strong>
-            <div><textarea id="fine_visual" style="min-height:70px">${esc(seg.visual||'')}</textarea></div>
-          </div>
-          <div class="actions" style="justify-content:flex-end; margin-top:12px">
-            <button class="btn btn-ghost" id="fine_cancel">取消</button>
-            <button class="btn btn-primary" id="fine_ok">加入</button>
-          </div>
-        `;
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-
-        overlay.addEventListener('click', (e)=> { if(e.target===overlay){ cleanup(); resolve(null); } });
-        modal.querySelector('#fine_cancel').addEventListener('click', ()=>{ cleanup(); resolve(null); });
-        modal.querySelector('#fine_ok').addEventListener('click', ()=>{
-          const r = {
-            type: modal.querySelector('#fine_type').value.trim() || seg.type || 'SEG',
-            camera: modal.querySelector('#fine_camera').value,
-            dialog: modal.querySelector('#fine_dialog').value,
-            visual: modal.querySelector('#fine_visual').value,
-          };
-          cleanup(); resolve(r);
-        });
-
-        function cleanup(){ overlay.remove(); }
-      });
-    }
-
     // ---- 初始渲染 ----
     renderTimeline();
     renderCards([]);
-
   </script>
 </body>
 </html>
-<!doctype html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>短影音腳本產生器｜前端測試頁</title>
-  <style>
-    /* ====== 基礎樣式（不依賴任何外部框架）====== */
-    :root{
-      --bg:#0f1220;
-      --panel:#14182b;
-      --panel-2:#1c2240;
-      --text:#e9ecf1;
-      --muted:#a9b0c3;
-      --primary:#6aa7ff;
-      --primary-2:#8bc6ff;
-      --accent:#b26dff;
-      --ok:#32d296;
-      --warn:#ffb100;
-      --danger:#ff5c7a;
-      --border:rgba(255,255,255,.08);
-      --card-shadow:0 8px 24px rgba(0,0,0,.25);
-      --radius:14px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; background:linear-gradient(180deg,#0c1020 0%, #0a0d18 100%);
-      color:var(--text); font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
-    }
-    a{color:var(--primary)}
-    .container{
-      max-width:1200px; margin:28px auto; padding:0 16px;
-    }
-    header{
-      display:flex; align-items:center; gap:14px; margin-bottom:18px;
-    }
-    .logo{
-      width:42px; height:42px; border-radius:12px;
-      background: radial-gradient(120% 120% at 10% 10%, var(--primary), transparent 60%),
-                  radial-gradient(120% 120% at 90% 30%, var(--accent), transparent 60%),
-                  radial-gradient(120% 120% at 50% 90%, #00e3e3, transparent 60%);
-      box-shadow:0 6px 20px rgba(106,167,255,.35), inset 0 0 24px rgba(255,255,255,.06);
-    }
-    h1{font-size:22px; margin:0}
-    .sub{color:var(--muted); font-size:13px}
 
-    /* 布局 */
-    .grid{
-      display:grid; grid-template-columns: 1.1fr 1.2fr; gap:18px;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-
-    /* 左側控制面板 */
-    .panel{
-      background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--card-shadow);
-      padding:16px;
-    }
-    .panel h2{margin:4px 0 12px; font-size:16px}
-    label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
-    textarea, input[type="text"]{
-      width:100%; color:var(--text); background:#0c1024; border:1px solid var(--border);
-      border-radius:12px; padding:12px 12px; outline:none; resize:vertical; min-height:100px;
-      transition:border-color .2s, box-shadow .2s;
-    }
-    textarea:focus, input:focus{border-color:var(--primary); box-shadow:0 0 0 4px rgba(106,167,255,.15)}
-    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    .hint{font-size:12px; color:var(--muted); margin-top:6px}
-
-    /* 按鈕 */
-    .btn{
-      appearance:none; border:1px solid var(--border); color:var(--text);
-      background:linear-gradient(180deg,#1a2042,#161b36); padding:10px 14px; border-radius:12px;
-      cursor:pointer; transition:transform .05s ease, box-shadow .2s ease, border-color .2s ease;
-    }
-    .btn:hover{border-color:#2a314f}
-    .btn:active{transform:translateY(1px)}
-    .btn-primary{
-      background:linear-gradient(180deg, var(--primary), var(--primary-2));
-      color:#0b1020; border:none; font-weight:700; box-shadow:0 6px 16px rgba(107,168,255,.35);
-    }
-    .btn-ghost{background:transparent}
-    .btn-danger{ background:linear-gradient(180deg,#ff7b94,#ff5c7a); border:none; color:#fff}
-    .btn-ok{ background:linear-gradient(180deg,#57e2b2,#32d296); border:none; color:#0a1312 }
-    .btn-small{ padding:7px 10px; border-radius:10px; font-size:12px }
-
-    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px }
-
-    /* 右側輸出與時間軸 */
-    .cards{ display:grid; grid-template-columns: 1fr; gap:12px; }
-    .card{
-      border:1px solid var(--border); border-radius:14px; background:#101633; padding:12px;
-      position:relative; overflow:hidden;
-    }
-    .card .badge{
-      position:absolute; top:10px; right:10px; font-size:11px; padding:4px 8px; border-radius:999px;
-      color:#0c1220; background:linear-gradient(180deg,#9fd1ff,#6aa7ff);
-      font-weight:700; letter-spacing:.3px;
-    }
-    .kv{ display:grid; grid-template-columns: 92px 1fr; gap:10px; }
-    .kv strong{ color:#cfe2ff; font-weight:700; font-size:13px }
-    .kv div{ padding:8px 10px; background:#0b1127; border:1px solid var(--border); border-radius:10px; min-height:40px; white-space:pre-wrap }
-    .actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
-
-    /* 時間軸 - 已接受段落（previous_segments） */
-    .timeline{
-      margin-top:12px; padding-left:4px; border-left:2px dashed #26305c;
-    }
-    .tl-item{
-      position:relative; padding:10px 10px 10px 16px; margin:4px 0 8px;
-      background:#0d1330; border:1px solid var(--border); border-radius:12px;
-    }
-    .tl-item::before{
-      content:""; position:absolute; left:-7px; top:14px; width:10px; height:10px; border-radius:50%;
-      background:var(--primary-2); box-shadow:0 0 0 4px rgba(139,198,255,.15);
-    }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
-
-    /* 狀態/載入 */
-    .status{
-      display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin-top:8px;
-    }
-    .dot{
-      width:10px; height:10px; border-radius:50%;
-      background:linear-gradient(180deg,#9fd1ff,#6aa7ff); animation:pulse 1s infinite alternate ease-in-out;
-      box-shadow: 0 0 0 6px rgba(110,170,255,.15);
-    }
-    @keyframes pulse{ to{ transform:scale(1.1); box-shadow: 0 0 0 10px rgba(110,170,255,.08);} }
-
-    /* 浮動通知 */
-    .toast{
-      position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
-      background:#0b1024; color:var(--text); border:1px solid var(--border);
-      padding:10px 14px; border-radius:12px; box-shadow: var(--card-shadow);
-      font-size:14px; display:none; z-index:9999;
-    }
-    .toast.show{ display:block; animation:fade .2s ease }
-    @keyframes fade{ from{opacity:.0; transform:translate(-50%, 6px)} to{opacity:1; transform:translate(-50%, 0)} }
-
-    /* 小提示標籤 */
-    .pill{ font-size:11px; color:#0b1020; background:linear-gradient(180deg,#ffd480,#ffb100); border-radius:999px; padding:2px 8px; font-weight:700 }
-
-    /* 響應式優化 */
-    @media (max-width:560px){
-      .kv{ grid-template-columns: 1fr; }
-      .kv strong{ display:block; margin-top:6px }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <div class="logo" aria-hidden="true"></div>
-      <div>
-        <h1>短影音腳本產生器（前端測試頁）</h1>
-        <div class="sub">送出需求至 <span class="mono">POST /generate_script</span>，顯示<span class="mono">segments</span>。完全相容 API 結構。</div>
-      </div>
-    </header>
-
-    <div class="grid">
-      <!-- 左：輸入與控制 -->
-      <section class="panel" aria-labelledby="input-panel-title">
-        <h2 id="input-panel-title">輸入與控制</h2>
-        <label for="userInput">對話框（輸入短影片需求 / 修改建議）</label>
-        <textarea id="userInput" placeholder="例：目標觀眾為上班族，30 秒 Reels，主題是「加班也能健身」，風格幽默、口語化。"></textarea>
-        <div class="row" style="margin-top:10px">
-          <button id="btnSend" class="btn btn-primary">送出給 /generate_script</button>
-          <button id="btnNext" class="btn btn-ok" title="基於已接受的上一段，生成下一段">生成下一段</button>
-          <button id="btnClear" class="btn btn-danger">清空（不影響伺服器）</button>
-        </div>
-
-        <div class="toolbar">
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-            <input id="mockToggle" type="checkbox" />
-            使用 Mock API（本地測試，不呼叫後端）
-          </label>
-          <button id="btnExport" class="btn btn-ghost btn-small">匯出 previous_segments.json</button>
-          <button id="btnCopyAll" class="btn btn-ghost btn-small">複製所有段落文字</button>
-        </div>
-        <div class="hint">
-          備註：Request 僅送 <span class="mono">{"user_input": "...", "previous_segments": [...]}</span>；Response 僅讀
-          <span class="mono">{"segments":[...], "error":null}</span>。本頁不修改 URL 與結構。
-        </div>
-
-        <hr style="border-color:var(--border); margin:16px 0" />
-
-        <h2 style="display:flex; align-items:center; gap:8px">已接受段落 <span class="pill">previous_segments</span></h2>
-        <div id="timeline" class="timeline" aria-live="polite"></div>
-        <div class="status" id="status">
-          <div class="dot" aria-hidden="true"></div>
-          <div>狀態：<span id="statusText">閒置</span></div>
-        </div>
-      </section>
-
-      <!-- 右：輸出結果 -->
-      <section class="panel" aria-labelledby="output-panel-title">
-        <h2 id="output-panel-title">AI 生成的分段腳本</h2>
-        <div id="cards" class="cards" aria-live="polite"></div>
-        <div class="hint">每張卡片皆為 <span class="mono">segments[i]</span>。可「加入時間軸」或「複製」、「微調後加入」。</div>
-      </section>
-    </div>
-  </div>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    /**
-     * =========================
-     * 前端邏輯（純原生 JS）
-     * =========================
-     * 重點保證：
-     * 1) 僅呼叫 POST /generate_script
-     * 2) Request：{ user_input: string, previous_segments: Array<object> }
-     * 3) Response：{ segments: Array<{type,camera,dialog,visual}>, error: string|null }
-     * 4) 提供「編輯上一段並生成下一段」的流程（會直接修改 previous_segments[last]）。
-     */
-
-    // ---- DOM 快取 ----
-    const dom = {
-      userInput: document.getElementById('userInput'),
-      btnSend: document.getElementById('btnSend'),
-      btnNext: document.getElementById('btnNext'),
-      btnClear: document.getElementById('btnClear'),
-      btnExport: document.getElementById('btnExport'),
-      btnCopyAll: document.getElementById('btnCopyAll'),
-      mockToggle: document.getElementById('mockToggle'),
-      cards: document.getElementById('cards'),
-      timeline: document.getElementById('timeline'),
-      statusText: document.getElementById('statusText'),
-      toast: document.getElementById('toast')
-    };
-
-    // ---- 狀態 ----
-    /** @type {Array<{type:string,camera?:string,dialog?:string,visual?:string}>} */
-    let previousSegments = [];
-
-    // ---- 工具：提示窗 ----
-    function toast(msg, ms=1600){
-      dom.toast.textContent = msg;
-      dom.toast.classList.add('show');
-      setTimeout(()=> dom.toast.classList.remove('show'), ms);
-    }
-
-    // ---- 工具：更新狀態 ----
-    function setStatus(text){ dom.statusText.textContent = text; }
-
-    // ---- 工具：HTML 轉義（避免 XSS）----
-    function esc(s=''){ return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
-
-    // ---- UI：渲染右側卡片 ----
-    /**
-     * @param {Array<{type:string,camera?:string,dialog?:string,visual?:string}>} segments
-     */
-    function renderCards(segments){
-      if(!Array.isArray(segments) || !segments.length){
-        dom.cards.innerHTML = `<div class="card"><div class="badge">提示</div>目前沒有可顯示的 segments。</div>`;
-        return;
-      }
-      dom.cards.innerHTML = segments.map((seg, idx) => {
-        const title = esc(seg.type || `段落 ${idx+1}`);
-        return `
-        <article class="card">
-          <div class="badge">${esc(seg.type || 'SEG')}</div>
-          <div class="kv">
-            <strong>鏡位 camera</strong>
-            <div>${esc(seg.camera || '—')}</div>
-            <strong>台詞 dialog</strong>
-            <div>${esc(seg.dialog || '—')}</div>
-            <strong>視覺 visual</strong>
-            <div>${esc(seg.visual || '—')}</div>
-          </div>
-          <div class="actions">
-            <button class="btn btn-small" data-act="add" data-idx="${idx}">加入時間軸</button>
-            <button class="btn btn-small" data-act="copy" data-idx="${idx}">複製</button>
-            <button class="btn btn-small" data-act="fine" data-idx="${idx}">微調後加入</button>
-          </div>
-        </article>`;
-      }).join('');
-    }
-
-    // ---- UI：渲染左側時間軸（previous_segments）----
-    function renderTimeline(){
-      if(!previousSegments.length){
-        dom.timeline.innerHTML = `<div class="tl-item">尚未加入任何段落。先在右側選擇「加入時間軸」。</div>`;
-        return;
-      }
-      dom.timeline.innerHTML = previousSegments.map((seg, i) => `
-        <div class="tl-item" data-i="${i}">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">
-            <strong>${esc(seg.type || `段落 ${i+1}`)}</strong>
-            ${i === previousSegments.length-1 ? `<span class="pill" title="上一輪（可編輯）">LAST 可編輯</span>`:``}
-          </div>
-          <div class="kv" style="margin-top:6px">
-            <strong>camera</strong>
-            <div contenteditable="${i===previousSegments.length-1}" data-field="camera">${esc(seg.camera || '')}</div>
-            <strong>dialog</strong>
-            <div contenteditable="${i===previousSegments.length-1}" data-field="dialog">${esc(seg.dialog || '')}</div>
-            <strong>visual</strong>
-            <div contenteditable="${i===previousSegments.length-1}" data-field="visual">${esc(seg.visual || '')}</div>
-          </div>
-          <div class="actions">
-            <button class="btn btn-ghost btn-small" data-tl="copy" data-i="${i}">複製</button>
-            <button class="btn btn-ghost btn-small" data-tl="remove" data-i="${i}">移除</button>
-            ${i===previousSegments.length-1 ? `<button class="btn btn-small" data-tl="save" data-i="${i}">保存此段修改</button>`:''}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // ---- 事件：右側卡片的按鈕（事件委派）----
-    dom.cards.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button[data-act]');
-      if(!btn) return;
-      const idx = +btn.dataset.idx;
-      const act = btn.dataset.act;
-
-      const card = dom.cards.querySelectorAll('.card')[idx];
-      const seg = extractSegmentFromCard(card);
-      if(!seg) return;
-
-      if(act === 'add'){
-        previousSegments.push(seg);
-        renderTimeline();
-        toast('已加入時間軸');
-      }else if(act === 'copy'){
-        const text = segmentToText(seg);
-        navigator.clipboard.writeText(text).then(()=> toast('已複製段落文字'));
-      }else if(act === 'fine'){
-        // 微調：彈窗編輯後加入
-        openFineTune(seg).then(result=>{
-          if(result){
-            previousSegments.push(result);
-            renderTimeline();
-            toast('已加入（微調後）');
-          }
-        });
-      }
-    });
-
-    // 從卡片節點擷取資料
-    function extractSegmentFromCard(card){
-      try{
-        const type = card.querySelector('.badge')?.textContent?.trim() || 'SEG';
-        const kv = card.querySelectorAll('.kv div');
-        return {
-          type,
-          camera: kv[0]?.textContent ?? '',
-          dialog: kv[1]?.textContent ?? '',
-          visual: kv[2]?.textContent ?? '',
-        };
-      }catch(err){
-        console.error(err);
-        toast('解析卡片資料失敗');
-        return null;
-      }
-    }
-
-    // 段落轉純文字（便於複製）
-    function segmentToText(seg){
-      return `【${seg.type || '段落'}】
-鏡位：${seg.camera || ''}
-台詞：${seg.dialog || ''}
-視覺：${seg.visual || ''}`;
-    }
-
-    // ---- 事件：時間軸按鈕 ----
-    dom.timeline.addEventListener('click', (e)=>{
-      const btn = e.target.closest('button[data-tl]');
-      if(!btn) return;
-      const i = +btn.dataset.i;
-      const act = btn.dataset.tl;
-
-      if(Number.isNaN(i) || !previousSegments[i]) return;
-
-      if(act === 'copy'){
-        navigator.clipboard.writeText(segmentToText(previousSegments[i]))
-          .then(()=> toast('已複製時間軸段落'));
-      }
-      else if(act === 'remove'){
-        previousSegments.splice(i,1);
-        renderTimeline();
-        toast('已移除段落');
-      }
-      else if(act === 'save'){
-        // 讀取 contenteditable 的內容回寫
-        const item = dom.timeline.querySelector(`.tl-item[data-i="${i}"]`);
-        const camera = item.querySelector('[data-field="camera"]')?.textContent ?? '';
-        const dialog = item.querySelector('[data-field="dialog"]')?.textContent ?? '';
-        const visual = item.querySelector('[data-field="visual"]')?.textContent ?? '';
-        previousSegments[i] = { ...previousSegments[i], camera, dialog, visual };
-        toast('已保存此段修改');
-      }
-    });
-
-    // ---- 事件：送出到 /generate_script ----
-    dom.btnSend.addEventListener('click', async ()=>{
-      await callGenerate(dom.userInput.value.trim());
-    });
-
-    // ---- 事件：基於「上一段」生成下一段 ----
-    dom.btnNext.addEventListener('click', async ()=>{
-      // 小幫手：若使用者沒輸入，就送出一段簡短指示
-      const prompt = dom.userInput.value.trim() || '請基於上一段，延續同一主題生成下一段。';
-      await callGenerate(prompt);
-    });
-
-    // ---- 事件：清空 ----
-    dom.btnClear.addEventListener('click', ()=>{
-      dom.userInput.value = '';
-      previousSegments = [];
-      renderTimeline();
-      dom.cards.innerHTML = '';
-      setStatus('已清空');
-      toast('已清空頁面狀態（僅前端）');
-    });
-
-    // ---- 事件：匯出 JSON ----
-    dom.btnExport.addEventListener('click', ()=>{
-      const blob = new Blob([JSON.stringify(previousSegments, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'previous_segments.json';
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-    });
-
-    // ---- 事件：複製所有段落 ----
-    dom.btnCopyAll.addEventListener('click', ()=>{
-      const text = previousSegments.map(segmentToText).join('\n\n');
-      navigator.clipboard.writeText(text || '（尚無段落）').then(()=> toast('已複製所有段落'));
-    });
-
-    // ---- 呼叫 API（含可選 Mock 模式／逾時／退避重試）----
-    async function callGenerate(user_input){
-      setStatus('處理中…');
-      try{
-        const payload = { user_input, previous_segments: previousSegments };
-        let data;
-
-        if(dom.mockToggle.checked){
-          // 本地 Mock：不改動 API 結構
-          await sleep(450);
-          data = await mockGenerate(payload);
-        }else{
-          data = await callApiWithRetry('/generate_script', payload, 8000, 2);
-        }
-
-        if(!data || typeof data !== 'object'){
-          throw new Error('Invalid JSON');
-        }
-        if(data.error){
-          throw new Error(data.error);
-        }
-        const segments = Array.isArray(data.segments) ? data.segments : [];
-        if(!segments.length){
-          toast('API 已回應，但沒有 segments。');
-        }
-        renderCards(segments);
-        setStatus('完成');
-      }catch(err){
-        console.error(err);
-        toast('呼叫失敗：' + (err?.message || '未知錯誤'));
-        setStatus('錯誤');
-      }
-    }
-
-    // 具退避重試的 fetch（固定 POST/JSON；不更改 API 結構）
-    async function callApiWithRetry(url, body, timeoutMs=8000, retry=2){
-      let lastErr;
-      for(let i=0;i<=retry;i++){
-        try{
-          const res = await fetchWithTimeout(url, {
-            method:'POST',
-            headers:{ 'Content-Type':'application/json' },
-            body: JSON.stringify(body),
-          }, timeoutMs + i*2000);
-          if(!res.ok){
-            throw new Error('HTTP '+res.status);
-          }
-          return await res.json();
-        }catch(e){
-          lastErr = e;
-          await sleep(300 * (i+1));
-        }
-      }
-      throw lastErr;
-    }
-
-    // fetch + 逾時
-    function fetchWithTimeout(resource, options={}, timeout=8000){
-      return new Promise((resolve, reject)=>{
-        const id = setTimeout(()=> reject(new Error('Timeout')), timeout);
-        fetch(resource, options).then(
-          res => { clearTimeout(id); resolve(res); },
-          err => { clearTimeout(id); reject(err); }
-        );
-      });
-    }
-
-    function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-    // ---- Mock API（本地測試。結構完全相同）----
-    async function mockGenerate(req){
-      const { user_input='', previous_segments=[] } = req || {};
-      // 依據是否已有上一段，回傳「片頭 / 場景 / 片尾」中的一種
-      const step = previous_segments.length;
-      const pickType = step===0 ? '片頭' : (step>=2 ? '片尾' : '場景');
-
-      // 小規則：把 user_input 融入台詞
-      const short = (user_input||'').slice(0,30);
-
-      return {
-        segments: [{
-          type: pickType,
-          camera: step===0 ? '特寫主角臉部，燈光從右側打入，焦點在眼神。'
-                           : step===1 ? '半身手持跟拍，移動至桌面，快速推近產品。'
-                           : '遠景收尾，主角背對夜景，鏡頭慢慢拉遠。',
-          dialog: step===0 ? `你是否也曾這樣想過？${short} —— 今天，用 30 秒改變你的看法。`
-                           : step===1 ? `重點只有一個：把難的變簡單。${short}，現在就開始。`
-                           : `行動永遠比等待重要。現在，輪到你了。`,
-          visual: step===0 ? '字幕彈入：#加班也能健身；背景霓虹線條掃過 LOGO。'
-                           : step===1 ? '快切 B-roll：鍵盤敲擊、手機定時器、杯中冰塊；節奏對齊拍點。'
-                           : 'LOGO 收合、CTA 卡片滑入（左下角）；畫面加粒子光點。'
-        }],
-        error: null
-      };
-    }
-
-    // ---- 微調彈窗（簡易版）----
-    function openFineTune(seg){
-      return new Promise(resolve=>{
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-          position:fixed; inset:0; background:rgba(6,8,20,.6); display:flex; align-items:center; justify-content:center; z-index:9998;
-        `;
-        const modal = document.createElement('div');
-        modal.style.cssText = `
-          width:min(720px, 92vw); background:#0f1532; border:1px solid ${getComputedStyle(document.documentElement).getPropertyValue('--border')};
-          border-radius:16px; padding:16px; box-shadow:0 12px 40px rgba(0,0,0,.45); color:var(--text);
-        `;
-        modal.innerHTML = `
-          <h3 style="margin:0 0 10px">微調段落後加入</h3>
-          <div class="kv" style="margin-top:8px">
-            <strong>type</strong>
-            <div><input id="fine_type" type="text" value="${esc(seg.type||'')}" style="width:100%; padding:10px; border-radius:10px; background:#0b1127; border:1px solid var(--border); color:var(--text)"/></div>
-            <strong>camera</strong>
-            <div><textarea id="fine_camera" style="min-height:70px">${esc(seg.camera||'')}</textarea></div>
-            <strong>dialog</strong>
-            <div><textarea id="fine_dialog" style="min-height:70px">${esc(seg.dialog||'')}</textarea></div>
-            <strong>visual</strong>
-            <div><textarea id="fine_visual" style="min-height:70px">${esc(seg.visual||'')}</textarea></div>
-          </div>
-          <div class="actions" style="justify-content:flex-end; margin-top:12px">
-            <button class="btn btn-ghost" id="fine_cancel">取消</button>
-            <button class="btn btn-primary" id="fine_ok">加入</button>
-          </div>
-        `;
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-
-        overlay.addEventListener('click', (e)=> { if(e.target===overlay){ cleanup(); resolve(null); } });
-        modal.querySelector('#fine_cancel').addEventListener('click', ()=>{ cleanup(); resolve(null); });
-        modal.querySelector('#fine_ok').addEventListener('click', ()=>{
-          const r = {
-            type: modal.querySelector('#fine_type').value.trim() || seg.type || 'SEG',
-            camera: modal.querySelector('#fine_camera').value,
-            dialog: modal.querySelector('#fine_dialog').value,
-            visual: modal.querySelector('#fine_visual').value,
-          };
-          cleanup(); resolve(r);
-        });
-
-        function cleanup(){ overlay.remove(); }
-      });
-    }
-
-    // ---- 初始渲染 ----
-    renderTimeline();
-    renderCards([]);
-
-  </script>
-</body>
-</html>
