@@ -221,7 +221,7 @@
             <button class="chip" data-insert="行業: 教育｜平台: Shorts｜時長: 60秒｜目標: 品牌記憶｜主題: 課程亮點">教育·60秒·品牌</button>
           </div>
           <div class="inputbar">
-            <textarea id="inputScript" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（Enter 送出，Shift+Enter 換行）"></textarea>
+            <textarea id="inputScript" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（Enter 換行，點「送出」生成）"></textarea>
             <button class="btn primary" id="sendScript">送出</button>
           </div>
         </div>
@@ -288,7 +288,7 @@
             <input id="topicCopy" placeholder="主題（產品/服務/活動，例如：入魂馬卡嗆嗆錠）" style="flex:1; padding:10px; border:1px solid var(--border); border-radius:12px; font-size:16px;" />
           </div>
           <div class="inputbar">
-            <textarea id="inputCopy" placeholder="輸入受眾/平台/語氣/CTA…（Enter 送出，Shift+Enter 換行）"></textarea>
+            <textarea id="inputCopy" placeholder="輸入受眾/平台/語氣/CTA…（Enter 換行，點「送出」生成）"></textarea>
             <button class="btn primary" id="sendCopy">送出</button>
           </div>
         </div>
@@ -414,7 +414,7 @@
   function fmtTS(d=new Date()){ const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
   function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
   function copyText(s){ navigator.clipboard.writeText(s).then(()=>showToast('已複製')); }
-  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;"}[c])); }
 
   // 偏好同步
   document.getElementById('userId') .value = state.userId;
@@ -422,13 +422,14 @@
   document.getElementById('userId').onchange  = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId2').value=state.userId; };
   document.getElementById('userId2').onchange = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId').value =state.userId; };
 
-  // 送出鍵、Enter/Shift+Enter
+  // 送出鍵（只保留按鈕送出，不攔截 Enter）
   const inputScript=document.getElementById('inputScript');
   const inputCopy  =document.getElementById('inputCopy');
   document.getElementById('sendScript').onclick = ()=>sendChat('script');
   document.getElementById('sendCopy').onclick   = ()=>sendChat('copy');
-  inputScript.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat('script'); } });
-  inputCopy  .addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat('copy'); } });
+  // ❌ 已移除：按 Enter 直接送出
+  // inputScript.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat('script'); } });
+  // inputCopy  .addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat('copy'); } });
 
   // 快速模板點填
   document.getElementById('chipsScript').onclick = e=>{ if(e.target.classList.contains('chip')){ inputScript.value = e.target.dataset.insert; inputScript.focus(); } };
@@ -591,4 +592,3 @@
 </script>
 </body>
 </html>
-
