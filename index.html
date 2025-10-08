@@ -97,9 +97,8 @@
     .btn.small{ padding:8px 10px; font-size:14px; min-height:38px; }
 
     .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s; z-index:100; }
-    .toast.show{ opacity:1; }
 
-    /* 手機底部抽屜（只在腳本/文案頁顯示） */
+    /* 手機底部抽屜（已移除元件，保留樣式不影響） */
     .drawer{ position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--border); padding:10px; display:none; gap:8px; z-index:45; }
 
     /* Footer 置中 */
@@ -132,9 +131,9 @@
         <button class="tab" data-page="copy">文案模式</button>
         <button class="tab" data-page="guide">說明/指南</button>
       </div>
-      <!-- Mock 切換按鈕介面隱藏（預設為 ON） -->
+      <!-- Mock 切換按鈕介面隱藏（預設為 OFF） -->
       <div style="display:none; gap:8px; flex-wrap:wrap">
-        <button class="btn small ghost" id="btn-toggle-mock" title="切換本地模擬回應">Mock: On</button>
+        <button class="btn small ghost" id="btn-toggle-mock" title="切換本地模擬回應">Mock: Off</button>
       </div>
     </div>
   </div>
@@ -165,7 +164,7 @@
         </article>
       </div>
 
-      <!-- 新增：客製化智能體 CTA 區塊 -->
+      <!-- 客製化智能體 CTA 區塊 -->
       <article class="card" style="margin-top:8px;">
         <h3>想要客製化您的短影音 AI 智能體嗎？</h3>
         <p class="muted">需要專屬功能、品牌語氣、整合後端或流程自動化？我們可協助從規劃到上線。</p>
@@ -174,7 +173,6 @@
         </div>
       </article>
 
-      <!-- 外部連結：保留 -->
       <div id="contactLinks" class="contact-links">
         <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/E49kA8">LINE 官方帳號</a>
         <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
@@ -314,7 +312,7 @@
     </div>
   </section>
 
-  <!-- 說明/指南（新版）：移除 Mock 說明 -->
+  <!-- 說明/指南（新版） -->
   <section id="page-guide" class="container" style="display:none; padding-top:16px">
     <article class="card" style="margin-bottom:12px">
       <h3>✍️ 說明／指南（新版）</h3>
@@ -353,7 +351,7 @@
       </ul>
     </article>
 
-    <article class="card" style="margin-bottom:12px">
+    <article class="card">
       <h3>🪄 使用小技巧</h3>
       <p>輸入時，建議包含：</p>
       <ul>
@@ -375,14 +373,6 @@
     </article>
   </section>
 
-  <!-- 手機底部抽屜（首頁/指南不顯示） -->
-  <div class="drawer" id="drawer">
-    <button class="btn small" data-act="copyAll">複製全部</button>
-    <button class="btn small" data-act="clear">清空</button>
-    <button class="btn small ok" data-act="up">👍</button>
-    <button class="btn small err" data-act="down">👎</button>
-  </div>
-
   <footer class="site-footer">
     <div class="container">
       <div class="copyright">© 2025 AIJobSchool 版權所有</div>
@@ -394,8 +384,8 @@
 <script>
   const API_BASE = 'https://aijobvideobackend.zeabur.app';
   const DEFAULT_USER_ID = `web-${Math.random().toString(36).slice(2,8)}`;
-  // 預設 Mock 開啟，且介面已隱藏
-  let MOCK_MODE = true;
+  // ✅ 預設 Mock 關閉（OFF），且 UI 仍隱藏
+  let MOCK_MODE = false;
 
   const state = { sessionIdScript:'', sessionIdCopy:'', userId: DEFAULT_USER_ID, messagesScript:[], messagesCopy:[], segments:[], copy:null };
 
@@ -407,11 +397,12 @@
       document.getElementById(`page-${p}`).style.display = (p===name)?'block':'none';
       document.querySelector(`.tab[data-page="${p}"]`).classList.toggle('active', p===name);
     });
-    // 抽屜只在腳本/文案出現
-    document.getElementById('drawer').style.display = (name==='script' || name==='copy') ? 'flex' : 'none';
+    // ⛔ 原本的手機底部抽屜已移除，這裡不再切換
+    const drawer = document.getElementById('drawer');
+    if(drawer){ drawer.style.display = 'none'; }
   }
 
-  // 設定預設隱藏的切換
+  // 設定折疊切換
   function bindToggle(btnId, settingsId){
     const btn=document.getElementById(btnId), wrap=document.getElementById(settingsId);
     btn.onclick=()=>{ const ex=btn.getAttribute('aria-expanded')==='true'; btn.setAttribute('aria-expanded',String(!ex)); wrap.classList.toggle('collapsed',ex); };
@@ -425,7 +416,7 @@
   function copyText(s){ navigator.clipboard.writeText(s).then(()=>showToast('已複製')); }
   function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
 
-  // 偏好（略：和原始一樣）
+  // 偏好同步
   document.getElementById('userId') .value = state.userId;
   document.getElementById('userId2').value = state.userId;
   document.getElementById('userId').onchange  = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId2').value=state.userId; };
@@ -453,8 +444,7 @@
           alternates:['🔥 這個方法超省時','💡 其實你只差一步','👉 跟著做就能上手'],
           hashtags:['#行銷','#AI','#文案','#社群經營'],
           cta:'點連結 🔗'
-        }};
-      }
+        }}; }
       return { session_id: payload.session_id||'mock-script', assistant_message:'模擬腳本：初稿完成。', segments:[
         { start_sec:0, end_sec:5, type:'hook', camera:'CU', dialog:`開場鉤子：${last.slice(0,20)}…`, visual:'快切 B-roll + 動態字卡', cta:'' },
         { start_sec:5, end_sec:25, type:'value', camera:'MS', dialog:'三點賣點清單 + punch line', visual:'產品/數據圖/對比畫面', cta:'' },
@@ -542,14 +532,7 @@
   document.getElementById('thumbUpCopy').onclick =()=>showToast('已送出回饋');
   document.getElementById('thumbDownCopy').onclick=()=>showToast('已送出回饋');
 
-  // 手機抽屜事件
-  document.getElementById('drawer').onclick = e=>{
-    const act=e.target?.dataset?.act; if(!act) return;
-    const inCopy=document.getElementById('page-copy').style.display==='block';
-    if(act==='copyAll') (inCopy?document.getElementById('copyAllCopy'):document.getElementById('copyAllScript')).click();
-    if(act==='clear')   (inCopy?document.getElementById('clearCopy'):document.getElementById('clearScript')).click();
-    if(act==='up' || act==='down') showToast('已送出回饋');
-  };
+  // ⛔ 手機抽屜事件處理已移除（黃色按鈕列刪除）
 
   // 發送聊天
   async function sendChat(which){
@@ -596,7 +579,7 @@
     }
   }
 
-  // Mock 切換（雖介面隱藏，仍保留程式能力）
+  // Mock 切換（UI隱藏，但程式仍可手動切換）
   const mockBtn=document.getElementById('btn-toggle-mock');
   if (mockBtn){
     mockBtn.textContent=`Mock: ${MOCK_MODE?'On':'Off'}`;
@@ -608,3 +591,4 @@
 </script>
 </body>
 </html>
+
