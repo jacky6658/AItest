@@ -97,8 +97,6 @@
     .btn.small{ padding:8px 10px; font-size:14px; min-height:38px; }
 
     .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s; z-index:100; }
-    /* ✅ 讓顯示狀態可見 */
-    .toast.show{ opacity:1; }
 
     /* 手機底部抽屜（已移除元件，保留樣式不影響） */
     .drawer{ position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--border); padding:10px; display:none; gap:8px; z-index:45; }
@@ -223,7 +221,7 @@
             <button class="chip" data-insert="行業: 教育｜平台: Shorts｜時長: 60秒｜目標: 品牌記憶｜主題: 課程亮點">教育·60秒·品牌</button>
           </div>
           <div class="inputbar">
-            <textarea id="inputScript" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（Enter 換行，點「送出」生成）"></textarea>
+            <textarea id="inputScript" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（Enter 送出，Shift+Enter 換行）"></textarea>
             <button class="btn primary" id="sendScript">送出</button>
           </div>
         </div>
@@ -290,7 +288,7 @@
             <input id="topicCopy" placeholder="主題（產品/服務/活動，例如：入魂馬卡嗆嗆錠）" style="flex:1; padding:10px; border:1px solid var(--border); border-radius:12px; font-size:16px;" />
           </div>
           <div class="inputbar">
-            <textarea id="inputCopy" placeholder="輸入受眾/平台/語氣/CTA…（Enter 換行，點「送出」生成）"></textarea>
+            <textarea id="inputCopy" placeholder="輸入受眾/平台/語氣/CTA…（Enter 送出，Shift+Enter 換行）"></textarea>
             <button class="btn primary" id="sendCopy">送出</button>
           </div>
         </div>
@@ -383,441 +381,329 @@
 
   <div id="toast" class="toast">已複製</div>
 
-<script>
-const API_BASE = 'https://aijobvideobackend.zeabur.app';
-const DEFAULT_USER_ID = `web-${Math.random().toString(36).slice(2,8)}`;
-let MOCK_MODE = false;
-
-const state = { 
-  sessionIdScript: localStorage.getItem('qa_session_id') || `web-${Math.random().toString(36).slice(2,8)}`,
-  sessionIdCopy:'',
-  userId: DEFAULT_USER_ID, 
-  messagesScript:[], 
-  lastAssistantScript:'',   // ✅ 新增，紀錄上一輪助理的提問
-  messagesCopy:[], 
-  segments:[], 
-  copy:null 
-};
-localStorage.setItem('qa_session_id', state.sessionIdScript);
-
-const pages = ['home','script','copy','guide'];
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>goPage(b.dataset.page));
-document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goPage(b.dataset.go));
-function goPage(name){
-  pages.forEach(p=>{
-    document.getElementById(`page-${p}`).style.display = (p===name)?'block':'none';
-    document.querySelector(`.tab[data-page="${p}"]`).classList.toggle('active', p===name);
-  });
-  const drawer = document.getElementById('drawer');
-  if(drawer){ drawer.style.display = 'none'; }
-
-  // ✅ 首次進入腳本模式 → 啟動引導問答
-  if(name==='script' && state.messagesScript.length===0){
-    startQaSession();
-  }
-}
-
-function fmtTS(d=new Date()){ const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
-function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
-function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
-function copyText(s,msg='已複製囉！'){ navigator.clipboard.writeText(s).then(()=>showToast(msg)); }
-
-// === 聊天顯示 ===
-const chatScriptEl=document.getElementById('chatScript');
-function appendMsg(el, role, content){
-  const div=document.createElement('div');
-  div.className='msg ' + (role==='user'?'user':'');
-  div.innerHTML=`<div class="meta">${role} · ${fmtTS()}</div><div>${escapeHTML(content)}</div>`;
-  el.appendChild(div); el.scrollTop=el.scrollHeight;
-}
-
-// === 問答 API ===
-async function apiChatQA(messages){
-  const r = await fetch(`${API_BASE}/chat_qa`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ session_id: state.sessionIdScript, messages })
-  });
-  if(!r.ok) throw new Error(`HTTP ${r.status}`);
-  return await r.json();
-}
-
-// ✅ 啟動問答：進入腳本頁時自動叫第一題
-async function startQaSession(){
-  try{
-    const resp = await apiChatQA([]);
-    if(resp.assistant_message){
-      appendMsg(chatScriptEl,'assistant',resp.assistant_message);
-      state.messagesScript.push({ role:'assistant', content:resp.assistant_message });
-      state.lastAssistantScript = resp.assistant_message;
-    }
-  }catch(e){
-    appendMsg(chatScriptEl,'assistant',`❌ 無法啟動問答：${e.message}`);
-  }
-}
-
-// ✅ 送出使用者回答
-document.getElementById('sendScript').onclick = async ()=>{
-  const textarea=document.getElementById('inputScript');
-  const text=(textarea.value||'').trim(); if(!text){ showToast('請先輸入內容'); return; }
-  appendMsg(chatScriptEl,'user',text);
-  state.messagesScript.push({ role:'user', content:text });
-  textarea.value='';
-
-  const btn=document.getElementById('sendScript');
-  const old=btn.textContent; btn.disabled=true; btn.textContent='生成中…';
-
-  try{
-    // 把上一輪助理提問 + 使用者回答一起送回去
-    const resp = await apiChatQA([
-      { role:'assistant', content: state.lastAssistantScript },
-      { role:'user', content:text }
-    ]);
-
-    // 如果還有下一題
-    if(resp.assistant_message && !resp.segments){
-      appendMsg(chatScriptEl,'assistant',resp.assistant_message);
-      state.messagesScript.push({ role:'assistant', content:resp.assistant_message });
-      state.lastAssistantScript = resp.assistant_message;
-    }
-
-    // 如果已生成腳本
-    if(resp.segments){
-      state.segments = resp.segments;
-      renderSegments();
-      appendMsg(chatScriptEl,'assistant',resp.assistant_message || '✅ 已完成產出');
-    }
-
-  }catch(e){
-    appendMsg(chatScriptEl,'assistant',`❌ 錯誤：${e.message}`);
-  }finally{
-    btn.disabled=false; btn.textContent=old;
-  }
-};
-// === 以下 copy 模式部分保持原本 chat_generate 流程 ===
-<script>
-const API_BASE = 'https://aijobvideobackend.zeabur.app';
-const DEFAULT_USER_ID = `web-${Math.random().toString(36).slice(2,8)}`;
-let MOCK_MODE = false;
-
-const state = { 
-  sessionIdScript: localStorage.getItem('qa_session_id') || `web-${Math.random().toString(36).slice(2,8)}`,
-  sessionIdCopy:'',
-  userId: DEFAULT_USER_ID, 
-  messagesScript:[], 
-  lastAssistantScript:'',   // ✅ 新增，紀錄上一輪助理的提問
-  messagesCopy:[], 
-  segments:[], 
-  copy:null 
-};
-localStorage.setItem('qa_session_id', state.sessionIdScript);
-
-const pages = ['home','script','copy','guide'];
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>goPage(b.dataset.page));
-document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goPage(b.dataset.go));
-function goPage(name){
-  pages.forEach(p=>{
-    document.getElementById(`page-${p}`).style.display = (p===name)?'block':'none';
-    document.querySelector(`.tab[data-page="${p}"]`).classList.toggle('active', p===name);
-  });
-  const drawer = document.getElementById('drawer');
-  if(drawer){ drawer.style.display = 'none'; }
-
-  // ✅ 首次進入腳本模式 → 啟動引導問答
-  if(name==='script' && state.messagesScript.length===0){
-    startQaSession();
-  }
-}
-
-function fmtTS(d=new Date()){ const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
-function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
-function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
-function copyText(s,msg='已複製囉！'){ navigator.clipboard.writeText(s).then(()=>showToast(msg)); }
-
-// === 聊天顯示 ===
-const chatScriptEl=document.getElementById('chatScript');
-function appendMsg(el, role, content){
-  const div=document.createElement('div');
-  div.className='msg ' + (role==='user'?'user':'');
-  div.innerHTML=`<div class="meta">${role} · ${fmtTS()}</div><div>${escapeHTML(content)}</div>`;
-  el.appendChild(div); el.scrollTop=el.scrollHeight;
-}
-
-// === 問答 API ===
-async function apiChatQA(messages){
-  const r = await fetch(`${API_BASE}/chat_qa`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ session_id: state.sessionIdScript, messages })
-  });
-  if(!r.ok) throw new Error(`HTTP ${r.status}`);
-  return await r.json();
-}
-
-// ✅ 啟動問答：進入腳本頁時自動叫第一題
-async function startQaSession(){
-  try{
-    const resp = await apiChatQA([]);
-    if(resp.assistant_message){
-      appendMsg(chatScriptEl,'assistant',resp.assistant_message);
-      state.messagesScript.push({ role:'assistant', content:resp.assistant_message });
-      state.lastAssistantScript = resp.assistant_message;
-    }
-  }catch(e){
-    appendMsg(chatScriptEl,'assistant',`❌ 無法啟動問答：${e.message}`);
-  }
-}
-
-// ✅ 送出使用者回答
-document.getElementById('sendScript').onclick = async ()=>{
-  const textarea=document.getElementById('inputScript');
-  const text=(textarea.value||'').trim(); if(!text){ showToast('請先輸入內容'); return; }
-  appendMsg(chatScriptEl,'user',text);
-  state.messagesScript.push({ role:'user', content:text });
-  textarea.value='';
-
-  const btn=document.getElementById('sendScript');
-  const old=btn.textContent; btn.disabled=true; btn.textContent='生成中…';
-
-  try{
-    // 把上一輪助理提問 + 使用者回答一起送回去
-    const resp = await apiChatQA([
-      { role:'assistant', content: state.lastAssistantScript },
-      { role:'user', content:text }
-    ]);
-
-    // 如果還有下一題
-    if(resp.assistant_message && !resp.segments){
-      appendMsg(chatScriptEl,'assistant',resp.assistant_message);
-      state.messagesScript.push({ role:'assistant', content:resp.assistant_message });
-      state.lastAssistantScript = resp.assistant_message;
-    }
-
-    // 如果已生成腳本
-    if(resp.segments){
-      state.segments = resp.segments;
-      renderSegments();
-      appendMsg(chatScriptEl,'assistant',resp.assistant_message || '✅ 已完成產出');
-    }
-
-  }catch(e){
-    appendMsg(chatScriptEl,'assistant',`❌ 錯誤：${e.message}`);
-  }finally{
-    btn.disabled=false; btn.textContent=old;
-  }
-};
-
-// === 以下 copy 模式部分保持原本 chat_generate 流程 ===
-
-// 原 chat_generate：給文案模式用（保留你原本的行為）
-async function apiChatGenerate(payload){
-  if(MOCK_MODE){
-    const last = payload.messages?.[payload.messages.length-1]?.content || '';
-    if(payload.mode==='copy'){
-      return { 
-        session_id: payload.session_id||'mock-copy',
-        assistant_message:'模擬文案：初稿完成。',
-        copy:{
-          main_copy:`主貼文：${(payload.topic?`【${payload.topic}】`:'')}${last}\n今天就行動！⚡️`,
-          alternates:['🔥 這個方法超省時','💡 其實你只差一步','👉 跟著做就能上手'],
-          hashtags:['#行銷','#AI','#文案','#社群經營'],
-          cta:'點連結 🔗'
-        }
-      };
-    } else {
-      return { 
-        session_id: payload.session_id||'mock-script',
-        assistant_message:'模擬腳本：初稿完成。',
-        segments:[
-          { start_sec:0, end_sec:5, type:'hook', camera:'CU', dialog:`開場鉤子：${last.slice(0,20)}…`, visual:'快切 B-roll + 動態字卡', cta:'' },
-          { start_sec:5, end_sec:25, type:'value', camera:'MS', dialog:'三點賣點清單 + punch line', visual:'產品/數據圖/對比畫面', cta:'' },
-          { start_sec:25, end_sec:30, type:'cta', camera:'WS', dialog:'口播 CTA', visual:'大字卡+Logo', cta:'點連結領取' }
-        ]
-      };
-    }
-  }
-  const r = await fetch(`${API_BASE}/chat_generate`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
-  });
-  const j = await r.json().catch(()=>({}));
-  if(!r.ok) throw new Error(j?.assistant_message || j?.error || `HTTP ${r.status}`);
-  return j;
-}
-
-// ====== Copy（文案）模式：UI 綁定 + 發送 ======
-const chatCopyEl   = document.getElementById('chatCopy');
-const inputCopy    = document.getElementById('inputCopy');
-const topicCopyEl  = document.getElementById('topicCopy');
-
-document.getElementById('sendCopy').onclick = async ()=>{
-  const text=(inputCopy.value||'').trim(); 
-  if(!text){ showToast('請先輸入內容'); return; }
-
-  // 顯示 & 記錄使用者訊息
-  appendMsg(chatCopyEl,'user',text);
-  state.messagesCopy.push({ role:'user', content:text, ts:Date.now() });
-  inputCopy.value='';
-
-  const btn=document.getElementById('sendCopy');
-  const old=btn.textContent; btn.disabled=true; btn.textContent='生成中…';
-
-  try{
-    const messages = state.messagesCopy.slice(-20).map(m=>({ role:m.role, content:m.content }));
-    const resp = await apiChatGenerate({
-      user_id: state.userId,
-      session_id: state.sessionIdCopy,
-      mode: 'copy',
-      topic: (topicCopyEl.value||'').trim(),
-      messages,
-      previous_segments: [],
-      remember: document.getElementById('rememberChk2').checked
-    });
-
-    state.sessionIdCopy = resp.session_id || state.sessionIdCopy;
-
-    const assistant = resp.assistant_message || '已完成文案初稿。';
-    appendMsg(chatCopyEl, 'assistant', assistant);
-    state.messagesCopy.push({ role:'assistant', content:assistant, ts:Date.now() });
-
-    if(resp.copy){ state.copy = resp.copy; renderCopy(); }
-  }catch(e){
-    appendMsg(chatCopyEl, 'assistant', `❌ 錯誤：${e.message}`);
-    showToast(`發生錯誤：${e.message}`);
-  }finally{
-    btn.disabled=false; btn.textContent=old;
-  }
-};
-
-// ====== 片段/文案：渲染 & 操作 ======
-const segmentsWrap = document.getElementById('segmentsWrap');
-function segmentToText(s){ 
-  return `(${s.start_sec}s–${s.end_sec}s) [${s.type||'-'}] camera:${s.camera||'-'}\n台詞:${s.dialog||''}\n畫面:${s.visual||''}\nCTA:${s.cta||''}`;
-}
-function renderSegments(){
-  segmentsWrap.innerHTML='';
-  if(!state.segments?.length){ 
-    const empty=document.createElement('div'); 
-    empty.className='segment-card muted'; 
-    empty.textContent='尚無片段。請輸入更具體的秒數/場景/目標。'; 
-    segmentsWrap.appendChild(empty); 
-    return; 
-  }
-  state.segments.forEach((s,i)=>{
-    if(s.start_sec==null||s.end_sec==null){ s.start_sec=i*6; s.end_sec=i*6+6; }
-    const card=document.createElement('div'); card.className='segment-card';
-    card.innerHTML=`
-      <div class="segment-head">
-        <div class="seg-title">#${i+1} ${s.type||'segment'} <span class="seg-meta">${s.start_sec}s–${s.end_sec}s · 鏡位 ${s.camera||'-'}</span></div>
-        <div class="seg-actions">
-          <button class="btn small" data-act="copy" data-idx="${i}">複製</button>
-          <button class="btn small" data-act="tweak" data-idx="${i}">微調</button>
-          <button class="btn small err" data-act="del" data-idx="${i}">刪除</button>
-        </div>
-      </div>
-      <div class="muted">對白</div><div>${escapeHTML(s.dialog||'')}</div>
-      <div class="muted" style="margin-top:6px">畫面感</div><div>${escapeHTML(s.visual||'')}</div>
-      <div class="muted" style="margin-top:6px">CTA</div><div>${escapeHTML(s.cta||'')}</div>`;
-    segmentsWrap.appendChild(card);
-  });
-}
-segmentsWrap.onclick = e=>{
-  const b=e.target.closest('button'); if(!b) return;
-  const idx=+b.dataset.idx, seg=state.segments[idx];
-  if(b.dataset.act==='copy') copyText(segmentToText(seg));
-  if(b.dataset.act==='del'){ state.segments.splice(idx,1); renderSegments(); }
-  if(b.dataset.act==='tweak'){
-    const nd=prompt('微調對白（留空略過）',seg.dialog||''); if(nd!=null && nd!=='') seg.dialog=nd;
-    const nv=prompt('微調畫面（留空略過）',seg.visual||''); if(nv!=null && nv!=='') seg.visual=nv;
-    const nc=prompt('微調 CTA（留空略過）',seg.cta||''); if(nc!=null && nc!=='') seg.cta=nc;
-    renderSegments();
-  }
-};
-
-const copyWrap=document.getElementById('copyWrap');
-function copyToText(c){
-  const out=[]; 
-  out.push('【主貼文】',c.main_copy||'','\n【備選開頭】'); 
-  (c.alternates||[]).forEach((a,i)=>out.push(`${i+1}. ${a}`));
-  out.push('\n【Hashtags】',(c.hashtags||[]).join(' '),'\n【CTA】',c.cta||''); 
-  return out.join('\n');
-}
-function renderCopy(){
-  copyWrap.innerHTML='';
-  if(!state.copy){ 
-    const empty=document.createElement('div'); 
-    empty.className='copy-card muted'; 
-    empty.textContent='尚無文案。請描述平台/受眾/語氣/CTA，並填「主題」。'; 
-    copyWrap.appendChild(empty); 
-    return; 
-  }
-  const { main_copy, alternates=[], hashtags=[], cta='' } = state.copy;
-  const main=document.createElement('div'); 
-  main.className='copy-card';
-  main.innerHTML=`<h4>主貼文</h4><pre style="white-space:pre-wrap">${escapeHTML(main_copy||'')}</pre><div class="seg-actions" style="margin-top:8px"><button class="btn small" id="cp-main">複製</button></div>`;
-  const alt=document.createElement('div'); 
-  alt.className='copy-card'; 
-  alt.innerHTML=`<h4>備選開頭</h4><ul>${alternates.map(a=>`<li>${escapeHTML(a)}</li>`).join('')}</ul>`;
-  const tag=document.createElement('div'); 
-  tag.className='copy-card'; 
-  tag.innerHTML=`<h4>Hashtags</h4><div>${hashtags.map(h=>`<span class="chip">${escapeHTML(h)}</span>`).join(' ')}</div>`;
-  const ctaEl=document.createElement('div'); 
-  ctaEl.className='copy-card'; 
-  ctaEl.innerHTML=`<h4>CTA</h4><div>${escapeHTML(cta)}</div><div class="seg-actions" style="margin-top:8px"><button class="btn small" id="cp-all">複製全部</button></div>`;
-  copyWrap.append(main,alt,tag,ctaEl);
-  document.getElementById('cp-main').onclick=()=>copyText(main_copy||'');
-  document.getElementById('cp-all').onclick =()=>copyText(copyToText(state.copy),'已複製囉！');
-}
-
-// ====== 快速模板/偏好/雜項 UI 綁定 ======
-const inputScript = document.getElementById('inputScript');
-document.getElementById('chipsScript').onclick = e=>{
-  if(e.target.classList.contains('chip')){ inputScript.value = e.target.dataset.insert; inputScript.focus(); }
-};
-document.getElementById('chipsCopy').onclick = e=>{
-  if(e.target.classList.contains('chip')){ inputCopy.value = e.target.dataset.insert; inputCopy.focus(); }
-};
-
-// 偏好同步（簡化：只同步 userId）
-document.getElementById('userId').value  = state.userId;
-document.getElementById('userId2').value = state.userId;
-document.getElementById('userId').onchange  = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId2').value=state.userId; };
-document.getElementById('userId2').onchange = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId').value =state.userId; };
-
-// 複製/清空/回饋
-document.getElementById('copyAllScript').onclick=()=>{ 
-  if(!state.segments?.length) return showToast('無可複製內容'); 
-  copyText(state.segments.map(s=>segmentToText(s)).join('\n\n'),'已複製囉！');
-};
-document.getElementById('clearScript').onclick =()=>{ state.segments=[]; renderSegments(); };
-document.getElementById('thumbUpScript').onclick =()=>showToast('已送出回饋');
-document.getElementById('thumbDownScript').onclick=()=>showToast('已送出回饋');
-
-document.getElementById('copyAllCopy').onclick =()=>{ 
-  if(!state.copy) return showToast('無可複製內容'); 
-  copyText(copyToText(state.copy),'已複製囉！');
-};
-document.getElementById('clearCopy').onclick   =()=>{ state.copy=null; renderCopy(); };
-document.getElementById('thumbUpCopy').onclick =()=>showToast('已送出回饋');
-document.getElementById('thumbDownCopy').onclick=()=>showToast('已送出回饋');
-
-// Mock 切換（UI 預設隱藏，仍可在 DevTools 內手動切換）
-const mockBtn=document.getElementById('btn-toggle-mock');
-if (mockBtn){
-  mockBtn.textContent=`Mock: ${MOCK_MODE?'On':'Off'}`;
-  mockBtn.onclick=()=>{ 
-    MOCK_MODE=!MOCK_MODE; 
-    mockBtn.textContent=`Mock: ${MOCK_MODE?'On':'Off'}`; 
-    showToast(`Mock ${MOCK_MODE?'已開啟（示範資料）':'已關閉（串真後端）'}`); 
+  // === 以下 copy 模式部分保持原本 chat_generate 流程 ===
+  <script>
+  const API_BASE = 'https://aijobvideobackend.zeabur.app';
+  const DEFAULT_USER_ID = `web-${Math.random().toString(36).slice(2,8)}`;
+  let MOCK_MODE = false;
+  
+  const state = { 
+    sessionIdScript: localStorage.getItem('qa_session_id') || `web-${Math.random().toString(36).slice(2,8)}`,
+    sessionIdCopy:'',
+    userId: DEFAULT_USER_ID, 
+    messagesScript:[], 
+    lastAssistantScript:'',   // ✅ 新增，紀錄上一輪助理的提問
+    messagesCopy:[], 
+    segments:[], 
+    copy:null 
   };
-}
-
-// ====== 初始化 ======
-goPage('home');
-renderSegments();
-renderCopy();
-</script>
-
+  localStorage.setItem('qa_session_id', state.sessionIdScript);
+  
+  const pages = ['home','script','copy','guide'];
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>goPage(b.dataset.page));
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goPage(b.dataset.go));
+  function goPage(name){
+    pages.forEach(p=>{
+      document.getElementById(`page-${p}`).style.display = (p===name)?'block':'none';
+      document.querySelector(`.tab[data-page="${p}"]`).classList.toggle('active', p===name);
+    });
+    const drawer = document.getElementById('drawer');
+    if(drawer){ drawer.style.display = 'none'; }
+  
+    // ✅ 首次進入腳本模式 → 啟動引導問答
+    if(name==='script' && state.messagesScript.length===0){
+      startQaSession();
+    }
+  }
+  
+  function fmtTS(d=new Date()){ const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+  function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
+  function copyText(s,msg='已複製囉！'){ navigator.clipboard.writeText(s).then(()=>showToast(msg)); }
+  
+  // === 聊天顯示 ===
+  const chatScriptEl=document.getElementById('chatScript');
+  function appendMsg(el, role, content){
+    const div=document.createElement('div');
+    div.className='msg ' + (role==='user'?'user':'');
+    div.innerHTML=`<div class="meta">${role} · ${fmtTS()}</div><div>${escapeHTML(content)}</div>`;
+    el.appendChild(div); el.scrollTop=el.scrollHeight;
+  }
+  
+  // === 問答 API ===
+  async function apiChatQA(messages){
+    const r = await fetch(`${API_BASE}/chat_qa`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ session_id: state.sessionIdScript, messages })
+    });
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  }
+  
+  // ✅ 啟動問答：進入腳本頁時自動叫第一題
+  async function startQaSession(){
+    try{
+      const resp = await apiChatQA([]);
+      if(resp.assistant_message){
+        appendMsg(chatScriptEl,'assistant',resp.assistant_message);
+        state.messagesScript.push({ role:'assistant', content:resp.assistant_message });
+        state.lastAssistantScript = resp.assistant_message;
+      }
+    }catch(e){
+      appendMsg(chatScriptEl,'assistant',`❌ 無法啟動問答：${e.message}`);
+    }
+  }
+  
+  // ✅ 送出使用者回答
+  document.getElementById('sendScript').onclick = async ()=>{
+    const textarea=document.getElementById('inputScript');
+    const text=(textarea.value||'').trim(); if(!text){ showToast('請先輸入內容'); return; }
+    appendMsg(chatScriptEl,'user',text);
+    state.messagesScript.push({ role:'user', content:text });
+    textarea.value='';
+  
+    const btn=document.getElementById('sendScript');
+    const old=btn.textContent; btn.disabled=true; btn.textContent='生成中…';
+  
+    try{
+      // 把上一輪助理提問 + 使用者回答一起送回去
+      const resp = await apiChatQA([
+        { role:'assistant', content: state.lastAssistantScript },
+        { role:'user', content:text }
+      ]);
+  
+      // 如果還有下一題
+      if(resp.assistant_message && !resp.segments){
+        appendMsg(chatScriptEl,'assistant',resp.assistant_message);
+        state.messagesScript.push({ role:'assistant', content:resp.assistant_message });
+        state.lastAssistantScript = resp.assistant_message;
+      }
+  
+      // 如果已生成腳本
+      if(resp.segments){
+        state.segments = resp.segments;
+        renderSegments();
+        appendMsg(chatScriptEl,'assistant',resp.assistant_message || '✅ 已完成產出');
+      }
+  
+    }catch(e){
+      appendMsg(chatScriptEl,'assistant',`❌ 錯誤：${e.message}`);
+    }finally{
+      btn.disabled=false; btn.textContent=old;
+    }
+  };
+  
+  // === 以下 copy 模式部分保持原本 chat_generate 流程 ===
+  
+  // 原 chat_generate：給文案模式用（保留你原本的行為）
+  async function apiChatGenerate(payload){
+    if(MOCK_MODE){
+      const last = payload.messages?.[payload.messages.length-1]?.content || '';
+      if(payload.mode==='copy'){
+        return { 
+          session_id: payload.session_id||'mock-copy',
+          assistant_message:'模擬文案：初稿完成。',
+          copy:{
+            main_copy:`主貼文：${(payload.topic?`【${payload.topic}】`:'')}${last}\n今天就行動！⚡️`,
+            alternates:['🔥 這個方法超省時','💡 其實你只差一步','👉 跟著做就能上手'],
+            hashtags:['#行銷','#AI','#文案','#社群經營'],
+            cta:'點連結 🔗'
+          }
+        };
+      } else {
+        return { 
+          session_id: payload.session_id||'mock-script',
+          assistant_message:'模擬腳本：初稿完成。',
+          segments:[
+            { start_sec:0, end_sec:5, type:'hook', camera:'CU', dialog:`開場鉤子：${last.slice(0,20)}…`, visual:'快切 B-roll + 動態字卡', cta:'' },
+            { start_sec:5, end_sec:25, type:'value', camera:'MS', dialog:'三點賣點清單 + punch line', visual:'產品/數據圖/對比畫面', cta:'' },
+            { start_sec:25, end_sec:30, type:'cta', camera:'WS', dialog:'口播 CTA', visual:'大字卡+Logo', cta:'點連結領取' }
+          ]
+        };
+      }
+    }
+    const r = await fetch(`${API_BASE}/chat_generate`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j?.assistant_message || j?.error || `HTTP ${r.status}`);
+    return j;
+  }
+  
+  // ====== Copy（文案）模式：UI 綁定 + 發送 ======
+  const chatCopyEl   = document.getElementById('chatCopy');
+  const inputCopy    = document.getElementById('inputCopy');
+  const topicCopyEl  = document.getElementById('topicCopy');
+  
+  document.getElementById('sendCopy').onclick = async ()=>{
+    const text=(inputCopy.value||'').trim(); 
+    if(!text){ showToast('請先輸入內容'); return; }
+  
+    // 顯示 & 記錄使用者訊息
+    appendMsg(chatCopyEl,'user',text);
+    state.messagesCopy.push({ role:'user', content:text, ts:Date.now() });
+    inputCopy.value='';
+  
+    const btn=document.getElementById('sendCopy');
+    const old=btn.textContent; btn.disabled=true; btn.textContent='生成中…';
+  
+    try{
+      const messages = state.messagesCopy.slice(-20).map(m=>({ role:m.role, content:m.content }));
+      const resp = await apiChatGenerate({
+        user_id: state.userId,
+        session_id: state.sessionIdCopy,
+        mode: 'copy',
+        topic: (topicCopyEl.value||'').trim(),
+        messages,
+        previous_segments: [],
+        remember: document.getElementById('rememberChk2').checked
+      });
+  
+      state.sessionIdCopy = resp.session_id || state.sessionIdCopy;
+  
+      const assistant = resp.assistant_message || '已完成文案初稿。';
+      appendMsg(chatCopyEl, 'assistant', assistant);
+      state.messagesCopy.push({ role:'assistant', content:assistant, ts:Date.now() });
+  
+      if(resp.copy){ state.copy = resp.copy; renderCopy(); }
+    }catch(e){
+      appendMsg(chatCopyEl, 'assistant', `❌ 錯誤：${e.message}`);
+      showToast(`發生錯誤：${e.message}`);
+    }finally{
+      btn.disabled=false; btn.textContent=old;
+    }
+  };
+  
+  // ====== 片段/文案：渲染 & 操作 ======
+  const segmentsWrap = document.getElementById('segmentsWrap');
+  function segmentToText(s){ 
+    return `(${s.start_sec}s–${s.end_sec}s) [${s.type||'-'}] camera:${s.camera||'-'}\n台詞:${s.dialog||''}\n畫面:${s.visual||''}\nCTA:${s.cta||''}`;
+  }
+  function renderSegments(){
+    segmentsWrap.innerHTML='';
+    if(!state.segments?.length){ 
+      const empty=document.createElement('div'); 
+      empty.className='segment-card muted'; 
+      empty.textContent='尚無片段。請輸入更具體的秒數/場景/目標。'; 
+      segmentsWrap.appendChild(empty); 
+      return; 
+    }
+    state.segments.forEach((s,i)=>{
+      if(s.start_sec==null||s.end_sec==null){ s.start_sec=i*6; s.end_sec=i*6+6; }
+      const card=document.createElement('div'); card.className='segment-card';
+      card.innerHTML=`
+        <div class="segment-head">
+          <div class="seg-title">#${i+1} ${s.type||'segment'} <span class="seg-meta">${s.start_sec}s–${s.end_sec}s · 鏡位 ${s.camera||'-'}</span></div>
+          <div class="seg-actions">
+            <button class="btn small" data-act="copy" data-idx="${i}">複製</button>
+            <button class="btn small" data-act="tweak" data-idx="${i}">微調</button>
+            <button class="btn small err" data-act="del" data-idx="${i}">刪除</button>
+          </div>
+        </div>
+        <div class="muted">對白</div><div>${escapeHTML(s.dialog||'')}</div>
+        <div class="muted" style="margin-top:6px">畫面感</div><div>${escapeHTML(s.visual||'')}</div>
+        <div class="muted" style="margin-top:6px">CTA</div><div>${escapeHTML(s.cta||'')}</div>`;
+      segmentsWrap.appendChild(card);
+    });
+  }
+  segmentsWrap.onclick = e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    const idx=+b.dataset.idx, seg=state.segments[idx];
+    if(b.dataset.act==='copy') copyText(segmentToText(seg));
+    if(b.dataset.act==='del'){ state.segments.splice(idx,1); renderSegments(); }
+    if(b.dataset.act==='tweak'){
+      const nd=prompt('微調對白（留空略過）',seg.dialog||''); if(nd!=null && nd!=='') seg.dialog=nd;
+      const nv=prompt('微調畫面（留空略過）',seg.visual||''); if(nv!=null && nv!=='') seg.visual=nv;
+      const nc=prompt('微調 CTA（留空略過）',seg.cta||''); if(nc!=null && nc!=='') seg.cta=nc;
+      renderSegments();
+    }
+  };
+  
+  const copyWrap=document.getElementById('copyWrap');
+  function copyToText(c){
+    const out=[]; 
+    out.push('【主貼文】',c.main_copy||'','\n【備選開頭】'); 
+    (c.alternates||[]).forEach((a,i)=>out.push(`${i+1}. ${a}`));
+    out.push('\n【Hashtags】',(c.hashtags||[]).join(' '),'\n【CTA】',c.cta||''); 
+    return out.join('\n');
+  }
+  function renderCopy(){
+    copyWrap.innerHTML='';
+    if(!state.copy){ 
+      const empty=document.createElement('div'); 
+      empty.className='copy-card muted'; 
+      empty.textContent='尚無文案。請描述平台/受眾/語氣/CTA，並填「主題」。'; 
+      copyWrap.appendChild(empty); 
+      return; 
+    }
+    const { main_copy, alternates=[], hashtags=[], cta='' } = state.copy;
+    const main=document.createElement('div'); 
+    main.className='copy-card';
+    main.innerHTML=`<h4>主貼文</h4><pre style="white-space:pre-wrap">${escapeHTML(main_copy||'')}</pre><div class="seg-actions" style="margin-top:8px"><button class="btn small" id="cp-main">複製</button></div>`;
+    const alt=document.createElement('div'); 
+    alt.className='copy-card'; 
+    alt.innerHTML=`<h4>備選開頭</h4><ul>${alternates.map(a=>`<li>${escapeHTML(a)}</li>`).join('')}</ul>`;
+    const tag=document.createElement('div'); 
+    tag.className='copy-card'; 
+    tag.innerHTML=`<h4>Hashtags</h4><div>${hashtags.map(h=>`<span class="chip">${escapeHTML(h)}</span>`).join(' ')}</div>`;
+    const ctaEl=document.createElement('div'); 
+    ctaEl.className='copy-card'; 
+    ctaEl.innerHTML=`<h4>CTA</h4><div>${escapeHTML(cta)}</div><div class="seg-actions" style="margin-top:8px"><button class="btn small" id="cp-all">複製全部</button></div>`;
+    copyWrap.append(main,alt,tag,ctaEl);
+    document.getElementById('cp-main').onclick=()=>copyText(main_copy||'');
+    document.getElementById('cp-all').onclick =()=>copyText(copyToText(state.copy),'已複製囉！');
+  }
+  
+  // ====== 快速模板/偏好/雜項 UI 綁定 ======
+  const inputScript = document.getElementById('inputScript');
+  document.getElementById('chipsScript').onclick = e=>{
+    if(e.target.classList.contains('chip')){ inputScript.value = e.target.dataset.insert; inputScript.focus(); }
+  };
+  document.getElementById('chipsCopy').onclick = e=>{
+    if(e.target.classList.contains('chip')){ inputCopy.value = e.target.dataset.insert; inputCopy.focus(); }
+  };
+  
+  // 偏好同步（簡化：只同步 userId）
+  document.getElementById('userId').value  = state.userId;
+  document.getElementById('userId2').value = state.userId;
+  document.getElementById('userId').onchange  = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId2').value=state.userId; };
+  document.getElementById('userId2').onchange = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId').value =state.userId; };
+  
+  // 複製/清空/回饋
+  document.getElementById('copyAllScript').onclick=()=>{ 
+    if(!state.segments?.length) return showToast('無可複製內容'); 
+    copyText(state.segments.map(s=>segmentToText(s)).join('\n\n'),'已複製囉！');
+  };
+  document.getElementById('clearScript').onclick =()=>{ state.segments=[]; renderSegments(); };
+  document.getElementById('thumbUpScript').onclick =()=>showToast('已送出回饋');
+  document.getElementById('thumbDownScript').onclick=()=>showToast('已送出回饋');
+  
+  document.getElementById('copyAllCopy').onclick =()=>{ 
+    if(!state.copy) return showToast('無可複製內容'); 
+    copyText(copyToText(state.copy),'已複製囉！');
+  };
+  document.getElementById('clearCopy').onclick   =()=>{ state.copy=null; renderCopy(); };
+  document.getElementById('thumbUpCopy').onclick =()=>showToast('已送出回饋');
+  document.getElementById('thumbDownCopy').onclick=()=>showToast('已送出回饋');
+  
+  // Mock 切換（UI 預設隱藏，仍可在 DevTools 內手動切換）
+  const mockBtn=document.getElementById('btn-toggle-mock');
+  if (mockBtn){
+    mockBtn.textContent=`Mock: ${MOCK_MODE?'On':'Off'}`;
+    mockBtn.onclick=()=>{ 
+      MOCK_MODE=!MOCK_MODE; 
+      mockBtn.textContent=`Mock: ${MOCK_MODE?'On':'Off'}`; 
+      showToast(`Mock ${MOCK_MODE?'已開啟（示範資料）':'已關閉（串真後端）'}`); 
+    };
+  }
+  
+  // ====== 初始化 ======
+  goPage('home');
+  renderSegments();
+  renderCopy();
+  </script>
 </body>
 </html>
