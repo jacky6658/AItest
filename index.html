@@ -97,6 +97,8 @@
     .btn.small{ padding:8px 10px; font-size:14px; min-height:38px; }
 
     .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s; z-index:100; }
+    /* ✅ 讓顯示狀態可見 */
+    .toast.show{ opacity:1; }
 
     /* 手機底部抽屜（已移除元件，保留樣式不影響） */
     .drawer{ position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--border); padding:10px; display:none; gap:8px; z-index:45; }
@@ -397,7 +399,6 @@
       document.getElementById(`page-${p}`).style.display = (p===name)?'block':'none';
       document.querySelector(`.tab[data-page="${p}"]`).classList.toggle('active', p===name);
     });
-    // ⛔ 原本的手機底部抽屜已移除，這裡不再切換
     const drawer = document.getElementById('drawer');
     if(drawer){ drawer.style.display = 'none'; }
   }
@@ -413,8 +414,9 @@
   const val = sel=>document.querySelector(sel).value;
   function fmtTS(d=new Date()){ const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
   function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
-  function copyText(s){ navigator.clipboard.writeText(s).then(()=>showToast('已複製')); }
-  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;","&gt;":"&gt;","\"":"&quot;"}[c])); }
+  // ✅ 允許自訂訊息（預設：已複製囉！）
+  function copyText(s, msg='已複製囉！'){ navigator.clipboard.writeText(s).then(()=>showToast(msg)); }
+  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
 
   // 偏好同步
   document.getElementById('userId') .value = state.userId;
@@ -422,14 +424,11 @@
   document.getElementById('userId').onchange  = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId2').value=state.userId; };
   document.getElementById('userId2').onchange = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; document.getElementById('userId').value =state.userId; };
 
-  // 送出鍵（只保留按鈕送出，不攔截 Enter）
+  // 送出鍵（只保留按鈕送出）
   const inputScript=document.getElementById('inputScript');
   const inputCopy  =document.getElementById('inputCopy');
   document.getElementById('sendScript').onclick = ()=>sendChat('script');
   document.getElementById('sendCopy').onclick   = ()=>sendChat('copy');
-  // ❌ 已移除：按 Enter 直接送出
-  // inputScript.addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat('script'); } });
-  // inputCopy  .addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat('copy'); } });
 
   // 快速模板點填
   document.getElementById('chipsScript').onclick = e=>{ if(e.target.classList.contains('chip')){ inputScript.value = e.target.dataset.insert; inputScript.focus(); } };
@@ -494,7 +493,7 @@
   segmentsWrap.onclick = e=>{
     const b=e.target.closest('button'); if(!b) return;
     const idx=+b.dataset.idx, seg=state.segments[idx];
-    if(b.dataset.act==='copy') copyText(segmentToText(seg));
+    if(b.dataset.act==='copy') copyText(segmentToText(seg));           // 其他複製維持原樣
     if(b.dataset.act==='del'){ state.segments.splice(idx,1); renderSegments(); }
     if(b.dataset.act==='tweak'){
       const nd=prompt('微調對白（留空略過）',seg.dialog||''); if(nd!=null && nd!=='') seg.dialog=nd;
@@ -519,21 +518,25 @@
     const tag=document.createElement('div'); tag.className='copy-card'; tag.innerHTML=`<h4>Hashtags</h4><div>${hashtags.map(h=>`<span class="chip">${escapeHTML(h)}</span>`).join(' ')}</div>`;
     const ctaEl=document.createElement('div'); ctaEl.className='copy-card'; ctaEl.innerHTML=`<h4>CTA</h4><div>${escapeHTML(cta)}</div><div class="seg-actions" style="margin-top:8px"><button class="btn small" id="cp-all">複製全部</button></div>`;
     copyWrap.append(main,alt,tag,ctaEl);
-    document.getElementById('cp-main').onclick=()=>copyText(main_copy||'');
-    document.getElementById('cp-all').onclick =()=>copyText(copyToText(state.copy));
+    document.getElementById('cp-main').onclick=()=>copyText(main_copy||'');                  // 維持預設提示
+    document.getElementById('cp-all').onclick =()=>copyText(copyToText(state.copy),'已複製囉！'); // 文案「複製全部」提示
   }
 
   // 清空/複製/回饋
-  document.getElementById('copyAllScript').onclick=()=>{ if(!state.segments?.length) return showToast('無可複製內容'); copyText(state.segments.map(s=>segmentToText(s)).join('\n\n')); };
+  document.getElementById('copyAllScript').onclick=()=>{ 
+    if(!state.segments?.length) return showToast('無可複製內容'); 
+    copyText(state.segments.map(s=>segmentToText(s)).join('\n\n'),'已複製囉！'); // 腳本「複製全部」提示
+  };
   document.getElementById('clearScript').onclick =()=>{ state.segments=[]; renderSegments(); };
   document.getElementById('thumbUpScript').onclick =()=>showToast('已送出回饋');
   document.getElementById('thumbDownScript').onclick=()=>showToast('已送出回饋');
-  document.getElementById('copyAllCopy').onclick =()=>{ if(!state.copy) return showToast('無可複製內容'); copyText(copyToText(state.copy)); };
+  document.getElementById('copyAllCopy').onclick =()=>{ 
+    if(!state.copy) return showToast('無可複製內容'); 
+    copyText(copyToText(state.copy),'已複製囉！'); // 文案「複製全部」提示
+  };
   document.getElementById('clearCopy').onclick   =()=>{ state.copy=null; renderCopy(); };
   document.getElementById('thumbUpCopy').onclick =()=>showToast('已送出回饋');
   document.getElementById('thumbDownCopy').onclick=()=>showToast('已送出回饋');
-
-  // ⛔ 手機抽屜事件處理已移除（黃色按鈕列刪除）
 
   // 發送聊天
   async function sendChat(which){
