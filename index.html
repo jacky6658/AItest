@@ -92,6 +92,24 @@
     .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s; z-index:100; }
     .toast.show{ opacity:1; }
 
+    /* AI 載入動畫樣式 */
+    .loading-msg{ background:#f8fafc; border:1px solid #e2e8f0; }
+    .loading-content{ display:flex; align-items:center; gap:12px; }
+    .loading-dots{ display:flex; gap:4px; }
+    .loading-dots span{ width:8px; height:8px; border-radius:50%; background:#3b82f6; animation:loading-bounce 1.4s ease-in-out infinite both; }
+    .loading-dots span:nth-child(1){ animation-delay:-0.32s; }
+    .loading-dots span:nth-child(2){ animation-delay:-0.16s; }
+    .loading-dots span:nth-child(3){ animation-delay:0s; }
+    .loading-text{ color:#64748b; font-style:italic; }
+    @keyframes loading-bounce{ 0%, 80%, 100%{ transform:scale(0); } 40%{ transform:scale(1); } }
+
+    /* 格式化內容樣式 */
+    .formatted-content{ line-height:1.6; }
+    .formatted-content p{ margin:8px 0; }
+    .formatted-content strong{ font-weight:600; color:#1e40af; }
+    .formatted-content em{ font-style:italic; color:#7c3aed; }
+    .formatted-content br{ margin:4px 0; }
+
     .site-footer{ border-top:1px solid var(--border); margin-top:24px; background:#fff; }
     .copyright{ color:var(--text-muted); font-size:14px; padding:6px 0 14px 0; text-align:center; }
 
@@ -124,9 +142,9 @@
       </div>
       <div class="tabs">
         <button class="tab active" data-page="home">首頁</button>
-        <button class="tab" data-page="positioning">定位智能體</button>
-        <button class="tab" data-page="topics">選題智能體</button>
-        <button class="tab" data-page="script">腳本文案</button>
+        <button class="tab" data-page="positioning">AI影音定位顧問</button>
+        <button class="tab" data-page="topics">AI選題小助手</button>
+        <button class="tab" data-page="script">AI腳本生成大師</button>
         <button class="tab" data-page="guide">說明/指南</button>
       </div>
     </div>
@@ -141,7 +159,7 @@
       </div>
       <div class="grid-cards">
         <article class="card">
-          <h3>🎯 定位智能體</h3>
+          <h3>🎯 AI影音定位顧問</h3>
           <p>釐清你的帳號方向、目標受眾、品牌定位。建立完整的內容策略基礎，讓後續創作更有方向。</p>
           <div class="actions">
             <button class="btn primary" data-go="positioning">開始定位分析</button>
@@ -149,7 +167,7 @@
           </div>
         </article>
         <article class="card">
-          <h3>💡 選題智能體</h3>
+          <h3>💡 AI選題小助手</h3>
           <p>基於你的定位檔案，每日提供靈感選題建議。結合熱點、季節性與你的品牌特色。</p>
           <div class="actions">
             <button class="btn primary" data-go="topics">獲取選題靈感</button>
@@ -157,7 +175,7 @@
           </div>
         </article>
         <article class="card">
-          <h3>📝 腳本文案智能體</h3>
+          <h3>📝 AI腳本生成大師</h3>
           <p>整合腳本與文案功能，基於你的定位與記憶生成個性化內容。支援多種模板與時長。</p>
           <div class="actions">
             <button class="btn primary" data-go="script">開始創作</button>
@@ -182,7 +200,7 @@
     <div class="layout">
       <div class="panel">
         <div class="panel-head">
-          <div class="panel-title">🎯 定位智能體</div>
+          <div class="panel-title">🎯 AI影音定位顧問</div>
           <div class="settings">
             <button class="btn small" id="saveProfile">儲存檔案</button>
             <button class="btn small" id="clearPositioningChat">清空對話</button>
@@ -212,7 +230,7 @@
           <div id="profileWrap" class="right-scroll">
             <div class="copy-card">
               <h4>用戶定位檔案</h4>
-              <div id="profileContent" class="muted">尚未建立定位檔案，請先與定位智能體對話。</div>
+              <div id="profileContent" class="muted">尚未建立定位檔案，請先與AI影音定位顧問對話。</div>
             </div>
           </div>
         </div>
@@ -225,7 +243,7 @@
     <div class="layout">
       <div class="panel">
         <div class="panel-head">
-          <div class="panel-title">💡 選題智能體</div>
+          <div class="panel-title">💡 AI選題小助手</div>
           <div class="settings">
             <button class="btn small" id="refreshTopics">重新生成</button>
             <button class="btn small" id="viewTopicHistory">歷史記錄</button>
@@ -271,7 +289,7 @@
     <div class="layout">
       <div class="panel">
         <div class="panel-head">
-          <div class="panel-title">聊天協作（腳本）</div>
+          <div class="panel-title">📝 AI腳本生成大師</div>
           <div class="mode-wrap">
             <!-- 模式切換 -->
             <div class="segctl">
@@ -441,7 +459,7 @@
   // 根據部署環境自動選擇 API 基礎 URL
   const API_BASE = window.location.hostname === 'localhost' 
     ? 'http://localhost:8080'  // 本地開發
-    : 'https://aijobvideobackend.zeabur.app';  // 替換為你的實際 Zeabur 後端 URL
+    : 'https://aijobvideobackend.zeabur.app';  // 你的實際 Zeabur 後端 URL
   const DEFAULT_USER_ID = `web-${Math.random().toString(36).slice(2,8)}`;
 
   // 全域狀態
@@ -470,11 +488,81 @@
   function escapeHTML(s){ return (s||'').replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
   function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
   function copyText(s,msg='已複製囉！'){ navigator.clipboard.writeText(s).then(()=>showToast(msg)); }
-  function appendMsg(el, role, content){
+  function appendMsg(el, role, content, isFormatted = false){
     const div=document.createElement('div');
     div.className='msg ' + (role==='user'?'user':'');
-    div.innerHTML=`<div class="meta">${role} · ${fmtTS()}</div><div>${escapeHTML(content)}</div>`;
+    
+    // 如果是 AI 回應且需要格式化
+    if(role === 'assistant' && isFormatted){
+      div.innerHTML=`<div class="meta">${role} · ${fmtTS()}</div><div class="formatted-content">${formatAIResponse(content)}</div>`;
+    } else {
+      div.innerHTML=`<div class="meta">${role} · ${fmtTS()}</div><div>${escapeHTML(content)}</div>`;
+    }
+    
     el.appendChild(div); el.scrollTop=el.scrollHeight;
+  }
+
+  // 添加 AI 處理中的載入狀態
+  function showLoadingMsg(el, message = 'AI 正在思考中...'){
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'msg loading-msg';
+    loadingDiv.id = 'loading-msg';
+    loadingDiv.innerHTML = `
+      <div class="meta">assistant · ${fmtTS()}</div>
+      <div class="loading-content">
+        <div class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="loading-text">${message}</span>
+      </div>
+    `;
+    el.appendChild(loadingDiv);
+    el.scrollTop = el.scrollHeight;
+    return loadingDiv;
+  }
+
+  function hideLoadingMsg(el){
+    const loadingMsg = el.querySelector('#loading-msg');
+    if(loadingMsg){
+      loadingMsg.remove();
+    }
+  }
+
+  // 格式化 AI 回應，改善顯示效果
+  function formatAIResponse(content){
+    if(!content) return '';
+    
+    // 移除多個星號，改為適當的格式
+    let formatted = content
+      .replace(/\*\*\*(.*?)\*\*\*/g, '<strong>$1</strong>')  // 三個星號轉為粗體
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')      // 兩個星號轉為粗體
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')                  // 一個星號轉為斜體
+      .replace(/\n\n+/g, '</p><p>')                          // 多個換行轉為段落
+      .replace(/\n/g, '<br>');                               // 單個換行轉為換行標籤
+    
+    // 添加段落標籤
+    if(!formatted.startsWith('<p>')) formatted = '<p>' + formatted;
+    if(!formatted.endsWith('</p>')) formatted = formatted + '</p>';
+    
+    // 處理標題（數字開頭的行）
+    formatted = formatted.replace(/(<p>)?(\d+[\.\)]\s*.*?)(<\/p>)?/g, '<p><strong>$2</strong></p>');
+    
+    // 處理列表項（• 或 - 開頭）
+    formatted = formatted.replace(/(<p>)?([•\-]\s*.*?)(<\/p>)?/g, '<p>• $2</p>');
+    
+    // 添加適當的 emoji
+    formatted = formatted
+      .replace(/業務類型/g, '🏢 業務類型')
+      .replace(/目標受眾/g, '👥 目標受眾')
+      .replace(/品牌語氣/g, '🎨 品牌語氣')
+      .replace(/平台策略/g, '📱 平台策略')
+      .replace(/內容方向/g, '📝 內容方向')
+      .replace(/建議/g, '💡 建議')
+      .replace(/分析/g, '🔍 分析')
+      .replace(/重點/g, '⭐ 重點')
+      .replace(/關鍵/g, '🔑 關鍵');
+    
+    return formatted;
   }
 
   // 分頁切換
@@ -702,8 +790,8 @@
   // 定位智能體
   function showPositioningWelcome(){
     const chat = document.getElementById('chatPositioning');
-    const msg = '🎯 歡迎使用定位智能體！\n\n我會幫助你釐清：\n• 帳號領域定位\n• 目標受眾分析\n• 品牌形象定位\n• 平台策略建議\n• 內容方向規劃\n\n請告訴我你的業務、產品或目標，我來幫你建立完整的定位檔案！';
-    appendMsg(chat, 'assistant', msg);
+    const msg = '🎯 歡迎使用AI影音定位顧問！\n\n我會幫助你釐清：\n• 帳號領域定位\n• 目標受眾分析\n• 品牌形象定位\n• 平台策略建議\n• 內容方向規劃\n\n請告訴我你的業務、產品或目標，我來幫你建立完整的定位檔案！';
+    appendMsg(chat, 'assistant', msg, true);
     state.messagesPositioning.push({ role:'assistant', content:msg });
   }
 
@@ -716,6 +804,9 @@
     appendMsg(chat, 'user', text);
     textarea.value = '';
     
+    // 顯示載入狀態
+    showLoadingMsg(chat, 'AI影音定位顧問正在分析中...');
+    
     try{
       const resp = await fetch(`${API_BASE}/agent/positioning/analyze`, {
         method: 'POST',
@@ -727,8 +818,13 @@
       });
       
       const data = await resp.json();
+      
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      
       if(data.response){
-        appendMsg(chat, 'assistant', data.response);
+        // 使用格式化顯示 AI 回應
+        appendMsg(chat, 'assistant', data.response, true);
         state.messagesPositioning.push({ role:'assistant', content:data.response });
         
         // 更新用戶檔案顯示
@@ -738,6 +834,8 @@
         }
       }
     }catch(e){
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
       appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
     }
   }
@@ -760,8 +858,8 @@
   // 選題智能體
   function showTopicsWelcome(){
     const chat = document.getElementById('chatTopics');
-    const msg = '💡 歡迎使用選題智能體！\n\n我會根據你的定位檔案，提供：\n• 每日選題靈感\n• 熱門話題建議\n• 季節性內容\n• 平台特色選題\n\n點擊「獲取靈感」開始生成今日選題建議！';
-    appendMsg(chat, 'assistant', msg);
+    const msg = '💡 歡迎使用AI選題小助手！\n\n我會根據你的定位檔案，提供：\n• 每日選題靈感\n• 熱門話題建議\n• 季節性內容\n• 平台特色選題\n\n點擊「獲取靈感」開始生成今日選題建議！';
+    appendMsg(chat, 'assistant', msg, true);
     state.messagesTopics.push({ role:'assistant', content:msg });
   }
 
@@ -791,6 +889,9 @@
       appendMsg(chat, 'user', text);
     }
     
+    // 顯示載入狀態
+    showLoadingMsg(chat, 'AI選題小助手正在生成靈感中...');
+    
     try{
       const resp = await fetch(`${API_BASE}/agent/topics/suggest`, {
         method: 'POST',
@@ -802,14 +903,21 @@
       });
       
       const data = await resp.json();
+      
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      
       if(data.suggestions){
-        appendMsg(chat, 'assistant', data.suggestions);
+        // 使用格式化顯示 AI 回應
+        appendMsg(chat, 'assistant', data.suggestions, true);
         state.messagesTopics.push({ role:'assistant', content:data.suggestions });
         
         // 更新選題顯示
         updateTopicsDisplay(data.suggestions);
       }
     }catch(e){
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
       appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
     }
   }
@@ -825,8 +933,12 @@
     const text = (textarea.value || '').trim();
     if(!text){ showToast('請先輸入內容'); return; }
     
-    appendMsg(document.getElementById('chatScript'), 'user', text);
+    const chat = document.getElementById('chatScript');
+    appendMsg(chat, 'user', text);
     textarea.value = '';
+    
+    // 顯示載入狀態
+    showLoadingMsg(chat, 'AI腳本生成大師正在創作中...');
     
     try{
       const payload = {
@@ -844,17 +956,24 @@
       });
       
       const j = await r.json();
+      
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      
       if(!r.ok) throw new Error(j?.assistant_message || j?.error || `HTTP ${r.status}`);
       
       if(j.assistant_message) {
-        appendMsg(document.getElementById('chatScript'), 'assistant', j.assistant_message);
+        // 使用格式化顯示 AI 回應
+        appendMsg(chat, 'assistant', j.assistant_message, true);
       }
       if(j.generated_content?.segments) {
         state.segments = j.generated_content.segments;
         renderSegments();
       }
     }catch(e){
-      appendMsg(document.getElementById('chatScript'), 'assistant', `❌ 錯誤：${e.message}`);
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
     }
   }
 
