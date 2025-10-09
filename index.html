@@ -88,6 +88,7 @@
     .btn.primary:disabled{ opacity:.6; cursor:not-allowed; }
     .btn.ghost{ background:transparent; }
     .btn.small{ padding:8px 10px; font-size:14px; min-height:38px; }
+    .link-row{ display:flex; gap:8px; flex-wrap:wrap; }
 
     .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s; z-index:100; }
     .toast.show{ opacity:1; }
@@ -130,7 +131,7 @@
     .segctl .group{ display:flex; gap:6px; background:var(--muted); border:1px solid var(--border); border-radius:12px; padding:6px; }
     .segctl .group label{ padding:6px 10px; border-radius:999px; cursor:pointer; }
     .segctl .group input{ display:none; }
-    .segctl .group input:checked + span{ background:#fff; border:1px solid var(--primary); color:var(--primary); box-shadow:var(--shadow); }
+    .segctl .group input:checked + span{ background:var(--primary); border:1px solid var(--primary); color:#fff; box-shadow:var(--shadow); }
   </style>
 </head>
 <body>
@@ -192,6 +193,13 @@
           <a class="btn primary" target="_blank" href="https://AIJobschool.short.gy/E49kA8">與我們聯繫（LINE 官方）</a>
         </div>
       </article>
+      <div class="link-row">
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">AIJob 行銷自動化課程</a>
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/UUwpEG">AIJob Discord社群討論</a>
+        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/E49kA8">AIJob LINE官方帳號</a>
+      </div>
     </section>
   </main>
 
@@ -202,7 +210,6 @@
         <div class="panel-head">
           <div class="panel-title">🎯 AI影音定位顧問</div>
           <div class="settings">
-            <button class="btn small" id="saveProfile">儲存檔案</button>
             <button class="btn small" id="clearPositioningChat">清空對話</button>
           </div>
         </div>
@@ -218,6 +225,7 @@
           <div class="inputbar">
             <textarea id="inputPositioning" placeholder="告訴我你的業務、產品、目標或困惑..."></textarea>
             <button class="btn primary" id="sendPositioning">分析</button>
+            <button class="btn" id="cancelPositioning">停止</button>
           </div>
         </div>
       </div>
@@ -225,6 +233,9 @@
       <div class="panel">
         <div class="panel-head">
           <div class="panel-title">📍 定位檔案</div>
+          <div class="settings">
+            <button class="btn small" id="saveProfile">儲存檔案</button>
+          </div>
         </div>
         <div class="right-wrap">
           <div id="profileWrap" class="right-scroll">
@@ -261,6 +272,7 @@
           <div class="inputbar">
             <textarea id="inputTopics" placeholder="告訴我你想要什麼類型的選題靈感..."></textarea>
             <button class="btn primary" id="getTopics">獲取靈感</button>
+            <button class="btn" id="cancelTopics">停止</button>
           </div>
         </div>
       </div>
@@ -351,6 +363,7 @@
           <div class="inputbar">
             <textarea id="inputScript" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（按鈕送出；Shift+Enter 換行）"></textarea>
             <button class="btn primary" id="sendScript">送出</button>
+            <button class="btn" id="cancelScript">停止</button>
           </div>
         </div>
       </div>
@@ -528,6 +541,44 @@
     }
   }
 
+  // 串流聊天：逐步渲染 assistant 回覆
+  let currentStream = { controller: null };
+  async function streamChat(targetEl, payload, { onComplete } = {}){
+    const div = document.createElement('div');
+    div.className = 'msg';
+    div.innerHTML = `<div class="meta">assistant · ${fmtTS()}</div><div class="stream-content"></div>`;
+    const contentEl = div.querySelector('.stream-content');
+    targetEl.appendChild(div);
+    targetEl.scrollTop = targetEl.scrollHeight;
+
+    let buffer = '';
+    try{
+      const controller = new AbortController();
+      currentStream.controller = controller;
+      const resp = await fetch(`${API_BASE}/chat_stream`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        signal: controller.signal,
+        body: JSON.stringify(payload)
+      });
+      if(!resp.ok || !resp.body) throw new Error(`HTTP ${resp.status}`);
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      while(true){
+        const {done, value} = await reader.read();
+        if(done) break;
+        buffer += decoder.decode(value, {stream:true});
+        contentEl.textContent = buffer;
+        targetEl.scrollTop = targetEl.scrollHeight;
+      }
+      contentEl.innerHTML = formatAIResponse(buffer);
+      if(typeof onComplete === 'function') onComplete(buffer);
+    }catch(e){
+      contentEl.textContent = `❌ 錯誤：${e.message}`;
+    } finally { currentStream.controller = null; }
+  }
+
+  function cancelStream(){ try{ currentStream.controller && currentStream.controller.abort(); }catch(_){ } }
+
   // 格式化 AI 回應，改善顯示效果
   function formatAIResponse(content){
     if(!content) return '';
@@ -579,13 +630,13 @@
     
     if(name==='script' && state.messagesScript.length===0){
       showScriptWelcome();
-      startQaFirstQuestion(); // 先進入引導的第一題
+      // 不自動進入 Q1，僅顯示歡迎
       renderChips();          // 初始化 chips
     } else if(name==='positioning' && state.messagesPositioning.length===0){
       showPositioningWelcome();
+      checkPositioningProfile();
     } else if(name==='topics' && state.messagesTopics.length===0){
       showTopicsWelcome();
-      loadUserProfile();
     }
   }
 
@@ -603,14 +654,14 @@
     const wrap=document.getElementById('chipsScript');
     wrap.innerHTML='';
     if(state.scriptMode==='guide'){
-      const hint = document.createElement('span'); hint.className='muted'; hint.textContent='模板＆時長已在上方選擇 → 直接回答問題或輸入主題開始生成';
+      const hint = document.createElement('span'); hint.className='muted'; hint.textContent='已選擇模板與時長 → 直接輸入主題或需求開始生成';
       wrap.appendChild(hint);
     }else{
       const hint = document.createElement('span'); hint.className='muted'; hint.textContent='快速提問：';
       wrap.appendChild(hint);
       [
         '幫我把這個想法拆成 60 秒腳本，Hook 要很強：',
-        '這個主題適合哪一種結構（A~F），直接給第一版：',
+        '請先用簡短方式介紹 A~F 六種結構的差異與適用情境，然後依我這個主題挑一種並給第一版：',
         '請用 6 段 60 秒，對白口語＋畫面具體，最後給 CTA：'
       ].forEach(q=>{
         const b=document.createElement('button'); b.className='chip'; b.textContent=q;
@@ -633,6 +684,7 @@
 
   // 取得第一題
   async function startQaFirstQuestion(){
+    if(state.guideApplied) return; // 已套用設定，不自動進入 Q1
     const resp=await apiChatQA('');
     if(resp.assistant_message){
       appendMsg(document.getElementById('chatScript'),'assistant',resp.assistant_message);
@@ -646,14 +698,10 @@
     if(state.scriptMode!=='guide') return;
     const tpl = document.querySelector('input[name="tpl"]:checked').value;
     const dur = document.querySelector('input[name="dur"]:checked').value;
-    // 直接回答 Q1（結構）
-    appendMsg(chatScript,'user',tpl);
-    let r = await apiChatQA(tpl);
-    if(r.assistant_message){ appendMsg(chatScript,'assistant',r.assistant_message); state.lastAssistantScript=r.assistant_message; }
-    // 回答 Q2（時長）
-    appendMsg(chatScript,'user',dur);
-    r = await apiChatQA(dur);
-    if(r.assistant_message){ appendMsg(chatScript,'assistant',r.assistant_message); state.lastAssistantScript=r.assistant_message; }
+    state.templateType = tpl;
+    state.duration = parseInt(dur,10);
+    state.guideApplied = true;
+    showToast('已套用模板與時長設定');
   };
 
   // 模式切換
@@ -673,44 +721,14 @@
     appendMsg(chatScript,'user',text);
     textarea.value='';
 
-    if(state.scriptMode==='guide'){
-      // 引導：丟到 chat_qa（逐題）
-      try{
-        const resp = await apiChatQA(text);
-        if(resp.assistant_message && !resp.segments){
-          appendMsg(chatScript,'assistant',resp.assistant_message);
-          state.lastAssistantScript = resp.assistant_message;
-        }
-        if(resp.segments){
-          state.segments = resp.segments; renderSegments();
-          appendMsg(chatScript,'assistant',resp.assistant_message || '✅ 已完成產出');
-        }
-      }catch(e){ appendMsg(chatScript,'assistant',`❌ 錯誤：${e.message}`); }
-      return;
-    }
-
-    // 自由：丟到 chat_generate + 高自由度 +（可帶選擇但不強制）
-    try{
-      const payload = {
-        user_id: state.userId,
-        session_id: state.sessionIdScript,
-        mode: 'script',
-        dialogue_mode: 'free',
-        template_type: state.templateType || null,
-        duration: state.duration || null,
-        knowledge_hint: '',                 // 如需指定領域可填
-        messages: [{ role:'user', content:text }],
-        previous_segments: state.segments || []
-      };
-      const r = await fetch(`${API_BASE}/chat_generate`,{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
-      const j = await r.json();
-      if(!r.ok) throw new Error(j?.assistant_message||j?.error||`HTTP ${r.status}`);
-      if(j.assistant_message) appendMsg(chatScript,'assistant',j.assistant_message);
-      if(j.segments){ state.segments = j.segments; renderSegments(); }
-    }catch(e){ appendMsg(chatScript,'assistant',`❌ 錯誤：${e.message}`); }
+    // 串流方式
+    streamChat(chatScript, {
+      user_id: state.userId,
+      agent_type: 'script',
+      messages: [{ role:'user', content:text }],
+      template_type: state.templateType || null,
+      duration: state.duration || null
+    });
   };
 
   // 片段渲染
@@ -804,40 +822,20 @@
     appendMsg(chat, 'user', text);
     textarea.value = '';
     
-    // 顯示載入狀態
-    showLoadingMsg(chat, 'AI影音定位顧問正在分析中...');
-    
-    try{
-      const resp = await fetch(`${API_BASE}/agent/positioning/analyze`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          user_id: state.userId,
-          user_input: text
-        })
-      });
-      
-      const data = await resp.json();
-      
-      // 隱藏載入狀態
-      hideLoadingMsg(chat);
-      
-      if(data.response){
-        // 使用格式化顯示 AI 回應
-        appendMsg(chat, 'assistant', data.response, true);
-        state.messagesPositioning.push({ role:'assistant', content:data.response });
-        
-        // 更新用戶檔案顯示
-        if(data.user_profile){
-          state.userProfile = data.user_profile;
-          updateProfileDisplay();
-        }
+    // 串流方式
+    streamChat(chat, {
+      user_id: state.userId,
+      agent_type: 'positioning',
+      messages: [{ role: 'user', content: text }]
+    }, {
+      onComplete: async ()=>{
+        try{
+          const r = await fetch(`${API_BASE}/memory/user/${state.userId}?agent_type=positioning&limit=1`);
+          const j = await r.json();
+          if(j && j.user_id){ /* 可擴充同步顯示 */ }
+        }catch(_){ }
       }
-    }catch(e){
-      // 隱藏載入狀態
-      hideLoadingMsg(chat);
-      appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
-    }
+    });
   }
 
   function updateProfileDisplay(){
@@ -864,20 +862,21 @@
   }
 
   async function loadUserProfile(){
+    // 保留但不再在選題頁顯示提示
+    try{ await fetch(`${API_BASE}/memory/user/${state.userId}?agent_type=positioning&limit=1`); }catch(e){}
+  }
+
+  async function checkPositioningProfile(){
     try{
       const resp = await fetch(`${API_BASE}/memory/user/${state.userId}?agent_type=positioning&limit=5`);
       const data = await resp.json();
+      const chat = document.getElementById('chatPositioning');
       if(data.memories && data.memories.length > 0){
-        // 有定位記憶，顯示提示
-        const chat = document.getElementById('chatTopics');
-        appendMsg(chat, 'assistant', '✅ 我已經讀取到你的定位檔案，可以開始生成個性化選題建議了！');
+        appendMsg(chat, 'assistant', '✅ 我已讀取到你的定位檔案，之後的建議會更貼近你的方向。', true);
       } else {
-        const chat = document.getElementById('chatTopics');
-        appendMsg(chat, 'assistant', '💡 建議先完成定位分析，這樣我可以提供更精準的選題建議。');
+        appendMsg(chat, 'assistant', '💡 目前沒有定位檔案，先跟我聊聊你的業務與受眾，我會幫你建立。', true);
       }
-    }catch(e){
-      console.log('載入用戶檔案失敗:', e);
-    }
+    }catch(e){ }
   }
 
   async function getTopics(){
@@ -889,37 +888,14 @@
       appendMsg(chat, 'user', text);
     }
     
-    // 顯示載入狀態
-    showLoadingMsg(chat, 'AI選題小助手正在生成靈感中...');
-    
-    try{
-      const resp = await fetch(`${API_BASE}/agent/topics/suggest`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          user_id: state.userId,
-          target_date: new Date().toISOString().split('T')[0]
-        })
-      });
-      
-      const data = await resp.json();
-      
-      // 隱藏載入狀態
-      hideLoadingMsg(chat);
-      
-      if(data.suggestions){
-        // 使用格式化顯示 AI 回應
-        appendMsg(chat, 'assistant', data.suggestions, true);
-        state.messagesTopics.push({ role:'assistant', content:data.suggestions });
-        
-        // 更新選題顯示
-        updateTopicsDisplay(data.suggestions);
-      }
-    }catch(e){
-      // 隱藏載入狀態
-      hideLoadingMsg(chat);
-      appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
-    }
+    // 串流方式
+    streamChat(chat, {
+      user_id: state.userId,
+      agent_type: 'topics',
+      messages: [{ role:'user', content: text || '請提供今日的選題靈感' }]
+    }, {
+      onComplete: (finalText)=>{ updateTopicsDisplay(finalText); }
+    });
   }
 
   function updateTopicsDisplay(suggestions){
@@ -980,6 +956,9 @@
   // 事件綁定
   document.getElementById('sendPositioning').onclick = sendPositioningMessage;
   document.getElementById('getTopics').onclick = getTopics;
+  document.getElementById('cancelPositioning').onclick = cancelStream;
+  document.getElementById('cancelTopics').onclick = cancelStream;
+  document.getElementById('cancelScript').onclick = cancelStream;
   
   // 快速問題 chips
   document.querySelectorAll('#chipsPositioning .chip').forEach(chip => {
