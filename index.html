@@ -124,8 +124,9 @@
       </div>
       <div class="tabs">
         <button class="tab active" data-page="home">首頁</button>
-        <button class="tab" data-page="script">腳本模式</button>
-        <button class="tab" data-page="copy">文案模式</button>
+        <button class="tab" data-page="positioning">定位智能體</button>
+        <button class="tab" data-page="topics">選題智能體</button>
+        <button class="tab" data-page="script">腳本文案</button>
         <button class="tab" data-page="guide">說明/指南</button>
       </div>
     </div>
@@ -140,18 +141,26 @@
       </div>
       <div class="grid-cards">
         <article class="card">
-          <h3>與 AI 討論「腳本」</h3>
-          <p>時間軸（秒數）＋台詞＋畫面感＋鏡位 camera＋CTA。支援卡片/時間軸檢視與微調。</p>
+          <h3>🎯 定位智能體</h3>
+          <p>釐清你的帳號方向、目標受眾、品牌定位。建立完整的內容策略基礎，讓後續創作更有方向。</p>
           <div class="actions">
-            <button class="btn primary" data-go="script">開始腳本模式</button>
+            <button class="btn primary" data-go="positioning">開始定位分析</button>
             <button class="btn ghost" data-go="guide">看操作說明</button>
           </div>
         </article>
         <article class="card">
-          <h3>與 AI 討論「文案」</h3>
-          <p>主貼文、開頭金句、Hashtags 與 CTA；結構清楚、語氣可選。</p>
+          <h3>💡 選題智能體</h3>
+          <p>基於你的定位檔案，每日提供靈感選題建議。結合熱點、季節性與你的品牌特色。</p>
           <div class="actions">
-            <button class="btn primary" data-go="copy">開始文案模式</button>
+            <button class="btn primary" data-go="topics">獲取選題靈感</button>
+            <button class="btn ghost" data-go="guide">看操作說明</button>
+          </div>
+        </article>
+        <article class="card">
+          <h3>📝 腳本文案智能體</h3>
+          <p>整合腳本與文案功能，基於你的定位與記憶生成個性化內容。支援多種模板與時長。</p>
+          <div class="actions">
+            <button class="btn primary" data-go="script">開始創作</button>
             <button class="btn ghost" data-go="guide">看操作說明</button>
           </div>
         </article>
@@ -167,6 +176,95 @@
       </article>
     </section>
   </main>
+
+  <!-- 定位智能體頁 -->
+  <section id="page-positioning" class="container" style="display:none">
+    <div class="layout">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">🎯 定位智能體</div>
+          <div class="settings">
+            <button class="btn small" id="saveProfile">儲存檔案</button>
+            <button class="btn small" id="clearPositioningChat">清空對話</button>
+          </div>
+        </div>
+        <div class="chat-wrap">
+          <div id="chatPositioning" class="chat-scroll"></div>
+          <div class="chips" id="chipsPositioning">
+            <span class="muted">快速問題：</span>
+            <button class="chip" data-question="我的帳號應該專注在哪個領域？">帳號領域定位</button>
+            <button class="chip" data-question="我的目標受眾是誰？">目標受眾分析</button>
+            <button class="chip" data-question="我的品牌應該傳達什麼形象？">品牌形象定位</button>
+            <button class="chip" data-question="我應該在哪些平台經營？">平台策略建議</button>
+          </div>
+          <div class="inputbar">
+            <textarea id="inputPositioning" placeholder="告訴我你的業務、產品、目標或困惑..."></textarea>
+            <button class="btn primary" id="sendPositioning">分析</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">📍 定位檔案</div>
+        </div>
+        <div class="right-wrap">
+          <div id="profileWrap" class="right-scroll">
+            <div class="copy-card">
+              <h4>用戶定位檔案</h4>
+              <div id="profileContent" class="muted">尚未建立定位檔案，請先與定位智能體對話。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 選題智能體頁 -->
+  <section id="page-topics" class="container" style="display:none">
+    <div class="layout">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">💡 選題智能體</div>
+          <div class="settings">
+            <button class="btn small" id="refreshTopics">重新生成</button>
+            <button class="btn small" id="viewTopicHistory">歷史記錄</button>
+          </div>
+        </div>
+        <div class="chat-wrap">
+          <div id="chatTopics" class="chat-scroll"></div>
+          <div class="chips" id="chipsTopics">
+            <span class="muted">選題類型：</span>
+            <button class="chip" data-topic-type="trending">熱門趨勢</button>
+            <button class="chip" data-topic-type="educational">教育分享</button>
+            <button class="chip" data-topic-type="personal">個人故事</button>
+            <button class="chip" data-topic-type="product">產品介紹</button>
+          </div>
+          <div class="inputbar">
+            <textarea id="inputTopics" placeholder="告訴我你想要什麼類型的選題靈感..."></textarea>
+            <button class="btn primary" id="getTopics">獲取靈感</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">📅 今日選題建議</div>
+          <div class="settings">
+            <button class="btn small" id="copyAllTopics">複製全部</button>
+          </div>
+        </div>
+        <div class="right-wrap">
+          <div id="topicsWrap" class="right-scroll">
+            <div class="copy-card">
+              <h4>選題建議</h4>
+              <div id="topicsContent" class="muted">點擊「獲取靈感」開始生成選題建議。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- 腳本頁 -->
   <section id="page-script" class="container" style="display:none">
@@ -263,12 +361,72 @@
   <!-- 說明/指南（新版） -->
   <section id="page-guide" class="container" style="display:none; padding-top:16px">
     <article class="card" style="margin-bottom:12px">
-      <h3>✍️ 說明／指南（新版）</h3>
-      <h4 style="margin:6px 0 8px">🧠 兩種模式的用途</h4>
-      <p>新手沒想法？→ **引導模式** 先選「結構＋時長」，AI 會一步步問答並用知識庫給建議，最後生成腳本。<br/>
-         已有想法？→ **自由模式** 直接聊需求，AI 會自由討論與回饋，最後生成腳本。</p>
+      <h3>🎯 三智能體長期記憶系統</h3>
+      <h4 style="margin:6px 0 8px">💡 系統特色</h4>
+      <p>這是一個具備長期記憶功能的三智能體系統，能夠記住你的偏好、分析你的定位，並提供個性化的內容建議。</p>
     </article>
-    <!-- 其餘內容同原檔 -->
+
+    <article class="card" style="margin-bottom:12px">
+      <h3>🎯 定位智能體</h3>
+      <h4 style="margin:6px 0 8px">功能說明</h4>
+      <p>• <strong>帳號定位分析</strong>：幫助釐清你的業務類型、目標受眾、品牌形象<br/>
+         • <strong>平台策略建議</strong>：根據你的定位推薦最適合的平台<br/>
+         • <strong>內容方向規劃</strong>：建立完整的內容策略基礎<br/>
+         • <strong>長期記憶</strong>：記住你的定位偏好，影響後續智能體的建議</p>
+      <h4 style="margin:6px 0 8px">使用方式</h4>
+      <p>告訴智能體你的業務、產品、目標或困惑，它會透過對話幫你建立完整的定位檔案。</p>
+    </article>
+
+    <article class="card" style="margin-bottom:12px">
+      <h3>💡 選題智能體</h3>
+      <h4 style="margin:6px 0 8px">功能說明</h4>
+      <p>• <strong>個性化選題</strong>：基於你的定位檔案生成相關選題<br/>
+         • <strong>熱點結合</strong>：結合當前熱門話題與你的品牌特色<br/>
+         • <strong>季節性內容</strong>：考慮時節與節日提供適時建議<br/>
+         • <strong>歷史追蹤</strong>：記錄你的選題偏好，持續優化建議</p>
+      <h4 style="margin:6px 0 8px">使用方式</h4>
+      <p>建議先完成定位分析，然後點擊「獲取靈感」即可獲得個性化的選題建議。</p>
+    </article>
+
+    <article class="card" style="margin-bottom:12px">
+      <h3>📝 腳本文案智能體</h3>
+      <h4 style="margin:6px 0 8px">功能說明</h4>
+      <p>• <strong>整合功能</strong>：同時支援腳本生成與文案創作<br/>
+         • <strong>記憶整合</strong>：根據你的定位檔案與歷史偏好生成內容<br/>
+         • <strong>多種模板</strong>：支援 A-F 六種腳本結構模板<br/>
+         • <strong>時長靈活</strong>：支援 30 秒與 60 秒腳本<br/>
+         • <strong>引導與自由</strong>：新手可用引導模式，老手可用自由模式</p>
+      <h4 style="margin:6px 0 8px">使用方式</h4>
+      <p>新手沒想法？→ <strong>引導模式</strong> 先選「結構＋時長」，AI 會一步步問答並用知識庫給建議。<br/>
+         已有想法？→ <strong>自由模式</strong> 直接聊需求，AI 會自由討論與回饋，並整合你的定位記憶。</p>
+    </article>
+
+    <article class="card" style="margin-bottom:12px">
+      <h3>🧠 長期記憶系統</h3>
+      <h4 style="margin:6px 0 8px">記憶類型</h4>
+      <p>• <strong>定位記憶</strong>：你的業務類型、目標受眾、品牌語氣等<br/>
+         • <strong>偏好記憶</strong>：你喜歡的內容風格、平台偏好等<br/>
+         • <strong>洞察記憶</strong>：AI 分析出的關鍵洞察與建議<br/>
+         • <strong>生成記憶</strong>：你使用過的功能與反饋</p>
+      <h4 style="margin:6px 0 8px">記憶作用</h4>
+      <p>智能體會根據你的記憶提供更個性化的建議。例如：<br/>
+         • 定位智能體記住你的業務類型後，選題智能體會推薦相關領域的選題<br/>
+         • 腳本文案智能體會根據你的品牌語氣與受眾偏好生成內容<br/>
+         • 系統會持續學習你的偏好，提供越來越精準的建議</p>
+    </article>
+
+    <article class="card" style="margin-bottom:12px">
+      <h3>🚀 使用建議</h3>
+      <h4 style="margin:6px 0 8px">最佳流程</h4>
+      <p>1. <strong>先使用定位智能體</strong>：建立你的基本定位檔案<br/>
+         2. <strong>再使用選題智能體</strong>：獲取個性化的選題建議<br/>
+         3. <strong>最後使用腳本文案智能體</strong>：基於定位與選題創作具體內容</p>
+      <h4 style="margin:6px 0 8px">進階技巧</h4>
+      <p>• 定期更新定位檔案，讓系統更了解你的變化<br/>
+         • 使用快速問題 chips 快速開始對話<br/>
+         • 查看歷史記錄了解過去的建議<br/>
+         • 利用複製功能保存有用的內容</p>
+    </article>
   </section>
 
   <footer class="site-footer">
@@ -292,7 +450,16 @@
     sessionIdScript: `web-${Math.random().toString(36).slice(2,8)}`,
     messagesScript: [],
     lastAssistantScript: '',
-    segments: []
+    segments: [],
+    
+    // 新增：三智能體狀態
+    sessionIdPositioning: `web-${Math.random().toString(36).slice(2,8)}`,
+    messagesPositioning: [],
+    userProfile: null,
+    
+    sessionIdTopics: `web-${Math.random().toString(36).slice(2,8)}`,
+    messagesTopics: [],
+    currentTopics: null
   };
 
   // 簡便工具
@@ -308,7 +475,7 @@
   }
 
   // 分頁切換
-  const pages = ['home','script','copy','guide'];
+  const pages = ['home','positioning','topics','script','copy','guide'];
   document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>goPage(b.dataset.page));
   document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goPage(b.dataset.go));
   function goPage(name){
@@ -318,10 +485,16 @@
       const tab = document.querySelector(`.tab[data-page="${p}"]`);
       if(tab) tab.classList.toggle('active', p===name);
     });
+    
     if(name==='script' && state.messagesScript.length===0){
       showScriptWelcome();
       startQaFirstQuestion(); // 先進入引導的第一題
       renderChips();          // 初始化 chips
+    } else if(name==='positioning' && state.messagesPositioning.length===0){
+      showPositioningWelcome();
+    } else if(name==='topics' && state.messagesTopics.length===0){
+      showTopicsWelcome();
+      loadUserProfile();
     }
   }
 
@@ -520,6 +693,254 @@
   document.getElementById('durGroup').addEventListener('change', e=>{
     if(e.target.name==='dur') state.duration = parseInt(e.target.value,10);
   });
+
+  // ========= 三智能體功能 =========
+
+  // 定位智能體
+  function showPositioningWelcome(){
+    const chat = document.getElementById('chatPositioning');
+    const msg = '🎯 歡迎使用定位智能體！\n\n我會幫助你釐清：\n• 帳號領域定位\n• 目標受眾分析\n• 品牌形象定位\n• 平台策略建議\n• 內容方向規劃\n\n請告訴我你的業務、產品或目標，我來幫你建立完整的定位檔案！';
+    appendMsg(chat, 'assistant', msg);
+    state.messagesPositioning.push({ role:'assistant', content:msg });
+  }
+
+  async function sendPositioningMessage(){
+    const textarea = document.getElementById('inputPositioning');
+    const text = (textarea.value || '').trim();
+    if(!text){ showToast('請先輸入內容'); return; }
+    
+    const chat = document.getElementById('chatPositioning');
+    appendMsg(chat, 'user', text);
+    textarea.value = '';
+    
+    try{
+      const resp = await fetch(`${API_BASE}/agent/positioning/analyze`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          user_id: state.userId,
+          user_input: text
+        })
+      });
+      
+      const data = await resp.json();
+      if(data.response){
+        appendMsg(chat, 'assistant', data.response);
+        state.messagesPositioning.push({ role:'assistant', content:data.response });
+        
+        // 更新用戶檔案顯示
+        if(data.user_profile){
+          state.userProfile = data.user_profile;
+          updateProfileDisplay();
+        }
+      }
+    }catch(e){
+      appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
+    }
+  }
+
+  function updateProfileDisplay(){
+    const profileContent = document.getElementById('profileContent');
+    if(state.userProfile){
+      const profile = state.userProfile;
+      profileContent.innerHTML = `
+        <div><strong>業務類型：</strong>${profile.business_type || '未設定'}</div>
+        <div><strong>目標受眾：</strong>${profile.target_audience || '未設定'}</div>
+        <div><strong>品牌語氣：</strong>${profile.brand_voice || '未設定'}</div>
+        <div><strong>主要平台：</strong>${profile.primary_platform || '未設定'}</div>
+        <div><strong>內容目標：</strong>${profile.content_goals || '未設定'}</div>
+        <div><strong>發文頻率：</strong>${profile.posting_frequency || '未設定'}</div>
+      `;
+    }
+  }
+
+  // 選題智能體
+  function showTopicsWelcome(){
+    const chat = document.getElementById('chatTopics');
+    const msg = '💡 歡迎使用選題智能體！\n\n我會根據你的定位檔案，提供：\n• 每日選題靈感\n• 熱門話題建議\n• 季節性內容\n• 平台特色選題\n\n點擊「獲取靈感」開始生成今日選題建議！';
+    appendMsg(chat, 'assistant', msg);
+    state.messagesTopics.push({ role:'assistant', content:msg });
+  }
+
+  async function loadUserProfile(){
+    try{
+      const resp = await fetch(`${API_BASE}/memory/user/${state.userId}?agent_type=positioning&limit=5`);
+      const data = await resp.json();
+      if(data.memories && data.memories.length > 0){
+        // 有定位記憶，顯示提示
+        const chat = document.getElementById('chatTopics');
+        appendMsg(chat, 'assistant', '✅ 我已經讀取到你的定位檔案，可以開始生成個性化選題建議了！');
+      } else {
+        const chat = document.getElementById('chatTopics');
+        appendMsg(chat, 'assistant', '💡 建議先完成定位分析，這樣我可以提供更精準的選題建議。');
+      }
+    }catch(e){
+      console.log('載入用戶檔案失敗:', e);
+    }
+  }
+
+  async function getTopics(){
+    const textarea = document.getElementById('inputTopics');
+    const text = (textarea.value || '').trim();
+    
+    const chat = document.getElementById('chatTopics');
+    if(text){
+      appendMsg(chat, 'user', text);
+    }
+    
+    try{
+      const resp = await fetch(`${API_BASE}/agent/topics/suggest`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          user_id: state.userId,
+          target_date: new Date().toISOString().split('T')[0]
+        })
+      });
+      
+      const data = await resp.json();
+      if(data.suggestions){
+        appendMsg(chat, 'assistant', data.suggestions);
+        state.messagesTopics.push({ role:'assistant', content:data.suggestions });
+        
+        // 更新選題顯示
+        updateTopicsDisplay(data.suggestions);
+      }
+    }catch(e){
+      appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
+    }
+  }
+
+  function updateTopicsDisplay(suggestions){
+    const topicsContent = document.getElementById('topicsContent');
+    topicsContent.innerHTML = `<div>${suggestions.replace(/\n/g, '<br>')}</div>`;
+  }
+
+  // 腳本文案智能體（增強版）
+  async function sendScriptMessage(){
+    const textarea = document.getElementById('inputScript');
+    const text = (textarea.value || '').trim();
+    if(!text){ showToast('請先輸入內容'); return; }
+    
+    appendMsg(document.getElementById('chatScript'), 'user', text);
+    textarea.value = '';
+    
+    try{
+      const payload = {
+        user_id: state.userId,
+        user_input: text,
+        mode: 'script',
+        template_type: state.templateType || null,
+        duration: state.duration || null
+      };
+      
+      const r = await fetch(`${API_BASE}/agent/content/generate`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      
+      const j = await r.json();
+      if(!r.ok) throw new Error(j?.assistant_message || j?.error || `HTTP ${r.status}`);
+      
+      if(j.assistant_message) {
+        appendMsg(document.getElementById('chatScript'), 'assistant', j.assistant_message);
+      }
+      if(j.generated_content?.segments) {
+        state.segments = j.generated_content.segments;
+        renderSegments();
+      }
+    }catch(e){
+      appendMsg(document.getElementById('chatScript'), 'assistant', `❌ 錯誤：${e.message}`);
+    }
+  }
+
+  // 事件綁定
+  document.getElementById('sendPositioning').onclick = sendPositioningMessage;
+  document.getElementById('getTopics').onclick = getTopics;
+  
+  // 快速問題 chips
+  document.querySelectorAll('#chipsPositioning .chip').forEach(chip => {
+    chip.onclick = () => {
+      const question = chip.dataset.question;
+      document.getElementById('inputPositioning').value = question;
+    };
+  });
+  
+  document.querySelectorAll('#chipsTopics .chip').forEach(chip => {
+    chip.onclick = () => {
+      const topicType = chip.dataset.topicType;
+      document.getElementById('inputTopics').value = `我想要${chip.textContent}類型的選題建議`;
+    };
+  });
+
+  // 複製功能
+  document.getElementById('copyAllTopics').onclick = () => {
+    const content = document.getElementById('topicsContent').textContent;
+    if(content && content !== '點擊「獲取靈感」開始生成選題建議。'){
+      copyText(content, '選題建議已複製！');
+    } else {
+      showToast('暫無可複製內容');
+    }
+  };
+
+  // 清空對話
+  document.getElementById('clearPositioningChat').onclick = () => {
+    document.getElementById('chatPositioning').innerHTML = '';
+    state.messagesPositioning = [];
+    showPositioningWelcome();
+  };
+
+  // 重新生成選題
+  document.getElementById('refreshTopics').onclick = getTopics;
+
+  // 歷史記錄
+  document.getElementById('viewTopicHistory').onclick = async () => {
+    try{
+      const resp = await fetch(`${API_BASE}/agent/topics/history?user_id=${state.userId}&limit=5`);
+      const data = await resp.json();
+      if(data.suggestions && data.suggestions.length > 0){
+        let history = '📅 選題歷史記錄：\n\n';
+        data.suggestions.forEach((s, i) => {
+          history += `${i+1}. ${s.suggested_date}\n${JSON.parse(s.topics || '{}').suggestions || s.reasoning}\n\n`;
+        });
+        showToast('歷史記錄已顯示在對話中');
+        appendMsg(document.getElementById('chatTopics'), 'assistant', history);
+      } else {
+        showToast('暫無歷史記錄');
+      }
+    }catch(e){
+      showToast('載入歷史記錄失敗');
+    }
+  };
+
+  // 儲存檔案
+  document.getElementById('saveProfile').onclick = async () => {
+    if(!state.userProfile){
+      showToast('暫無檔案可儲存');
+      return;
+    }
+    
+    try{
+      const resp = await fetch(`${API_BASE}/agent/positioning/profile`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          user_id: state.userId,
+          profile_data: state.userProfile
+        })
+      });
+      
+      const data = await resp.json();
+      if(data.success){
+        showToast('檔案儲存成功！');
+      } else {
+        showToast('檔案儲存失敗');
+      }
+    }catch(e){
+      showToast('儲存失敗：' + e.message);
+    }
+  };
 
   // 初始化
   goPage('home');
