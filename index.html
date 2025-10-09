@@ -551,6 +551,9 @@
     targetEl.appendChild(div);
     targetEl.scrollTop = targetEl.scrollHeight;
 
+    // 初始顯示打字指示
+    contentEl.textContent = 'AI 正在回覆中…';
+
     let buffer = '';
     try{
       const controller = new AbortController();
@@ -643,7 +646,7 @@
   // 腳本模式：歡迎說明
   function showScriptWelcome(){
     const chat=document.getElementById('chatScript');
-    const msg = '👋 歡迎使用腳本模式！\n— 新手沒想法 → 請用【引導模式】，先選結構＋時長，我會一步步問答並給建議。\n— 已有想法 → 切到【自由模式】直接聊，你說想做什麼，我來補齊腳本與畫面建議。';
+    const msg = '👋 歡迎使用腳本模式！\n— 如果你用【引導模式】：請先輸入你的主題，我會一步步引導你生成屬於你的腳本（先選結構＋時長）。\n— 已有想法 → 切到【自由模式】直接聊，你說想做什麼，我來補齊腳本與畫面建議。';
     appendMsg(chat,'assistant',msg);
     state.messagesScript.push({ role:'assistant', content:msg });
     state.lastAssistantScript = msg;
