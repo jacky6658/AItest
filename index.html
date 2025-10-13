@@ -334,7 +334,7 @@
         </div>
 
         <!-- 隱藏的偏好設定（保留原樣） -->
-        <div class="panel-head" id="settingsScriptWrap" style="border-top:0; border-bottom:1px solid var(--border);">
+        <div class="panel-head" id="settingsScriptWrap" style="display:none; border-top:0; border-bottom:1px solid var(--border);">
           <div class="settings collapsed" id="settingsScript">
             <div class="field"><span class="muted">user_id</span><input id="userId" type="text" /></div>
             <div class="field"><span class="muted">tone</span>
@@ -490,10 +490,15 @@
     sessionIdPositioning: `web-${Math.random().toString(36).slice(2,8)}`,
     messagesPositioning: [],
     userProfile: null,
+    userNotes: [],
     
     sessionIdTopics: `web-${Math.random().toString(36).slice(2,8)}`,
     messagesTopics: [],
-    currentTopics: null
+    currentTopics: null,
+    topicsNotes: [],
+    
+    sessionIdScript: `web-${Math.random().toString(36).slice(2,8)}`,
+    scriptNotes: []
   };
 
   // 簡便工具
@@ -640,6 +645,10 @@
       checkPositioningProfile();
     } else if(name==='topics' && state.messagesTopics.length===0){
       showTopicsWelcome();
+      refreshTopicsNotes();
+    } else if(name==='script' && state.messagesScript.length===0){
+      showScriptWelcome();
+      refreshScriptNotes();
     }
   }
 
@@ -715,24 +724,9 @@
     renderChips();
   });
 
-  // 送出（依模式切換後端）
+  // 送出：改走增強版 API，能回傳分段 → 右側顯示
   const chatScript = document.getElementById('chatScript');
-  document.getElementById('sendScript').onclick = async ()=>{
-    const textarea=document.getElementById('inputScript');
-    const text=(textarea.value||'').trim();
-    if(!text){ showToast('請先輸入內容'); return; }
-    appendMsg(chatScript,'user',text);
-    textarea.value='';
-
-    // 串流方式
-    streamChat(chatScript, {
-      user_id: state.userId,
-      agent_type: 'script',
-      messages: [{ role:'user', content:text }],
-      template_type: state.templateType || null,
-      duration: state.duration || null
-    });
-  };
+  document.getElementById('sendScript').onclick = async ()=>{ await sendScriptMessage(); };
 
   // 片段渲染
   const segmentsWrap = document.getElementById('segmentsWrap');
@@ -788,10 +782,12 @@
 
   // 展開/收合設定
   document.getElementById('toggleSettingsScript').onclick=()=>{
+    const wrap=document.getElementById('settingsScriptWrap');
     const box=document.getElementById('settingsScript'); const t=document.getElementById('toggleSettingsScript');
-    const open = box.classList.contains('collapsed');
-    box.classList.toggle('collapsed', !open);
-    t.setAttribute('aria-expanded', open?'true':'false');
+    const isHidden = wrap.style.display === 'none';
+    wrap.style.display = isHidden ? 'block' : 'none';
+    box.classList.toggle('collapsed', !isHidden);
+    t.setAttribute('aria-expanded', isHidden?'true':'false');
   };
 
   // 同步 user_id 到隱藏設定
@@ -829,14 +825,11 @@
     streamChat(chat, {
       user_id: state.userId,
       agent_type: 'positioning',
+      session_id: state.sessionIdPositioning,
       messages: [{ role: 'user', content: text }]
     }, {
       onComplete: async ()=>{
-        try{
-          const r = await fetch(`${API_BASE}/memory/user/${state.userId}?agent_type=positioning&limit=1`);
-          const j = await r.json();
-          if(j && j.user_id){ /* 可擴充同步顯示 */ }
-        }catch(_){ }
+        try{ await refreshPositioningProfile(); }catch(_){ }
       }
     });
   }
@@ -845,6 +838,7 @@
     const profileContent = document.getElementById('profileContent');
     if(state.userProfile){
       const profile = state.userProfile;
+      const notes = (state.userNotes||[]).map(n=>`<li>${escapeHTML(n.content||'')}</li>`).join('') || '<li class="muted">尚無筆記</li>';
       profileContent.innerHTML = `
         <div><strong>業務類型：</strong>${profile.business_type || '未設定'}</div>
         <div><strong>目標受眾：</strong>${profile.target_audience || '未設定'}</div>
@@ -852,7 +846,19 @@
         <div><strong>主要平台：</strong>${profile.primary_platform || '未設定'}</div>
         <div><strong>內容目標：</strong>${profile.content_goals || '未設定'}</div>
         <div><strong>發文頻率：</strong>${profile.posting_frequency || '未設定'}</div>
+        <div style="margin-top:8px"><strong>定位筆記：</strong></div>
+        <ul style="padding-left:18px; margin:6px 0 0">${notes}</ul>
       `;
+    }
+  }
+
+  async function refreshPositioningProfile(){
+    const resp = await fetch(`${API_BASE}/agent/positioning/profile?user_id=${state.userId}&notes_limit=8`);
+    const data = await resp.json();
+    if(data && !data.error){
+      state.userProfile = data.profile || {};
+      state.userNotes = data.notes || [];
+      updateProfileDisplay();
     }
   }
 
@@ -864,6 +870,32 @@
     state.messagesTopics.push({ role:'assistant', content:msg });
   }
 
+  // 選題筆記顯示
+  function updateTopicsNotesDisplay(){
+    const topicsContent = document.getElementById('topicsContent');
+    if(state.topicsNotes && state.topicsNotes.length > 0){
+      const notes = state.topicsNotes.map(n=>`<li>${escapeHTML(n.content||'')}</li>`).join('');
+      topicsContent.innerHTML = `
+        <div><strong>選題建議</strong></div>
+        <div style="margin-top:8px"><strong>選題筆記：</strong></div>
+        <ul style="padding-left:18px; margin:6px 0 0">${notes}</ul>
+      `;
+    } else {
+      topicsContent.innerHTML = '<div>點擊「獲取靈感」開始生成選題建議。</div>';
+    }
+  }
+
+  async function refreshTopicsNotes(){
+    try{
+      const resp = await fetch(`${API_BASE}/agent/notes?user_id=${state.userId}&agent_type=topic_selection&memory_type=note&limit=8`);
+      const data = await resp.json();
+      if(data && !data.error){
+        state.topicsNotes = data.notes || [];
+        updateTopicsNotesDisplay();
+      }
+    }catch(e){}
+  }
+
   async function loadUserProfile(){
     // 保留但不再在選題頁顯示提示
     try{ await fetch(`${API_BASE}/memory/user/${state.userId}?agent_type=positioning&limit=1`); }catch(e){}
@@ -871,10 +903,9 @@
 
   async function checkPositioningProfile(){
     try{
-      const resp = await fetch(`${API_BASE}/memory/user/${state.userId}?agent_type=positioning&limit=5`);
-      const data = await resp.json();
+      await refreshPositioningProfile();
       const chat = document.getElementById('chatPositioning');
-      if(data.memories && data.memories.length > 0){
+      if(state.userProfile && Object.keys(state.userProfile).length){
         appendMsg(chat, 'assistant', '✅ 我已讀取到你的定位檔案，之後的建議會更貼近你的方向。', true);
       } else {
         appendMsg(chat, 'assistant', '💡 目前沒有定位檔案，先跟我聊聊你的業務與受眾，我會幫你建立。', true);
@@ -895,15 +926,29 @@
     streamChat(chat, {
       user_id: state.userId,
       agent_type: 'topics',
+      session_id: state.sessionIdTopics,
       messages: [{ role:'user', content: text || '請提供今日的選題靈感' }]
     }, {
-      onComplete: (finalText)=>{ updateTopicsDisplay(finalText); }
+      onComplete: async (finalText)=>{ 
+        updateTopicsDisplay(finalText);
+        await refreshTopicsNotes(); // 更新筆記
+      }
     });
   }
 
   function updateTopicsDisplay(suggestions){
     const topicsContent = document.getElementById('topicsContent');
-    topicsContent.innerHTML = `<div>${suggestions.replace(/\n/g, '<br>')}</div>`;
+    if(state.topicsNotes && state.topicsNotes.length > 0){
+      const notes = state.topicsNotes.map(n=>`<li>${escapeHTML(n.content||'')}</li>`).join('');
+      topicsContent.innerHTML = `
+        <div><strong>選題建議</strong></div>
+        <div style="margin:8px 0">${suggestions.replace(/\n/g, '<br>')}</div>
+        <div style="margin-top:8px"><strong>選題筆記：</strong></div>
+        <ul style="padding-left:18px; margin:6px 0 0">${notes}</ul>
+      `;
+    } else {
+      topicsContent.innerHTML = `<div>${suggestions.replace(/\n/g, '<br>')}</div>`;
+    }
   }
 
   // 腳本文案智能體（增強版）
@@ -949,10 +994,41 @@
         state.segments = j.generated_content.segments;
         renderSegments();
       }
+      
+      // 更新腳本筆記
+      await refreshScriptNotes();
     }catch(e){
       // 隱藏載入狀態
       hideLoadingMsg(chat);
       appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
+    }
+  }
+
+  // 腳本筆記功能
+  async function refreshScriptNotes(){
+    try{
+      const resp = await fetch(`${API_BASE}/agent/notes?user_id=${state.userId}&agent_type=script_copy&memory_type=note&limit=8`);
+      const data = await resp.json();
+      if(data && !data.error){
+        state.scriptNotes = data.notes || [];
+        updateScriptNotesDisplay();
+      }
+    }catch(e){}
+  }
+
+  function updateScriptNotesDisplay(){
+    const segmentsWrap = document.getElementById('segmentsWrap');
+    if(state.scriptNotes && state.scriptNotes.length > 0){
+      const notes = state.scriptNotes.map(n=>`<li>${escapeHTML(n.content||'')}</li>`).join('');
+      const notesDiv = document.createElement('div');
+      notesDiv.className = 'segment-card';
+      notesDiv.innerHTML = `
+        <div class="segment-head">
+          <div class="seg-title">📝 腳本筆記</div>
+        </div>
+        <ul style="padding-left:18px; margin:6px 0 0">${notes}</ul>
+      `;
+      segmentsWrap.insertBefore(notesDiv, segmentsWrap.firstChild);
     }
   }
 
