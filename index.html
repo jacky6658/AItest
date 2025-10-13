@@ -322,6 +322,7 @@
             <!-- 模式切換 -->
             <div class="segctl">
               <div class="group" id="modeGroup">
+                <button class="mode-btn" id="oneClickScript" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">🚀 一鍵生成腳本</button>
                 <label><input type="radio" name="scriptMode" value="guide" checked><span>✍️ 引導模式</span></label>
                 <label><input type="radio" name="scriptMode" value="free"><span>💬 自由模式</span></label>
               </div>
@@ -1189,6 +1190,65 @@
         await refreshPositioningProfile();
         
         showToast('定位生成完成！');
+      }
+      
+    } catch (e) {
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
+      showToast('生成失敗：' + e.message);
+    }
+  };
+
+  // 一鍵生成腳本功能
+  document.getElementById('oneClickScript').onclick = async () => {
+    const theme = prompt('請輸入您的主題或腳本內容：', '');
+    if (!theme || !theme.trim()) {
+      showToast('請輸入主題');
+      return;
+    }
+    
+    const chat = document.getElementById('chatScript');
+    
+    // 顯示載入狀態
+    showLoadingMsg(chat, 'AI正在生成腳本...');
+    
+    try {
+      const payload = {
+        user_id: state.userId,
+        theme: theme.trim(),
+        template_type: state.templateType,
+        duration: state.duration
+      };
+      
+      const resp = await fetch(`${API_BASE}/agent/script/generate`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await resp.json();
+      
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      
+      if (!resp.ok) {
+        throw new Error(data?.error || `HTTP ${resp.status}`);
+      }
+      
+      if (data.assistant_message) {
+        // 顯示 AI 回應
+        appendMsg(chat, 'assistant', data.assistant_message, true);
+        
+        // 更新腳本分段顯示
+        if (data.segments && data.segments.length > 0) {
+          updateScriptSegmentsDisplay(data.segments);
+        }
+        
+        // 刷新腳本筆記
+        await refreshScriptNotes();
+        
+        showToast('腳本生成完成！');
       }
       
     } catch (e) {
