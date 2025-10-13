@@ -211,6 +211,51 @@
       line-height: 1.2;
       display: inline-block;
     }
+    
+    /* 腳本分段樣式 */
+    .script-segment {
+      margin-bottom: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .segment-content {
+      padding: 12px;
+      background: #f8f9fa;
+    }
+    
+    .segment-content .dialog,
+    .segment-content .visual,
+    .segment-content .cta {
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    
+    .segment-content .dialog {
+      color: #333;
+    }
+    
+    .segment-content .visual {
+      color: #666;
+      font-style: italic;
+    }
+    
+    .segment-content .cta {
+      color: #2196F3;
+      font-weight: 600;
+    }
+    
+    /* 定位檔案欄位樣式 */
+    .profile-field {
+      margin-bottom: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .profile-field:last-of-type {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
@@ -389,8 +434,8 @@
             <div class="segctl">
               <div class="group" id="modeGroup">
                 <button class="mode-btn" id="oneClickScript" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">🚀 一鍵生成腳本</button>
-                <label><input type="radio" name="scriptMode" value="guide" checked><span>✍️ 引導模式</span></label>
-                <label><input type="radio" name="scriptMode" value="free"><span>💬 自由模式</span></label>
+                <button class="mode-btn" id="guideMode" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">✍️ 引導模式</button>
+                <button class="mode-btn" id="freeMode" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">💬 自由模式</button>
               </div>
             </div>
           </div>
@@ -942,13 +987,13 @@
       
       profileContent.innerHTML = `
         ${statusText}
-        <div><strong>業務類型：</strong>${profile.business_type || '未設定'}</div>
-        <div><strong>目標受眾：</strong>${profile.target_audience || '未設定'}</div>
-        <div><strong>品牌語氣：</strong>${profile.brand_voice || '未設定'}</div>
-        <div><strong>主要平台：</strong>${profile.primary_platform || '未設定'}</div>
-        <div><strong>內容目標：</strong>${profile.content_goals || '未設定'}</div>
-        <div><strong>發文頻率：</strong>${profile.posting_frequency || '未設定'}</div>
-        <div style="margin-top:8px"><strong>定位筆記：</strong></div>
+        <div class="profile-field"><strong>業務類型：</strong>${profile.business_type || '未設定'}</div>
+        <div class="profile-field"><strong>目標受眾：</strong>${profile.target_audience || '未設定'}</div>
+        <div class="profile-field"><strong>品牌語氣：</strong>${profile.brand_voice || '未設定'}</div>
+        <div class="profile-field"><strong>主要平台：</strong>${profile.primary_platform || '未設定'}</div>
+        <div class="profile-field"><strong>內容目標：</strong>${profile.content_goals || '未設定'}</div>
+        <div class="profile-field"><strong>發文頻率：</strong>${profile.posting_frequency || '未設定'}</div>
+        <div style="margin-top:12px; padding-top:8px; border-top:1px solid #eee;"><strong>📝 定位筆記：</strong></div>
         <ul style="padding-left:18px; margin:6px 0 0">${notes}</ul>
       `;
     } else {
@@ -978,14 +1023,29 @@
   function updateTopicsNotesDisplay(){
     const topicsContent = document.getElementById('topicsContent');
     if(state.topicsNotes && state.topicsNotes.length > 0){
-      const notes = state.topicsNotes.map(n=>`<li>${escapeHTML(n.content||'')}</li>`).join('');
+      const notes = state.topicsNotes.map(n=>{
+        // 清理內容，移除開場白
+        let cleanContent = n.content
+          .replace(/沒問題!.*?選題顧問.*?影片燒起來。/g, '')
+          .replace(/哈囉!.*?選題小助手.*?歡迎使用。/g, '')
+          .trim();
+        
+        // 格式化段落
+        cleanContent = cleanContent
+          .replace(/\n/g, '<br>')
+          .replace(/(\d+\.)/g, '<br><strong>$1</strong>')
+          .replace(/(選題方向|爆點切入|內容發展|為什麼會爆)/g, '<br><strong>$1</strong>')
+          .replace(/(Hook|Value|CTA)/g, '<br><strong>$1</strong>');
+        
+        return `<li style="margin-bottom: 12px; line-height: 1.6; padding: 8px; background: #f8f9fa; border-radius: 6px;">${cleanContent}</li>`;
+      }).join('');
+      
       topicsContent.innerHTML = `
-        <div><strong>選題建議</strong></div>
-        <div style="margin-top:8px"><strong>選題筆記：</strong></div>
-        <ul style="padding-left:18px; margin:6px 0 0">${notes}</ul>
+        <div style="margin-bottom: 12px;"><strong>📝 選題建議</strong></div>
+        <ul style="padding-left: 0; margin: 0; list-style: none;">${notes}</ul>
       `;
     } else {
-      topicsContent.innerHTML = '<div>點擊「獲取靈感」開始生成選題建議。</div>';
+      topicsContent.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">點擊「獲取靈感」開始生成選題建議。</div>';
     }
   }
 
@@ -1118,6 +1178,45 @@
         updateScriptNotesDisplay();
       }
     }catch(e){}
+  }
+
+  function updateScriptSegmentsDisplay(segments) {
+    const segmentsWrap = document.getElementById('segmentsWrap');
+    if (!segmentsWrap) return;
+    
+    // 清除現有的腳本分段
+    const existingSegments = segmentsWrap.querySelectorAll('.script-segment');
+    existingSegments.forEach(el => el.remove());
+    
+    if (!segments || segments.length === 0) {
+      return;
+    }
+    
+    segments.forEach((segment, index) => {
+      const segmentDiv = document.createElement('div');
+      segmentDiv.className = 'script-segment segment-card';
+      
+      let typeText = '';
+      switch(segment.type) {
+        case 'hook': typeText = '🎯 開場鉤子'; break;
+        case 'value': typeText = '💡 內容價值'; break;
+        case 'cta': typeText = '📢 行動呼籲'; break;
+        default: typeText = '📝 腳本段落';
+      }
+      
+      segmentDiv.innerHTML = `
+        <div class="segment-head">
+          <div class="seg-title">${typeText} (${segment.start_sec}-${segment.end_sec}秒)</div>
+        </div>
+        <div class="segment-content">
+          <div class="dialog"><strong>台詞：</strong>${segment.dialog || ''}</div>
+          <div class="visual"><strong>畫面：</strong>${segment.visual || ''}</div>
+          ${segment.cta ? `<div class="cta"><strong>CTA：</strong>${segment.cta}</div>` : ''}
+        </div>
+      `;
+      
+      segmentsWrap.appendChild(segmentDiv);
+    });
   }
 
   function updateScriptNotesDisplay(){
@@ -1304,8 +1403,36 @@
     }
   };
 
+  // 模式切換功能
+  document.getElementById('guideMode').onclick = () => {
+    // 切換到引導模式
+    document.getElementById('guideBar').style.display = 'block';
+    // 更新按鈕狀態
+    document.getElementById('guideMode').style.background = '#1976D2';
+    document.getElementById('freeMode').style.background = '#2196F3';
+    document.getElementById('oneClickScript').style.background = '#2196F3';
+    // 更新全局狀態
+    state.scriptMode = 'guide';
+  };
+
+  document.getElementById('freeMode').onclick = () => {
+    // 切換到自由模式
+    document.getElementById('guideBar').style.display = 'none';
+    // 更新按鈕狀態
+    document.getElementById('freeMode').style.background = '#1976D2';
+    document.getElementById('guideMode').style.background = '#2196F3';
+    document.getElementById('oneClickScript').style.background = '#2196F3';
+    // 更新全局狀態
+    state.scriptMode = 'free';
+  };
+
   // 一鍵生成腳本功能
   document.getElementById('oneClickScript').onclick = async () => {
+    // 更新按鈕狀態
+    document.getElementById('oneClickScript').style.background = '#1976D2';
+    document.getElementById('guideMode').style.background = '#2196F3';
+    document.getElementById('freeMode').style.background = '#2196F3';
+    
     const theme = prompt('請輸入您的主題或腳本內容：', '');
     if (!theme || !theme.trim()) {
       showToast('請輸入主題');
@@ -1352,6 +1479,12 @@
         // 刷新腳本筆記
         await refreshScriptNotes();
         
+        // 確保腳本分段區域可見
+        const segmentsWrap = document.getElementById('segmentsWrap');
+        if (segmentsWrap) {
+          segmentsWrap.scrollTop = 0;
+        }
+        
         showToast('腳本生成完成！');
       }
       
@@ -1363,8 +1496,18 @@
     }
   };
 
+  // 初始化腳本模式按鈕狀態
+  function initScriptModeButtons() {
+    // 設置初始狀態：引導模式為選中
+    document.getElementById('guideMode').style.background = '#1976D2';
+    document.getElementById('freeMode').style.background = '#2196F3';
+    document.getElementById('oneClickScript').style.background = '#2196F3';
+    state.scriptMode = 'guide';
+  }
+
   // 初始化
   goPage('home');
+  initScriptModeButtons();
   </script>
 </body>
 </html>
