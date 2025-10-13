@@ -129,6 +129,60 @@
     .mode-wrap{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
     .segctl{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
     .segctl .group{ display:flex; gap:6px; background:var(--muted); border:1px solid var(--border); border-radius:12px; padding:6px; }
+    
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .chat-wrap, .right-wrap {
+        height: 50vh;
+        min-height: 300px;
+      }
+      
+      .panel-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .settings {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .tabs {
+        justify-content: center;
+      }
+      
+      .btn {
+        min-height: 38px;
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+      
+      .chips {
+        justify-content: center;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .chat-wrap, .right-wrap {
+        height: 45vh;
+        min-height: 250px;
+      }
+      
+      .btn {
+        min-height: 36px;
+        font-size: 13px;
+        padding: 6px 10px;
+      }
+      
+      .panel-title {
+        font-size: 16px;
+      }
+      
+      .brand {
+        font-size: 18px;
+      }
+    }
     .segctl .group label{ 
       padding:8px 16px; 
       border-radius:8px; 
@@ -137,6 +191,8 @@
       background:#fff; 
       transition:all 0.2s ease;
       font-weight:500;
+      writing-mode: horizontal-tb;
+      text-orientation: mixed;
     }
     .segctl .group input{ display:none; }
     .segctl .group input:checked + span{ 
@@ -144,6 +200,16 @@
       border:1px solid var(--primary); 
       color:#fff; 
       box-shadow:0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* 套用結構按鈕樣式 - 確保字體不垂直 */
+    .segctl .group label span {
+      writing-mode: horizontal-tb;
+      text-orientation: mixed;
+      transform: none;
+      font-size: 14px;
+      line-height: 1.2;
+      display: inline-block;
     }
   </style>
 </head>
@@ -322,7 +388,7 @@
             <!-- 模式切換 -->
             <div class="segctl">
               <div class="group" id="modeGroup">
-                <button class="mode-btn" id="oneClickScript" style="background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">🚀 一鍵生成腳本</button>
+                <button class="mode-btn" id="oneClickScript" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">🚀 一鍵生成腳本</button>
                 <label><input type="radio" name="scriptMode" value="guide" checked><span>✍️ 引導模式</span></label>
                 <label><input type="radio" name="scriptMode" value="free"><span>💬 自由模式</span></label>
               </div>
@@ -390,53 +456,57 @@
   <!-- 說明/指南（新版） -->
   <section id="page-guide" class="container" style="display:none; padding-top:16px">
     <article class="card" style="margin-bottom:12px">
-      <h3>🎯 三智能體長期記憶系統</h3>
-      <h4 style="margin:6px 0 8px">💡 系統特色</h4>
-      <p>這是一個具備長期記憶功能的三智能體系統，能夠記住你的偏好、分析你的定位，並提供個性化的內容建議。</p>
-    </article>
-
-    <article class="card" style="margin-bottom:12px">
-      <h3>🎯 定位智能體</h3>
+      <h3>🎯 AI影音定位顧問</h3>
       <h4 style="margin:6px 0 8px">功能說明</h4>
       <p>• <strong>帳號定位分析</strong>：幫助釐清你的業務類型、目標受眾、品牌形象<br/>
          • <strong>平台策略建議</strong>：根據你的定位推薦最適合的平台<br/>
          • <strong>內容方向規劃</strong>：建立完整的內容策略基礎<br/>
-         • <strong>長期記憶</strong>：記住你的定位偏好，影響後續智能體的建議</p>
+         • <strong>定位檔案管理</strong>：自動記錄和更新你的定位資訊</p>
       <h4 style="margin:6px 0 8px">使用方式</h4>
-      <p>告訴智能體你的業務、產品、目標或困惑，它會透過對話幫你建立完整的定位檔案。</p>
+      <p>1️⃣ 點擊「快速問題」按鈕開始定位分析<br/>
+         2️⃣ 回答AI的問題，建立你的定位檔案<br/>
+         3️⃣ 使用「🚀 一鍵生成定位」快速建立完整定位<br/>
+         4️⃣ 定位檔案會自動儲存並同步到其他功能</p>
     </article>
 
     <article class="card" style="margin-bottom:12px">
-      <h3>💡 選題智能體</h3>
+      <h3>💡 AI選題小助手</h3>
       <h4 style="margin:6px 0 8px">功能說明</h4>
       <p>• <strong>個性化選題</strong>：基於你的定位檔案生成相關選題<br/>
          • <strong>熱點結合</strong>：結合當前熱門話題與你的品牌特色<br/>
          • <strong>季節性內容</strong>：考慮時節與節日提供適時建議<br/>
-         • <strong>歷史追蹤</strong>：記錄你的選題偏好，持續優化建議</p>
+         • <strong>選題類型篩選</strong>：熱門趨勢、教育分享、個人故事、產品介紹</p>
       <h4 style="margin:6px 0 8px">使用方式</h4>
-      <p>建議先完成定位分析，然後點擊「獲取靈感」即可獲得個性化的選題建議。</p>
+      <p>1️⃣ 先完成定位分析，建立你的定位檔案<br/>
+         2️⃣ 選擇選題類型（熱門趨勢、教育分享等）<br/>
+         3️⃣ 點擊「獲取靈感」獲得個性化選題建議<br/>
+         4️⃣ 查看「今日選題建議」和「歷史記錄」</p>
     </article>
 
     <article class="card" style="margin-bottom:12px">
-      <h3>📝 腳本文案智能體</h3>
+      <h3>📝 AI腳本生成大師</h3>
       <h4 style="margin:6px 0 8px">功能說明</h4>
-      <p>• <strong>整合功能</strong>：同時支援腳本生成與文案創作<br/>
-         • <strong>記憶整合</strong>：根據你的定位檔案與歷史偏好生成內容<br/>
+      <p>• <strong>一鍵生成腳本</strong>：根據主題快速生成完整腳本<br/>
+         • <strong>引導模式</strong>：選擇結構模板和時長，AI逐步引導<br/>
+         • <strong>自由模式</strong>：自由討論需求，AI提供創意建議<br/>
          • <strong>多種模板</strong>：支援 A-F 六種腳本結構模板<br/>
-         • <strong>時長靈活</strong>：支援 30 秒與 60 秒腳本<br/>
-         • <strong>引導與自由</strong>：新手可用引導模式，老手可用自由模式</p>
+         • <strong>時長靈活</strong>：支援 30 秒與 60 秒腳本</p>
       <h4 style="margin:6px 0 8px">使用方式</h4>
-      <p>新手沒想法？→ <strong>引導模式</strong> 先選「結構＋時長」，AI 會一步步問答並用知識庫給建議。<br/>
-         已有想法？→ <strong>自由模式</strong> 直接聊需求，AI 會自由討論與回饋，並整合你的定位記憶。</p>
+      <p>1️⃣ <strong>一鍵生成</strong>：點擊「🚀 一鍵生成腳本」，輸入主題即可<br/>
+         2️⃣ <strong>引導模式</strong>：選擇結構模板和時長，輸入主題開始<br/>
+         3️⃣ <strong>自由模式</strong>：直接輸入需求，與AI自由討論<br/>
+         4️⃣ 查看「腳本分段/時間軸」和「腳本筆記」</p>
     </article>
 
     <article class="card" style="margin-bottom:12px">
-      <h3>🧠 長期記憶系統</h3>
-      <h4 style="margin:6px 0 8px">記憶類型</h4>
-      <p>• <strong>定位記憶</strong>：你的業務類型、目標受眾、品牌語氣等<br/>
-         • <strong>偏好記憶</strong>：你喜歡的內容風格、平台偏好等<br/>
-         • <strong>洞察記憶</strong>：AI 分析出的關鍵洞察與建議<br/>
-         • <strong>生成記憶</strong>：你使用過的功能與反饋</p>
+      <h3>💾 資料儲存與管理</h3>
+      <h4 style="margin:6px 0 8px">儲存位置</h4>
+      <p>• <strong>定位檔案</strong>：自動儲存在資料庫中，點擊「儲存檔案」確認<br/>
+         • <strong>選題建議</strong>：儲存在「今日選題建議」和「歷史記錄」中<br/>
+         • <strong>腳本筆記</strong>：儲存在「腳本分段/時間軸」中<br/>
+         • <strong>定位筆記</strong>：儲存在「定位檔案」側邊欄中</p>
+      <h4 style="margin:6px 0 8px">資料同步</h4>
+      <p>所有資料會自動同步到其他功能，讓AI能夠根據你的歷史記錄提供更精準的建議。</p>
       <h4 style="margin:6px 0 8px">記憶作用</h4>
       <p>智能體會根據你的記憶提供更個性化的建議。例如：<br/>
          • 定位智能體記住你的業務類型後，選題智能體會推薦相關領域的選題<br/>
@@ -824,7 +894,22 @@
     const profileContent = document.getElementById('profileContent');
     if(state.userProfile){
       const profile = state.userProfile;
-      const notes = (state.userNotes||[]).map(n=>`<li>${escapeHTML(n.content||'')}</li>`).join('') || '<li class="muted">尚無筆記</li>';
+      const notes = (state.userNotes||[]).map(n=>{
+        // 清理內容，移除開場白
+        let cleanContent = n.content
+          .replace(/哈囉!.*?定位顧問.*?台灣市場特性.*?短影音腳本。/g, '')
+          .replace(/沒問題!.*?選題顧問.*?影片燒起來。/g, '')
+          .trim();
+        
+        // 格式化段落
+        cleanContent = cleanContent
+          .replace(/\n/g, '<br>')
+          .replace(/(\d+\.)/g, '<br><strong>$1</strong>')
+          .replace(/(Hook|Value|CTA)/g, '<br><strong>$1</strong>')
+          .replace(/(\d+-\d+秒)/g, '<br><em>$1</em>');
+        
+        return `<li style="margin-bottom: 8px; line-height: 1.5;">${cleanContent}</li>`;
+      }).join('') || '<li class="muted">尚無筆記</li>';
       
       // 檢查哪些欄位已填寫
       const filledFields = [];
@@ -1038,7 +1123,26 @@
   function updateScriptNotesDisplay(){
     const segmentsWrap = document.getElementById('segmentsWrap');
     if(state.scriptNotes && state.scriptNotes.length > 0){
-      const notes = state.scriptNotes.map(n=>`<li>${escapeHTML(n.content||'')}</li>`).join('');
+      const notes = state.scriptNotes.map(n=>{
+        // 清理內容，移除程式碼和開場白
+        let cleanContent = n.content
+          .replace(/哈囉!.*?腳本顧問.*?台灣市場特性.*?短影音腳本。/g, '')
+          .replace(/```json[\s\S]*?```/g, '')
+          .replace(/\{[\s\S]*?\}/g, '')
+          .replace(/---.*?---/g, '')
+          .replace(/\*\*.*?\*\*/g, '')
+          .trim();
+        
+        // 格式化段落
+        cleanContent = cleanContent
+          .replace(/\n/g, '<br>')
+          .replace(/(\d+\.)/g, '<br><strong>$1</strong>')
+          .replace(/(Hook|Value|CTA)/g, '<br><strong>$1</strong>')
+          .replace(/(\d+-\d+秒)/g, '<br><em>$1</em>');
+        
+        return `<li style="margin-bottom: 12px; line-height: 1.6;">${cleanContent}</li>`;
+      }).join('');
+      
       const notesDiv = document.createElement('div');
       notesDiv.className = 'segment-card';
       notesDiv.innerHTML = `
