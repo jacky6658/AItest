@@ -129,9 +129,22 @@
     .mode-wrap{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
     .segctl{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
     .segctl .group{ display:flex; gap:6px; background:var(--muted); border:1px solid var(--border); border-radius:12px; padding:6px; }
-    .segctl .group label{ padding:6px 10px; border-radius:999px; cursor:pointer; }
+    .segctl .group label{ 
+      padding:8px 16px; 
+      border-radius:8px; 
+      cursor:pointer; 
+      border:1px solid #e0e0e0; 
+      background:#fff; 
+      transition:all 0.2s ease;
+      font-weight:500;
+    }
     .segctl .group input{ display:none; }
-    .segctl .group input:checked + span{ background:var(--primary); border:1px solid var(--primary); color:#fff; box-shadow:var(--shadow); }
+    .segctl .group input:checked + span{ 
+      background:var(--primary); 
+      border:1px solid var(--primary); 
+      color:#fff; 
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
@@ -217,12 +230,13 @@
           <div id="chatPositioning" class="chat-scroll"></div>
           <div class="chips" id="chipsPositioning">
             <span class="muted">快速問題：</span>
-            <button class="chip" data-question="我的帳號是做AI智能體跟AI自動化課程，應該專注在哪個領域？">業務類型定位</button>
+            <button class="chip" data-question="我的帳號是OOO(填寫您的產品或服務或主題)，應該專注在哪個領域？">業務類型定位</button>
             <button class="chip" data-question="我的目標受眾是誰？他們有什麼特徵和痛點？">目標受眾分析</button>
             <button class="chip" data-question="我的品牌應該傳達什麼形象和語氣？">品牌形象定位</button>
             <button class="chip" data-question="我應該在哪些平台經營？為什麼？">平台策略建議</button>
             <button class="chip" data-question="我的內容目標是什麼？想要達成什麼效果？">內容目標設定</button>
             <button class="chip" data-question="我應該多久發一次文？發文頻率如何安排？">發文頻率規劃</button>
+            <button class="chip primary" id="oneClickPositioning">🚀 一鍵生成定位</button>
           </div>
           <div class="inputbar">
             <textarea id="inputPositioning" placeholder="告訴我你的業務、產品、目標或困惑..."></textarea>
@@ -312,7 +326,6 @@
                 <label><input type="radio" name="scriptMode" value="free"><span>💬 自由模式</span></label>
               </div>
             </div>
-            <button class="toggle-settings" id="toggleSettingsScript" aria-expanded="false"><span class="chev">▾</span> ⚙️ 設定</button>
           </div>
         </div>
 
@@ -335,24 +348,6 @@
           </div>
         </div>
 
-        <!-- 隱藏的偏好設定（保留原樣） -->
-        <div class="panel-head" id="settingsScriptWrap" style="display:none; border-top:0; border-bottom:1px solid var(--border);">
-          <div class="settings collapsed" id="settingsScript">
-            <div class="field"><span class="muted">user_id</span><input id="userId" type="text" /></div>
-            <div class="field"><span class="muted">tone</span>
-              <select id="toneSel"><option value="neutral">neutral</option><option>friendly</option><option>energetic</option><option>professional</option></select>
-            </div>
-            <div class="field"><span class="muted">lang</span>
-              <select id="langSel"><option value="zh-TW">zh-TW</option><option value="zh-CN">zh-CN</option><option value="en">en</option></select>
-            </div>
-            <div class="field"><span class="muted">style</span>
-              <select id="styleSel"><option value="concise">concise</option><option value="storytelling">storytelling</option><option value="educational">educational</option></select>
-            </div>
-            <div class="field"><span class="muted">max_len</span><input id="lenSel" type="number" min="200" max="2000" step="50" value="800" /></div>
-            <label class="check"><input type="checkbox" id="rememberChk" /> 記住</label>
-            <button class="btn small" id="btn-save-prefs">更新偏好</button>
-          </div>
-        </div>
 
         <div class="chat-wrap">
           <div id="chatScript" class="chat-scroll"></div>
@@ -782,19 +777,7 @@
   };
   document.getElementById('clearScript').onclick =()=>{ state.segments=[]; renderSegments(); };
 
-  // 展開/收合設定
-  document.getElementById('toggleSettingsScript').onclick=()=>{
-    const wrap=document.getElementById('settingsScriptWrap');
-    const box=document.getElementById('settingsScript'); const t=document.getElementById('toggleSettingsScript');
-    const isHidden = wrap.style.display === 'none';
-    wrap.style.display = isHidden ? 'block' : 'none';
-    box.classList.toggle('collapsed', !isHidden);
-    t.setAttribute('aria-expanded', isHidden?'true':'false');
-  };
 
-  // 同步 user_id 到隱藏設定
-  document.getElementById('userId').value  = state.userId;
-  document.getElementById('userId').onchange  = e=>{ state.userId = e.target.value || DEFAULT_USER_ID; };
 
   // 模板/時長選取 → 存到 state（供自由模式也可帶）
   document.getElementById('tplGroup').addEventListener('change', e=>{
@@ -1154,6 +1137,65 @@
       }
     }catch(e){
       showToast('儲存失敗：' + e.message);
+    }
+  };
+
+  // 一鍵生成定位
+  document.getElementById('oneClickPositioning').onclick = async () => {
+    const theme = prompt('請輸入你的產品、服務或主題：', '');
+    if (!theme || !theme.trim()) {
+      showToast('請輸入主題');
+      return;
+    }
+    
+    const chat = document.getElementById('chatPositioning');
+    const input = document.getElementById('inputPositioning');
+    
+    // 顯示載入狀態
+    showLoadingMsg(chat, 'AI正在分析你的主題並生成定位...');
+    
+    try {
+      const payload = {
+        user_id: state.userId,
+        theme: theme.trim()
+      };
+      
+      const resp = await fetch(`${API_BASE}/agent/positioning/generate`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await resp.json();
+      
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      
+      if (!resp.ok) {
+        throw new Error(data?.error || `HTTP ${resp.status}`);
+      }
+      
+      if (data.response) {
+        // 顯示 AI 回應
+        appendMsg(chat, 'assistant', data.response, true);
+        
+        // 更新定位檔案
+        if (data.user_profile) {
+          state.userProfile = data.user_profile;
+          updateProfileDisplay();
+        }
+        
+        // 刷新定位筆記
+        await refreshPositioningProfile();
+        
+        showToast('定位生成完成！');
+      }
+      
+    } catch (e) {
+      // 隱藏載入狀態
+      hideLoadingMsg(chat);
+      appendMsg(chat, 'assistant', `❌ 錯誤：${e.message}`);
+      showToast('生成失敗：' + e.message);
     }
   };
 
