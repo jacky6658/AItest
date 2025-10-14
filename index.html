@@ -61,7 +61,9 @@
     .msg{ max-width:80%; padding:10px 12px; border-radius:14px; border:1px solid var(--border); background:#fff; box-shadow:var(--shadow); }
     .msg.user{ margin-left:auto; background:#eef4ff; border-color:#dbe6ff; }
     .msg .meta{ font-size:12px; color:var(--text-muted); margin-bottom:4px; }
-    .inputbar{ display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff; }
+    .inputbar{ display:flex !important; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff; visibility:visible !important; }
+    .inputbar textarea{ flex:1; resize:none; border:1px solid var(--border); border-radius:12px; padding:10px 12px; min-height:46px; max-height:160px; font-size:16px; line-height:1.5; display:block !important; visibility:visible !important; }
+    .inputbar button{ flex-shrink:0; display:block !important; visibility:visible !important; }
     textarea{ flex:1; resize:none; border:1px solid var(--border); border-radius:12px; padding:10px 12px; min-height:46px; max-height:160px; font-size:16px; line-height:1.5; }
 
     .right-wrap{ display:flex; flex-direction:column; height:62vh; }
@@ -235,6 +237,19 @@
         border-radius: 20px;
         padding: 10px 16px;
         font-size: 14px;
+        display: block !important;
+        visibility: visible !important;
+      }
+      
+      /* 確保腳本頁面輸入框在手機版也可見 */
+      #page-script .inputbar {
+        display: flex !important;
+        visibility: visible !important;
+      }
+      
+      #page-script .inputbar textarea {
+        display: block !important;
+        visibility: visible !important;
       }
       
       .input-group button {
@@ -938,6 +953,13 @@
     appendMsg(chat,'assistant',msg);
     state.messagesScript.push({ role:'assistant', content:msg });
     state.lastAssistantScript = msg;
+    
+    // 確保輸入框可見
+    const inputScript = document.getElementById('inputScript');
+    if(inputScript) {
+      inputScript.style.display = 'block';
+      inputScript.style.visibility = 'visible';
+    }
   }
 
   // 快速模板 / 快速問題（依模式更換）
@@ -1767,6 +1789,18 @@
   // 初始化
   goPage('home');
   initScriptModeButtons();
+  
+  // 確保腳本頁面輸入框可見
+  setTimeout(() => {
+    const inputScript = document.getElementById('inputScript');
+    if(inputScript) {
+      console.log('腳本輸入框找到:', inputScript);
+      inputScript.style.display = 'block';
+      inputScript.style.visibility = 'visible';
+    } else {
+      console.error('腳本輸入框未找到!');
+    }
+  }, 100);
   </script>
 </body>
 </html>
