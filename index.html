@@ -1,617 +1,1403 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>AI短影音顧問｜AIJob智能</title>
-  <style>
-    :root{
-      --primary:#2563eb; --primary-600:#1d4ed8;
-      --bg:#ffffff; --muted:#f5f7fb; --border:#e6e8ef;
-      --text:#0f172a; --text-muted:#64748b;
-      --ok:#16a34a; --err:#dc2626; --shadow:0 6px 18px rgba(2,12,27,0.08);
-      --radius:14px;
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0; font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans TC, Helvetica Neue, Arial;
-      background:var(--bg); color:var(--text); line-height:1.6; font-size:16px;
-      -webkit-text-size-adjust:100%;
-      touch-action:manipulation;
-    }
-    a{ color:var(--primary); text-decoration:none; }
-    .container{ max-width:1200px; margin:0 auto; padding:16px; }
-
-    .topbar{ position:sticky; top:0; z-index:50; background:rgba(255,255,255,0.9); backdrop-filter:saturate(180%) blur(8px); border-bottom:1px solid var(--border); }
-    .topbar-inner{ display:flex; flex-direction:column; align-items:center; gap:10px; padding:12px 16px; }
-    .brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:22px; }
-    .brand .logo{ width:20px; height:20px; border-radius:4px; object-fit:cover; box-shadow:0 0 0 3px rgba(37,99,235,0.15); }
-    .tabs{ display:flex; gap:8px; flex-wrap:wrap; }
-    .tab{ padding:8px 12px; border:1px solid var(--border); border-radius:999px; background:#fff; color:var(--text); cursor:pointer; transition:all .15s; font-weight:600; font-size:14px; }
-    .tab.active{ background:var(--primary); border-color:var(--primary); color:#fff; box-shadow:var(--shadow); }
-
-    .hero{ display:grid; grid-template-columns:1fr; gap:16px; padding:20px 16px; }
-    .hero-title{ font-size:28px; font-weight:800; letter-spacing:.2px; text-align:left; }
-    .hero-sub{ color:var(--text-muted); margin-top:4px; }
-
-    .grid-cards{ display:grid; grid-template-columns:1fr; gap:16px; margin-top:20px; }
-    .card{ background:linear-gradient(180deg,#fff,#f9fbff); border:1px solid var(--border); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:12px; min-height:160px; }
-    .card h3{ margin:0; font-size:20px; }
-    .card p{ margin:0; color:var(--text-muted); }
-    .card .actions{ margin-top:auto; display:flex; gap:10px; }
-
-    .layout{ display:grid; grid-template-columns:7fr 5fr; gap:16px; padding:16px; }
-    .panel{ background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
-    .panel-head{ padding:12px 14px; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
-    .panel-title{ font-weight:800; display:flex; align-items:center; gap:8px; }
-
-    .settings{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    .settings .field{ display:flex; align-items:center; gap:6px; background:var(--muted); border:1px solid var(--border); border-radius:10px; padding:6px 8px; }
-    .settings input[type="text"], .settings select, .settings input[type="number"]{ border:none; background:transparent; outline:none; padding:4px; min-width:90px; font-size:16px; }
-    .settings .check{ display:flex; align-items:center; gap:6px; }
-    .settings.collapsed{ display:none; }
-    .toggle-settings{ margin-left:auto; border:1px solid var(--border); background:#fff; padding:6px 10px; border-radius:10px; cursor:pointer; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:6px; }
-    .toggle-settings:hover{ box-shadow:var(--shadow); }
-    .chev{ display:inline-block; transition:transform .2s ease; }
-    .toggle-settings[aria-expanded="false"] .chev{ transform:rotate(-90deg); }
-
-    .chat-wrap{ display:flex; flex-direction:column; height:62vh; max-height:62vh; }
-    .chat-scroll{ flex:1; overflow-y:auto; overflow-x:hidden; padding:14px; display:flex; flex-direction:column; gap:10px; background:var(--muted); }
-    .msg{ max-width:80%; padding:10px 12px; border-radius:14px; border:1px solid var(--border); background:#fff; box-shadow:var(--shadow); }
-    .msg.user{ margin-left:auto; background:#eef4ff; border-color:#dbe6ff; }
-    .msg .meta{ font-size:12px; color:var(--text-muted); margin-bottom:4px; }
-    .inputbar{ display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff; }
-    .inputbar textarea{ flex:1; resize:none; border:1px solid var(--border); border-radius:12px; padding:10px 12px; min-height:46px; max-height:160px; font-size:16px; line-height:1.5; }
-    .inputbar button{ flex-shrink:0; }
-    textarea{ flex:1; resize:none; border:1px solid var(--border); border-radius:12px; padding:10px 12px; min-height:46px; max-height:160px; font-size:16px; line-height:1.5; }
-
-    .right-wrap{ display:flex; flex-direction:column; height:62vh; max-height:62vh; }
-    .right-scroll{ flex:1; overflow-y:auto; overflow-x:hidden; padding:14px; display:flex; flex-direction:column; gap:10px; background:var(--muted); }
-    .toolbar{ display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff; flex-wrap:wrap; }
-
-    .segment-card{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:var(--shadow); }
-    .segment-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; }
-    .seg-title{ font-weight:700; }
-    .seg-meta{ color:var(--text-muted); font-size:13px; }
-    .seg-actions{ display:flex; gap:6px; }
-
-    .copy-card{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:var(--shadow); }
-    .copy-card h4{ margin:4px 0 8px; }
-    .muted{ color:var(--text-muted); font-size:14px; }
-
-    .chips{ display:flex; gap:8px; flex-wrap:wrap; padding:10px 14px; border-top:1px solid var(--border); background:#fff; }
-    .chip{ padding:6px 10px; border:1px solid var(--border); border-radius:999px; background:#fff; cursor:pointer; font-size:13px; }
-    .chip:hover{ border-color:var(--primary); color:var(--primary); }
-
-    .btn{ padding:10px 14px; border-radius:12px; border:1px solid var(--border); background:#fff; cursor:pointer; font-weight:700; font-size:15px; display:inline-flex; align-items:center; gap:6px; transition:all .15s; min-height:42px; }
-    .btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow); }
-    .btn.primary{ background:var(--primary); border-color:var(--primary); color:#fff; }
-    .btn.primary:disabled{ opacity:.6; cursor:not-allowed; }
-    .btn.ghost{ background:transparent; }
-    .btn.small{ padding:8px 10px; font-size:14px; min-height:38px; }
-    .link-row{ display:flex; gap:8px; flex-wrap:wrap; }
-
-    .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:20px; background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:opacity .25s; z-index:100; }
-    .toast.show{ opacity:1; }
-
-    /* AI 載入動畫樣式 */
-    .loading-msg{ background:#f8fafc; border:1px solid #e2e8f0; }
-    .loading-content{ display:flex; align-items:center; gap:12px; }
-    .loading-dots{ display:flex; gap:4px; }
-    .loading-dots span{ width:8px; height:8px; border-radius:50%; background:#3b82f6; animation:loading-bounce 1.4s ease-in-out infinite both; }
-    .loading-dots span:nth-child(1){ animation-delay:-0.32s; }
-    .loading-dots span:nth-child(2){ animation-delay:-0.16s; }
-    .loading-dots span:nth-child(3){ animation-delay:0s; }
-    .loading-text{ color:#64748b; font-style:italic; }
-    @keyframes loading-bounce{ 0%, 80%, 100%{ transform:scale(0); } 40%{ transform:scale(1); } }
-
-    /* 格式化內容樣式 */
-    .formatted-content{ line-height:1.6; }
-    .formatted-content p{ margin:8px 0; }
-    .formatted-content strong{ font-weight:600; color:#1e40af; }
-    .formatted-content em{ font-style:italic; color:#7c3aed; }
-    .formatted-content br{ margin:4px 0; }
-
-    .site-footer{ border-top:1px solid var(--border); margin-top:24px; background:#fff; }
-    .copyright{ color:var(--text-muted); font-size:14px; padding:6px 0 14px 0; text-align:center; }
-
-    @media (min-width:880px){ .grid-cards{ grid-template-columns:repeat(2,1fr); } }
-    @media (min-width:1200px){ .hero-title{ font-size:32px; } }
-    @media (max-width:1199px){ .layout{ grid-template-columns:1fr; } }
-    @media (max-width:767px){
-      .chat-wrap,.right-wrap{ height:auto; max-height:64vh; }
-      .toolbar{ display:none; }
-      .settings{ gap:6px; }
-      .btn{ min-height:44px; }
-      .btn.small{ min-height:40px; }
-    }
-
-    /* 新增：模式切換與模板面板 */
-    .mode-wrap{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-    .segctl{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .segctl .group{ display:flex; gap:6px; background:var(--muted); border:1px solid var(--border); border-radius:12px; padding:6px; }
-    
-    /* 響應式設計 */
-    @media (max-width: 768px) {
-      .chat-wrap, .right-wrap {
-        height: 50vh;
-        min-height: 300px;
-      }
-      
-      .panel-head {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      
-      .settings {
-        width: 100%;
-        justify-content: space-between;
-      }
-      
-      .tabs {
-        justify-content: center;
-      }
-      
-      .btn {
-        min-height: 38px;
-        font-size: 14px;
-        padding: 8px 12px;
-      }
-      
-      .chips {
-        justify-content: center;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .left-wrap, .right-wrap {
-        height: 45vh;
-      }
-      
-      .btn {
-        min-height: 36px;
-        font-size: 12px;
-        padding: 6px 10px;
-      }
-      
-      .panel-title {
-        font-size: 16px;
-      }
-      
-      .brand {
-        font-size: 18px;
-      }
-    }
-    .segctl .group label{ 
-      padding:8px 16px; 
-      border-radius:8px; 
-      cursor:pointer; 
-      border:1px solid #e0e0e0; 
-      background:#fff; 
-      transition:all 0.2s ease;
-      font-weight:500;
-      writing-mode: horizontal-tb;
-      text-orientation: mixed;
-    }
-    .segctl .group label:hover{
-      border-color:#2196F3;
-      background:#f5f5f5;
-    }
-    .segctl .group input{ display:none; }
-    .segctl .group input:checked + span{ 
-      background:var(--primary); 
-      border:1px solid var(--primary); 
-      color:#fff; 
-      box-shadow:0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    /* 套用結構按鈕樣式 - 確保字體不垂直 */
-    .segctl .group label span {
-      writing-mode: horizontal-tb;
-      text-orientation: mixed;
-      transform: none;
-      font-size: 14px;
-      line-height: 1.2;
-      display: inline-block;
-    }
-    
-    /* 腳本分段樣式 */
-    .script-segment {
-      margin-bottom: 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    
-    .segment-content {
-      padding: 12px;
-      background: #f8f9fa;
-    }
-    
-    .segment-content .dialog,
-    .segment-content .visual,
-    .segment-content .cta {
-      margin-bottom: 8px;
-      line-height: 1.5;
-    }
-    
-    .segment-content .dialog {
-      color: #333;
-    }
-    
-    .segment-content .visual {
-      color: #666;
-      font-style: italic;
-    }
-    
-    .segment-content .cta {
-      color: #2196F3;
-      font-weight: 600;
-    }
-    
-    /* 定位檔案欄位樣式 */
-    .profile-field {
-      margin-bottom: 8px;
-      padding: 6px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .profile-field:last-of-type {
-      border-bottom: none;
-    }
-    
-    /* 腳本模式按鈕樣式 - 強制覆蓋 */
-    #oneClickScript,
-    #guideMode,
-    #freeMode {
-      background: #2196F3 !important;
-      color: white !important;
-      border: none !important;
-      padding: 8px 16px !important;
-      border-radius: 6px !important;
-      margin-right: 10px !important;
-      cursor: pointer !important;
-      font-weight: 600 !important;
-      font-size: 14px !important;
-      transition: all 0.2s ease !important;
-    }
-    
-    #oneClickScript:hover,
-    #guideMode:hover,
-    #freeMode:hover {
-      background: #1976D2 !important;
-      transform: translateY(-1px) !important;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-    }
-    
-    /* 選中狀態 */
-    #oneClickScript.active,
-    #guideMode.active,
-    #freeMode.active {
-      background: #1976D2 !important;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIJob短影音顧問智能</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2563EB',
+                        'primary-hover': '#1D4ED8',
+                        secondary: '#16A34A',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
-  <div class="topbar">
-    <div class="topbar-inner container">
-      <div class="brand">
-        <img class="logo" alt="AIJob logo" src="https://static.wixstatic.com/media/9705bb_4edf6b22c58f4275bc9bae42891acb49~mv2.png"/>
-        AI短影音顧問｜AIJob智能
-      </div>
-      <div class="tabs">
-        <button class="tab active" data-page="home">首頁</button>
-        <button class="tab" data-page="positioning">AI影音定位顧問</button>
-        <button class="tab" data-page="topics">AI選題小助手</button>
-        <button class="tab" data-page="script">AI腳本生成大師</button>
-        <button class="tab" data-page="guide">說明/指南</button>
-      </div>
-    </div>
-  </div>
+<body class="font-sans bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-150">
+    <!-- Toast 容器 -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-  <!-- 首頁 -->
-  <main id="page-home" class="container">
-    <section class="hero">
-      <div>
-        <div class="hero-title">選擇你的任務</div>
-        <div class="hero-sub">輸入主題→AI 推理行業爆款要素→與你對話共創。介面簡約、行動友善。</div>
-      </div>
-      <div class="grid-cards">
-        <article class="card">
-          <h3>🎯 AI影音定位顧問</h3>
-          <p>釐清你的帳號方向、目標受眾、品牌定位。建立完整的內容策略基礎，讓後續創作更有方向。</p>
-          <div class="actions">
-            <button class="btn primary" data-go="positioning">開始定位分析</button>
-            <button class="btn ghost" data-go="guide">看操作說明</button>
-          </div>
-        </article>
-        <article class="card">
-          <h3>💡 AI選題小助手</h3>
-          <p>基於你的定位檔案，每日提供靈感選題建議。結合熱點、季節性與你的品牌特色。</p>
-          <div class="actions">
-            <button class="btn primary" data-go="topics">獲取選題靈感</button>
-            <button class="btn ghost" data-go="guide">看操作說明</button>
-          </div>
-        </article>
-        <article class="card">
-          <h3>📝 AI腳本生成大師</h3>
-          <p>整合腳本與文案功能，基於你的定位與記憶生成個性化內容。支援多種模板與時長。</p>
-          <div class="actions">
-            <button class="btn primary" data-go="script">開始創作</button>
-            <button class="btn ghost" data-go="guide">看操作說明</button>
-          </div>
-        </article>
-      </div>
+    <!-- 頂部導覽列 -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 relative">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="#!home" class="focus:outline-none" data-page="home">
+                        <h1 class="font-bold text-primary text-lg sm:text-xl md:text-2xl leading-tight">AIJob短影音顧問智能</h1>
+                    </a>
+                </div>
+                
+                <!-- 導覽連結 -->
+                <div class="hidden md:flex space-x-8" id="nav-links">
+                    <a href="#!home" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="home">首頁</a>
+                    <a href="#!positioning" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="positioning">AI短影音定位顧問</a>
+                    <a href="#!ideation" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="ideation">AI選題小助手</a>
+                    <a href="#!script" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="script">AI腳本生成大師</a>
+                    <a href="#!guide" class="nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="guide">說明/指南</a>
+                </div>
 
-      <!-- 客製化智能體 CTA -->
-      <article class="card" style="margin-top:8px;">
-        <h3>想要客製化您的短影音 AI 智能體嗎？</h3>
-        <p class="muted">需要專屬功能、品牌語氣、整合後端或流程自動化？我們可協助從規劃到上線。</p>
-        <div class="actions">
-          <a class="btn primary" target="_blank" href="https://AIJobschool.short.gy/E49kA8">與我們聯繫（LINE 官方）</a>
-        </div>
-      </article>
-      <div class="link-row">
-        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
-        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
-        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">AIJob 行銷自動化課程</a>
-        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/UUwpEG">AIJob Discord社群討論</a>
-        <a class="btn small" target="_blank" href="https://AIJobschool.short.gy/E49kA8">AIJob LINE官方帳號</a>
-      </div>
-    </section>
-  </main>
-
-  <!-- 定位智能體頁 -->
-  <section id="page-positioning" class="container" style="display:none">
-    <div class="layout">
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">🎯 AI影音定位顧問</div>
-          <div class="settings">
-            <button class="btn small" id="clearPositioningChat">清空對話</button>
-          </div>
-        </div>
-        <div class="chat-wrap">
-          <div id="chatPositioning" class="chat-scroll"></div>
-          <div class="chips" id="chipsPositioning">
-            <span class="muted">快速問題：</span>
-            <button class="chip" data-question="我的帳號是OOO(填寫您的產品或服務或主題)，應該專注在哪個領域？">業務類型定位</button>
-            <button class="chip" data-question="我的目標受眾是誰？他們有什麼特徵和痛點？">目標受眾分析</button>
-            <button class="chip" data-question="我的品牌應該傳達什麼形象和語氣？">品牌形象定位</button>
-            <button class="chip" data-question="我應該在哪些平台經營？為什麼？">平台策略建議</button>
-            <button class="chip" data-question="我的內容目標是什麼？想要達成什麼效果？">內容目標設定</button>
-            <button class="chip" data-question="我應該多久發一次文？發文頻率如何安排？">發文頻率規劃</button>
-            <button class="chip primary" id="oneClickPositioning">🚀 一鍵生成定位</button>
-          </div>
-          <div class="inputbar">
-            <textarea id="inputPositioning" placeholder="告訴我你的業務、產品、目標或困惑..."></textarea>
-            <button class="btn primary" id="sendPositioning">分析</button>
-            <button class="btn" id="cancelPositioning">停止</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">📍 定位檔案</div>
-          <div class="settings">
-            <button class="btn small" id="saveProfile">儲存檔案</button>
-          </div>
-        </div>
-        <div class="right-wrap">
-          <div id="profileWrap" class="right-scroll">
-            <div class="copy-card">
-              <h4>用戶定位檔案</h4>
-              <div id="profileContent" class="muted">尚未建立定位檔案，請先與AI影音定位顧問對話。</div>
+                <!-- 右側按鈕群 -->
+                <div class="flex items-center space-x-2 md:space-x-4">
+                    <!-- 手機選單 -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary" aria-label="開啟選單">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <!-- 暗色模式切換 -->
+                    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800" aria-label="切換暗色模式">
+                        <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="sun-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            <path id="moon-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- 假 Credits -->
+                    <div class="hidden sm:flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <span>Credits: 999</span>
+                    </div>
+                    
+                    <!-- 登入按鈕（最右側） -->
+                    <button id="login-btn" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                        登入
+                    </button>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 選題智能體頁 -->
-  <section id="page-topics" class="container" style="display:none">
-    <div class="layout">
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">💡 AI選題小助手</div>
-          <div class="settings">
-            <button class="btn small" id="refreshTopics">重新生成</button>
-            <button class="btn small" id="viewTopicHistory">歷史記錄</button>
-          </div>
-        </div>
-        <div class="chat-wrap">
-          <div id="chatTopics" class="chat-scroll"></div>
-          <div class="chips" id="chipsTopics">
-            <span class="muted">選題類型：</span>
-            <button class="chip" data-topic-type="trending">熱門趨勢</button>
-            <button class="chip" data-topic-type="educational">教育分享</button>
-            <button class="chip" data-topic-type="personal">個人故事</button>
-            <button class="chip" data-topic-type="product">產品介紹</button>
-          </div>
-          <div class="inputbar">
-            <textarea id="inputTopics" placeholder="告訴我你想要什麼類型的選題靈感..."></textarea>
-            <button class="btn primary" id="getTopics">獲取靈感</button>
-            <button class="btn" id="cancelTopics">停止</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">📅 今日選題建議</div>
-          <div class="settings">
-            <button class="btn small" id="copyAllTopics">複製全部</button>
-          </div>
-        </div>
-        <div class="right-wrap">
-          <div id="topicsWrap" class="right-scroll">
-            <div class="copy-card">
-              <h4>選題建議</h4>
-              <div id="topicsContent" class="muted">點擊「獲取靈感」開始生成選題建議。</div>
+            <!-- 手機下拉選單 -->
+            <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 dark:border-gray-700">
+                <div class="px-4 py-3 space-y-2">
+                    <a href="#!home" class="block nav-link" data-page="home">首頁</a>
+                    <a href="#!positioning" class="block nav-link" data-page="positioning">AI短影音定位顧問</a>
+                    <a href="#!ideation" class="block nav-link" data-page="ideation">AI選題小助手</a>
+                    <a href="#!script" class="block nav-link" data-page="script">AI腳本生成大師</a>
+                    <a href="#!guide" class="block nav-link" data-page="guide">說明/指南</a>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </nav>
 
-  <!-- 腳本頁 -->
-  <section id="page-script" class="container" style="display:none">
-    <div class="layout">
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">📝 AI腳本生成大師</div>
-          <div class="mode-wrap">
-            <!-- 模式切換 -->
-            <div class="segctl">
-              <div class="group" id="modeGroup">
-                <button class="mode-btn" id="oneClickScript">🚀 一鍵生成腳本</button>
-                <button class="mode-btn" id="guideMode">✍️ 引導模式</button>
-                <button class="mode-btn" id="freeMode">💬 自由模式</button>
-              </div>
+    <!-- 主要內容區域 -->
+    <main class="min-h-screen">
+        <!-- 首頁 -->
+        <div id="page-home" class="page hidden">
+            <!-- Hero 區 -->
+            <section class="bg-gradient-to-br from-primary to-primary-hover text-white py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 class="text-4xl md:text-6xl font-bold mb-6">內容創作，從此簡單</h2>
+                    <p class="text-xl md:text-2xl mb-8 opacity-90">三款專業工具，助您打造優質內容</p>
+                </div>
+            </section>
+
+            <!-- 工具卡片區 -->
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <!-- 定位助手卡片 -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 active:scale-95">
+                            <div class="text-4xl mb-4">🎯</div>
+                            <h3 class="text-2xl font-bold mb-4">AI短影音定位顧問</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">透過引導式問答，幫您找到最適合的品牌定位與語氣風格</p>
+                            <a href="#!positioning" class="block w-full bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                                開始使用
+                            </a>
+                        </div>
+
+                        <!-- 選題助手卡片 -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 active:scale-95">
+                            <div class="text-4xl mb-4">💡</div>
+                            <h3 class="text-2xl font-bold mb-4">AI選題小助手</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">輸入主題關鍵字，自動產生多個吸睛的內容角度與切入點</p>
+                            <a href="#!ideation" class="block w-full bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                                開始使用
+                            </a>
+                        </div>
+
+                        <!-- 腳本生成器卡片 -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 active:scale-95">
+                            <div class="text-4xl mb-4">📝</div>
+                            <h3 class="text-2xl font-bold mb-4">AI腳本生成大師</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">多種模板與時長選擇，快速生成專業的內容腳本</p>
+                            <a href="#!script" class="block w-full bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                                開始使用
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 客製化智能體 CTA -->
+            <section class="pt-0 pb-8">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+                        <h3 class="text-2xl font-bold mb-2">想要客製化您的短影音 AI 智能體嗎？</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">需要專屬功能、品牌語氣、整合後端或流程自動化？我們可協助從規劃到上線。</p>
+                        <a class="inline-block bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-hover" target="_blank" href="https://AIJobschool.short.gy/E49kA8">與我們聯繫（LINE 官方）</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 定位助手頁面 -->
+        <div id="page-positioning" class="page hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- 左側表單 -->
+                    <div class="space-y-6">
+                        <div>
+                            <h2 class="text-3xl font-bold mb-2">AI短影音定位顧問</h2>
+                            <p class="text-gray-600 dark:text-gray-400">透過幾個簡單問題，幫您找到最適合的品牌定位</p>
+                        </div>
+
+                        <form id="positioning-form" class="space-y-6">
+                            <!-- 產業 -->
+                            <div>
+                                <label for="industry" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">產業類型 *</label>
+                                <input type="text" id="industry" name="industry" required
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-150"
+                                    placeholder="例如：科技、教育、餐飲、金融...">
+                            </div>
+
+                            <!-- 目標受眾 -->
+                            <div>
+                                <label for="audience" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">目標受眾 *</label>
+                                <input type="text" id="audience" name="audience" required
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-150"
+                                    placeholder="例如：25-35歲上班族、學生家長、小企業主...">
+                            </div>
+
+                            <!-- 主要痛點 -->
+                            <div>
+                                <label for="pains" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">主要痛點 *</label>
+                                <textarea id="pains" name="pains" rows="4" required
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-150"
+                                    placeholder="描述您的目標受眾面臨的主要問題或挑戰..."></textarea>
+                            </div>
+
+                            <!-- 品牌語氣 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">品牌語氣 *</label>
+                                <div class="grid grid-cols-2 gap-3" role="radiogroup" aria-label="品牌語氣選擇">
+                                    <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <input type="radio" name="tone" value="professional" class="sr-only" required>
+                                        <div class="tone-option w-full text-center py-2">專業</div>
+                                    </label>
+                                    <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <input type="radio" name="tone" value="friendly" class="sr-only" required>
+                                        <div class="tone-option w-full text-center py-2">親切</div>
+                                    </label>
+                                    <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <input type="radio" name="tone" value="humorous" class="sr-only" required>
+                                        <div class="tone-option w-full text-center py-2">幽默</div>
+                                    </label>
+                                    <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <input type="radio" name="tone" value="authoritative" class="sr-only" required>
+                                        <div class="tone-option w-full text-center py-2">權威</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 競品分析 -->
+                            <div>
+                                <label for="competitors" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">競品分析（選填）</label>
+                                <input type="text" id="competitors" name="competitors"
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-150"
+                                    placeholder="列出主要競爭對手...">
+                            </div>
+
+                            <button type="submit" id="positioning-submit"
+                                class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="submit-text">生成定位摘要</span>
+                                <span class="loading-text hidden">
+                                    <svg class="loading-spinner w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    生成中...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 右側結果 -->
+                    <div>
+                        <div id="positioning-result" class="hidden">
+                            <h3 class="text-xl font-bold mb-4">定位摘要</h3>
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">品牌定位</h4>
+                                    <p class="text-gray-600 dark:text-gray-400" id="positioning-summary"></p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">語氣守則</h4>
+                                    <p class="text-gray-600 dark:text-gray-400" id="tone-guidelines"></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="positioning-empty" class="text-center py-12">
+                            <div class="text-6xl mb-4">🎯</div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備開始定位分析</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">填寫左側表單，我們將為您生成專業的定位摘要</p>
+                            <div class="space-y-2">
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：科技新創公司
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：線上教育平台
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：健康食品品牌
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 定位 顧問聊天室（強化版） -->
+                        <div class="mt-6">
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                                    <h3 class="text-lg font-semibold">🎯 AI影音定位顧問</h3>
+                                    <button id="chat-clear-positioning" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
+                                </div>
+                                <div id="chat-positioning" class="h-80 sm:h-96 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
+                                <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                                    <div class="flex flex-wrap gap-2 mb-3 text-sm">
+                                        <button class="chip-p btn-chip">業務類型定位</button>
+                                        <button class="chip-p btn-chip">目標受眾分析</button>
+                                        <button class="chip-p btn-chip">品牌形象定位</button>
+                                        <button class="chip-p btn-chip">平台策略建議</button>
+                                        <button class="chip-p btn-chip">內容目標設定</button>
+                                        <button class="chip-p btn-chip">發文頻率規劃</button>
+                                        <button class="chip-p btn-chip">🚀 一鍵生成定位</button>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <input id="chat-input-positioning" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="告訴我你的業務、產品、目標或困惑...">
+                                        <button id="chat-send-positioning" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">分析</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
 
-        <!-- 引導模式：模板與時長（僅 guide 顯示） -->
-        <div class="panel-head" id="guideBar" style="border-top:0; border-bottom:1px solid var(--border);">
-          <div class="segctl">
-            <div class="group" id="tplGroup" aria-label="模板結構">
-              <label><input type="radio" name="tpl" value="A" checked><span>A 三段式</span></label>
-              <label><input type="radio" name="tpl" value="B"><span>B 問題解決</span></label>
-              <label><input type="radio" name="tpl" value="C"><span>C Before-After</span></label>
-              <label><input type="radio" name="tpl" value="D"><span>D 教學</span></label>
-              <label><input type="radio" name="tpl" value="E"><span>E 敘事</span></label>
-              <label><input type="radio" name="tpl" value="F"><span>F 爆點連發</span></label>
+        <!-- 選題助手頁面 -->
+        <div id="page-ideation" class="page hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- 左側表單 -->
+                    <div class="space-y-6">
+                        <div>
+                            <h2 class="text-3xl font-bold mb-2">AI選題小助手</h2>
+                            <p class="text-gray-600 dark:text-gray-400">輸入主題關鍵字，獲得多元的內容角度與切入點</p>
+                        </div>
+
+                        <form id="ideation-form" class="space-y-6">
+                            <!-- 主題/關鍵字 -->
+                            <div>
+                                <label for="topic" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">主題/關鍵字 *</label>
+                                <input type="text" id="topic" name="topic" required
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-150"
+                                    placeholder="例如：減肥、理財、職場技能、親子教育...">
+                            </div>
+
+                            <!-- 產出條數 -->
+                            <div>
+                                <label for="count" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">欲產出條數 *</label>
+                                <select id="count" name="count" required
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white transition-all duration-150">
+                                    <option value="">請選擇</option>
+                                    <option value="1">1 條</option>
+                                    <option value="2">2 條</option>
+                                    <option value="3">3 條</option>
+                                    <option value="4">4 條</option>
+                                    <option value="5">5 條</option>
+                                    <option value="6">6 條</option>
+                                    <option value="7">7 條</option>
+                                    <option value="8">8 條</option>
+                                    <option value="9">9 條</option>
+                                    <option value="10">10 條</option>
+                                </select>
+                            </div>
+
+                            <!-- 避免重複 -->
+                            <div class="flex items-center">
+                                <input type="checkbox" id="dedupe" name="dedupe" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 dark:border-gray-600 rounded">
+                                <label for="dedupe" class="ml-2 text-sm text-gray-700 dark:text-gray-300">避免重複角度</label>
+                            </div>
+
+                            <button type="submit" id="ideation-submit"
+                                class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span class="submit-text">產生選題</span>
+                                <span class="loading-text hidden">
+                                    <svg class="loading-spinner w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    產生中...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 右側結果 -->
+                    <div>
+                        <div id="ideation-result" class="hidden">
+                            <h3 class="text-xl font-bold mb-4">選題建議</h3>
+                            <div id="ideation-cards" class="space-y-4"></div>
+                        </div>
+                        
+                        <div id="ideation-empty" class="text-center py-12">
+                            <div class="text-6xl mb-4">💡</div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備產生創意選題</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">輸入主題關鍵字，我們將為您產生多個吸睛的角度</p>
+                            <div class="space-y-2">
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：減肥方法
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：投資理財
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：職場技能
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 選題 聊天室 -->
+                        <div class="mt-6">
+                            <h3 class="text-xl font-bold mb-2">與 AI 對話</h3>
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+                                <div id="chat-ideation" class="h-64 overflow-y-auto p-4 space-y-2 border-b border-gray-200 dark:border-gray-700"></div>
+                                <div class="flex gap-2 p-3">
+                                    <input id="chat-input-ideation" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="輸入你想討論的選題方向...">
+                                    <button id="chat-send-ideation" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">送出</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="group" id="durGroup" aria-label="時長">
-              <label><input type="radio" name="dur" value="30" checked><span>30 秒</span></label>
-              <label><input type="radio" name="dur" value="60"><span>60 秒</span></label>
+        </div>
+
+        <!-- 腳本生成器頁面 -->
+        <div id="page-script" class="page hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- 左側控制區 -->
+                    <div class="space-y-8">
+                        <div>
+                            <h2 class="text-3xl font-bold mb-2">AI腳本生成大師</h2>
+                            <p class="text-gray-600 dark:text-gray-400">選擇模式、模板與時長，快速生成專業腳本</p>
+                        </div>
+
+                        <!-- 模式選擇 -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">模式選擇</h3>
+                            <div class="flex space-x-2" role="radiogroup" aria-label="模式選擇">
+                                <label class="flex-1">
+                                    <input type="radio" name="mode" value="guided" class="sr-only" checked>
+                                    <div class="mode-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        引導模式
+                                    </div>
+                                </label>
+                                <label class="flex-1">
+                                    <input type="radio" name="mode" value="free" class="sr-only">
+                                    <div class="mode-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        自由模式
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 模板選擇 -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">選擇模板</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="模板選擇">
+                                <label class="template-option">
+                                    <input type="radio" name="template" value="A" class="sr-only" checked>
+                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <div class="font-semibold mb-1">A 三段式</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">開頭-主體-結尾</div>
+                                    </div>
+                                </label>
+                                <label class="template-option">
+                                    <input type="radio" name="template" value="B" class="sr-only">
+                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <div class="font-semibold mb-1">B 問題解決</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">問題-分析-解決</div>
+                                    </div>
+                                </label>
+                                <label class="template-option">
+                                    <input type="radio" name="template" value="C" class="sr-only">
+                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <div class="font-semibold mb-1">C Before-After</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">對比呈現</div>
+                                    </div>
+                                </label>
+                                <label class="template-option">
+                                    <input type="radio" name="template" value="D" class="sr-only">
+                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <div class="font-semibold mb-1">D 教學</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">步驟式教學</div>
+                                    </div>
+                                </label>
+                                <label class="template-option">
+                                    <input type="radio" name="template" value="E" class="sr-only">
+                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <div class="font-semibold mb-1">E 故事</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">故事化敘述</div>
+                                    </div>
+                                </label>
+                                <label class="template-option">
+                                    <input type="radio" name="template" value="F" class="sr-only">
+                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        <div class="font-semibold mb-1">F 爆點連發</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">多個亮點</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 時長選擇 -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">時長選擇</h3>
+                            <div class="flex space-x-2" role="radiogroup" aria-label="時長選擇">
+                                <label class="flex-1">
+                                    <input type="radio" name="duration" value="30" class="sr-only" checked>
+                                    <div class="duration-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        30 秒
+                                    </div>
+                                </label>
+                                <label class="flex-1">
+                                    <input type="radio" name="duration" value="60" class="sr-only">
+                                    <div class="duration-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                        60 秒
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 主要 CTA -->
+                        <button id="apply-settings" 
+                            class="w-full bg-primary text-white py-4 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:scale-95">
+                            套用設定並開始
+                        </button>
+                    </div>
+
+                    <!-- 右側預覽區 -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">預覽結果</h3>
+                        <div id="script-preview" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-96">
+                            <div id="script-empty" class="text-center py-12">
+                                <div class="text-6xl mb-4">📝</div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">準備生成腳本</h4>
+                                <p class="text-gray-600 dark:text-gray-400">選擇左側設定，點擊「套用設定並開始」開始生成</p>
+                            </div>
+                            <div id="script-result" class="hidden">
+                                <div class="space-y-4">
+                                    <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本設定</h4>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                                            <span id="script-mode"></span> • <span id="script-template"></span> • <span id="script-duration"></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本內容</h4>
+                                        <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 腳本 聊天室 -->
+                        <div class="mt-6">
+                            <h3 class="text-xl font-bold mb-2">與 AI 對話</h3>
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+                                <div id="chat-script" class="h-64 overflow-y-auto p-4 space-y-2 border-b border-gray-200 dark:border-gray-700"></div>
+                                <div class="flex gap-2 p-3">
+                                    <input id="chat-input-script" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="輸入主題/目標/受眾/平台… 與 AI 討論腳本">
+                                    <button id="chat-send-script" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">送出</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button class="btn small" id="btnStartGuide">套用設定並開始</button>
-          </div>
         </div>
 
+        <!-- 說明/指南頁面 -->
+        <div id="page-guide" class="page hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold mb-2">🎯 AI短影音定位顧問</h3>
+                    <h4 class="font-semibold mb-2">功能說明</h4>
+                    <p class="text-gray-600 dark:text-gray-400">• <strong>帳號定位分析</strong>：幫助釐清你的業務類型、目標受眾、品牌形象<br/>• <strong>平台策略建議</strong>：根據你的定位推薦最適合的平台<br/>• <strong>內容方向規劃</strong>：建立完整的內容策略基礎<br/>• <strong>定位檔案管理</strong>：自動記錄和更新你的定位資訊</p>
+                    <h4 class="font-semibold mt-4 mb-2">使用方式</h4>
+                    <p class="text-gray-600 dark:text-gray-400">1️⃣ 點擊「快速問題」開始定位分析<br/>2️⃣ 回答AI的問題，建立你的定位檔案<br/>3️⃣ 使用「🚀 一鍵生成定位」快速建立完整定位<br/>4️⃣ 定位檔案會自動儲存並同步到其他功能</p>
+                </div>
 
-        <div class="chat-wrap">
-          <div id="chatScript" class="chat-scroll"></div>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold mb-2">💡 AI選題小助手</h3>
+                    <h4 class="font-semibold mb-2">功能說明</h4>
+                    <p class="text-gray-600 dark:text-gray-400">• <strong>個性化選題</strong>：基於你的定位檔案生成相關選題<br/>• <strong>熱點結合</strong>：結合當前熱門話題與你的品牌特色<br/>• <strong>季節性內容</strong>：考慮時節與節日提供適時建議<br/>• <strong>選題類型篩選</strong>：熱門趨勢、教育分享、個人故事、產品介紹</p>
+                    <h4 class="font-semibold mt-4 mb-2">使用方式</h4>
+                    <p class="text-gray-600 dark:text-gray-400">1️⃣ 先完成定位分析，建立你的定位檔案<br/>2️⃣ 選擇選題類型（熱門趨勢、教育分享等）<br/>3️⃣ 點擊「獲取靈感」獲得個性化選題建議<br/>4️⃣ 查看「今日選題建議」和「歷史記錄」</p>
+                </div>
 
-          <!-- 快速模板/快速問題 -->
-          <div class="chips" id="chipsScript">
-            <!-- 內容由 JS 根據模式切換 -->
-          </div>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold mb-2">📝 AI腳本生成大師</h3>
+                    <h4 class="font-semibold mb-2">功能說明</h4>
+                    <p class="text-gray-600 dark:text-gray-400">• <strong>一鍵生成腳本</strong>：根據主題快速生成完整腳本<br/>• <strong>引導模式</strong>：選擇結構模板和時長，AI逐步引導<br/>• <strong>自由模式</strong>：自由討論需求，AI提供創意建議<br/>• <strong>多種模板</strong>：支援 A-F 六種腳本結構模板<br/>• <strong>時長靈活</strong>：支援 30 秒與 60 秒腳本</p>
+                    <h4 class="font-semibold mt-4 mb-2">使用方式</h4>
+                    <p class="text-gray-600 dark:text-gray-400">1️⃣ 一鍵生成：套用設定後輸入主題即可<br/>2️⃣ 引導模式：選擇結構模板與時長，輸入主題開始<br/>3️⃣ 自由模式：直接輸入需求，與 AI 自由討論<br/>4️⃣ 查看「腳本分段/時間軸」</p>
+                </div>
 
-          <div class="inputbar">
-            <textarea id="inputScript" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（按鈕送出；Shift+Enter 換行）"></textarea>
-            <button class="btn primary" id="sendScript">送出</button>
-            <button class="btn" id="cancelScript">停止</button>
-          </div>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold mb-2">💾 資料儲存與管理</h3>
+                    <p class="text-gray-600 dark:text-gray-400">• <strong>定位檔案</strong>：自動儲存在資料庫中<br/>• <strong>選題建議</strong>：儲存在「今日選題建議」與「歷史記錄」<br/>• <strong>腳本筆記</strong>：儲存在「腳本分段/時間軸」</p>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">所有資料會自動同步到其他功能，讓 AI 能夠根據你的歷史記錄提供更精準的建議。</p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold mb-2">🚀 使用建議</h3>
+                    <p class="text-gray-600 dark:text-gray-400">1. 先使用定位智能體建立基本定位<br/>2. 再使用選題智能體獲取個性化建議<br/>3. 最後使用腳本生成大師創作具體內容</p>
+                </div>
+            </div>
         </div>
-      </div>
+    </main>
 
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">腳本分段 / 時間軸</div>
-          <div class="settings" style="gap:8px">
-            <button class="btn small" id="copyAllScript">複製全部</button>
-            <button class="btn small" id="clearScript">清空</button>
-          </div>
+    <!-- 全站頁尾：外部連結 + 版權 -->
+    <footer class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-wrap gap-3 mb-4">
+                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">AIJob 行銷自動化課程</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/UUwpEG">AIJob Discord社群討論</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/E49kA8">AIJob LINE官方帳號</a>
+            </div>
+            <div class="text-center text-gray-500 dark:text-gray-400">© 2025 AIJobSchool 版權所有</div>
         </div>
-        <div class="right-wrap">
-          <div id="segmentsWrap" class="right-scroll"></div>
-        </div>
-      </div>
-    </div>
-  </section>
+    </footer>
 
-  <!-- 說明/指南（新版） -->
-  <section id="page-guide" class="container" style="display:none; padding-top:16px">
-    <article class="card" style="margin-bottom:12px">
-      <h3>🎯 AI影音定位顧問</h3>
-      <h4 style="margin:6px 0 8px">功能說明</h4>
-      <p>• <strong>帳號定位分析</strong>：幫助釐清你的業務類型、目標受眾、品牌形象<br/>
-         • <strong>平台策略建議</strong>：根據你的定位推薦最適合的平台<br/>
-         • <strong>內容方向規劃</strong>：建立完整的內容策略基礎<br/>
-         • <strong>定位檔案管理</strong>：自動記錄和更新你的定位資訊</p>
-      <h4 style="margin:6px 0 8px">使用方式</h4>
-      <p>1️⃣ 點擊「快速問題」按鈕開始定位分析<br/>
-         2️⃣ 回答AI的問題，建立你的定位檔案<br/>
-         3️⃣ 使用「🚀 一鍵生成定位」快速建立完整定位<br/>
-         4️⃣ 定位檔案會自動儲存並同步到其他功能</p>
-    </article>
+    <script>
+        // API Base（自動偵測本機或雲端）
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://aijobvideobackend.zeabur.app';
 
-    <article class="card" style="margin-bottom:12px">
-      <h3>💡 AI選題小助手</h3>
-      <h4 style="margin:6px 0 8px">功能說明</h4>
-      <p>• <strong>個性化選題</strong>：基於你的定位檔案生成相關選題<br/>
-         • <strong>熱點結合</strong>：結合當前熱門話題與你的品牌特色<br/>
-         • <strong>季節性內容</strong>：考慮時節與節日提供適時建議<br/>
-         • <strong>選題類型篩選</strong>：熱門趨勢、教育分享、個人故事、產品介紹</p>
-      <h4 style="margin:6px 0 8px">使用方式</h4>
-      <p>1️⃣ 先完成定位分析，建立你的定位檔案<br/>
-         2️⃣ 選擇選題類型（熱門趨勢、教育分享等）<br/>
-         3️⃣ 點擊「獲取靈感」獲得個性化選題建議<br/>
-         4️⃣ 查看「今日選題建議」和「歷史記錄」</p>
-    </article>
+        // 全域變數
+        let currentPage = 'home';
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
-    <article class="card" style="margin-bottom:12px">
-      <h3>📝 AI腳本生成大師</h3>
-      <h4 style="margin:6px 0 8px">功能說明</h4>
-      <p>• <strong>一鍵生成腳本</strong>：根據主題快速生成完整腳本<br/>
-         • <strong>引導模式</strong>：選擇結構模板和時長，AI逐步引導<br/>
-         • <strong>自由模式</strong>：自由討論需求，AI提供創意建議<br/>
-         • <strong>多種模板</strong>：支援 A-F 六種腳本結構模板<br/>
-         • <strong>時長靈活</strong>：支援 30 秒與 60 秒腳本</p>
-      <h4 style="margin:6px 0 8px">使用方式</h4>
-      <p>1️⃣ <strong>一鍵生成</strong>：點擊「🚀 一鍵生成腳本」，輸入主題即可<br/>
-         2️⃣ <strong>引導模式</strong>：選擇結構模板和時長，輸入主題開始<br/>
-         3️⃣ <strong>自由模式</strong>：直接輸入需求，與AI自由討論<br/>
-         4️⃣ 查看「腳本分段/時間軸」和「腳本筆記」</p>
-    </article>
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initRouter();
+            initMobileMenu();
+            initPositioning();
+            initIdeation();
+            initScript();
+            initAuth();
+            initChats();
+            loadStoredData();
+        });
 
-    <article class="card" style="margin-bottom:12px">
-      <h3>💾 資料儲存與管理</h3>
-      <h4 style="margin:6px 0 8px">儲存位置</h4>
-      <p>• <strong>定位檔案</strong>：自動儲存在資料庫中，點擊「儲存檔案」確認<br/>
-         • <strong>選題建議</strong>：儲存在「今日選題建議」和「歷史記錄」中<br/>
-         • <strong>腳本筆記</strong>：儲存在「腳本分段/時間軸」中<br/>
-         • <strong>定位筆記</strong>：儲存在「定位檔案」側邊欄中</p>
-      <h4 style="margin:6px 0 8px">資料同步</h4>
-      <p>所有資料會自動同步到其他功能，讓AI能夠根據你的歷史記錄提供更精準的建議。</p>
-      <h4 style="margin:6px 0 8px">記憶作用</h4>
-      <p>智能體會根據你的記憶提供更個性化的建議。例如：<br/>
-         • 定位智能體記住你的業務類型後，選題智能體會推薦相關領域的選題<br/>
-         • 腳本文案智能體會根據你的品牌語氣與受眾偏好生成內容<br/>
-         • 系統會持續學習你的偏好，提供越來越精準的建議</p>
-    </article>
+        // 主題切換功能
+        function initTheme() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
 
-    <article class="card" style="margin-bottom:12px">
-      <h3>🚀 使用建議</h3>
-      <h4 style="margin:6px 0 8px">最佳流程</h4>
-      <p>1. <strong>先使用定位智能體</strong>：建立你的基本定位檔案<br/>
-         2. <strong>再使用選題智能體</strong>：獲取個性化的選題建議<br/>
-         3. <strong>最後使用腳本文案智能體</strong>：基於定位與選題創作具體內容</p>
-      <h4 style="margin:6px 0 8px">進階技巧</h4>
-      <p>• 定期更新定位檔案，讓系統更了解你的變化<br/>
-         • 使用快速問題 chips 快速開始對話<br/>
-         • 查看歷史記錄了解過去的建議<br/>
-         • 利用複製功能保存有用的內容</p>
-    </article>
-  </section>
+            // 設定初始主題
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
 
-  <footer class="site-footer">
-    <div class="container">
-      <div class="copyright">© 2025 AIJobSchool 版權所有</div>
-    </div>
-  </footer>
+            themeToggle.addEventListener('click', function() {
+                isDarkMode = !isDarkMode;
+                localStorage.setItem('darkMode', isDarkMode);
+                
+                if (isDarkMode) {
+                    document.documentElement.classList.add('dark');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                }
+            });
+        }
 
-  <div id="toast" class="toast">已複製</div>
+        // 路由系統
+        function initRouter() {
+            // 處理導覽連結點擊
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.dataset.page;
+                    navigateToPage(page);
+                });
+            });
 
-  <script src="app.js"></script>
+            // 處理首頁卡片點擊
+            document.querySelectorAll('a[href^="#!"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('href').replace('#!', '');
+                    navigateToPage(page);
+                });
+            });
+
+            // 監聽瀏覽器前進/後退
+            window.addEventListener('hashchange', function() {
+                const hash = window.location.hash.replace('#!', '') || 'home';
+                navigateToPage(hash);
+            });
+
+            // 初始化頁面
+            const hash = window.location.hash.replace('#!', '') || 'home';
+            navigateToPage(hash);
+        }
+
+        function navigateToPage(page) {
+            // 隱藏所有頁面
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            
+            // 顯示目標頁面
+            const targetPage = document.getElementById(`page-${page}`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                targetPage.classList.add('fade-in');
+                currentPage = page;
+                
+                // 更新 URL
+                window.location.hash = `#!${page}`;
+                
+                // 更新導覽狀態
+                updateNavigation(page);
+            }
+        }
+
+        function updateNavigation(activePage) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.dataset.page === activePage) {
+                    link.classList.add('text-primary', 'font-semibold');
+                    link.classList.remove('text-gray-700', 'dark:text-gray-300');
+                } else {
+                    link.classList.remove('text-primary', 'font-semibold');
+                    link.classList.add('text-gray-700', 'dark:text-gray-300');
+                }
+            });
+        }
+
+        function initMobileMenu() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            if (!btn || !menu) return;
+            btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+            // 點品牌返回首頁
+            const brand = document.querySelector('nav a[data-page="home"]');
+            if (brand) brand.addEventListener('click', (e)=>{ e.preventDefault(); navigateToPage('home'); });
+        }
+
+        // 簡易登入系統（參考 login.html）
+        function initAuth() {
+            const loginBtn = document.getElementById('login-btn');
+            if (!loginBtn) return;
+
+            function refreshUserUI() {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                const userRaw = localStorage.getItem('user');
+                if (isLoggedIn && userRaw) {
+                    const u = JSON.parse(userRaw);
+                    loginBtn.textContent = u.name || '已登入';
+                } else {
+                    loginBtn.textContent = '登入';
+                }
+            }
+
+            loginBtn.addEventListener('click', () => {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (!isLoggedIn) {
+                    // 導向登入頁（同層 login.html）
+                    window.location.href = 'login.html';
+                } else {
+                    // 顯示個人設定資訊（簡易）
+                    const u = JSON.parse(localStorage.getItem('user') || '{}');
+                    alert(`帳號：${u.name || ''}\nEmail：${u.email || ''}\n提供者：${u.provider || ''}`);
+                }
+            });
+
+            refreshUserUI();
+        }
+
+        // 共用聊天邏輯（前端模擬）
+        function initChats() {
+            async function callBackend(agent, content) {
+                try {
+                    const user = JSON.parse(localStorage.getItem('user') || '{}');
+                    const userId = user.id || 'web';
+                    const res = await fetch(`${API_BASE}/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            user_id: userId,
+                            agent_type: agent,
+                            messages: [{ role: 'user', content }]
+                        })
+                    });
+                    const data = await res.json();
+                    return data.assistant_message || '（後端已回覆，但無內容）';
+                } catch (e) {
+                    return '（後端不可用，這是前端示範回覆）';
+                }
+            }
+
+            function bindChat(sendId, inputId, boxId, agent) {
+                const send = document.getElementById(sendId);
+                const input = document.getElementById(inputId);
+                const box = document.getElementById(boxId);
+                if (!send || !input || !box) return;
+                function append(role, text) {
+                    const item = document.createElement('div');
+                    item.className = role === 'user' ? 'text-right' : 'text-left';
+                    const bubble = document.createElement('div');
+                    bubble.className = `inline-block px-3 py-2 rounded-lg ${role==='user'?'bg-blue-50 text-blue-900':'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'} shadow-sm`;
+                    bubble.textContent = text;
+                    item.appendChild(bubble);
+                    box.appendChild(item);
+                    box.scrollTop = box.scrollHeight;
+                }
+                send.addEventListener('click', () => {
+                    const v = input.value.trim();
+                    if (!v) return;
+                    append('user', v);
+                    input.value = '';
+                    callBackend(agent, v).then(msg=>append('ai', msg));
+                });
+            }
+            bindChat('chat-send-positioning','chat-input-positioning','chat-positioning','positioning');
+            bindChat('chat-send-ideation','chat-input-ideation','chat-ideation','topics');
+            bindChat('chat-send-script','chat-input-script','chat-script','script');
+
+            // 清空定位對話
+            const clearBtn = document.getElementById('chat-clear-positioning');
+            const box = document.getElementById('chat-positioning');
+            if (clearBtn && box) clearBtn.addEventListener('click', ()=> box.innerHTML = '');
+        }
+
+        // Toast 通知系統
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg fade-in`;
+            toast.textContent = message;
+            
+            toastContainer.appendChild(toast);
+            
+            // 2 秒後自動移除
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // 定位助手功能
+        function initPositioning() {
+            const form = document.getElementById('positioning-form');
+            const submitBtn = document.getElementById('positioning-submit');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingText = submitBtn.querySelector('.loading-text');
+
+            // 語氣選項點擊處理
+            document.querySelectorAll('input[name="tone"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateToneSelection();
+                });
+            });
+
+            // 表單提交
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 驗證必填欄位
+                const requiredFields = ['industry', 'audience', 'pains', 'tone'];
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    const input = form.querySelector(`[name="${field}"]`);
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('border-red-500');
+                        setTimeout(() => input.classList.remove('border-red-500'), 3000);
+                    }
+                });
+
+                if (!isValid) {
+                    showToast('請填寫所有必填欄位', 'error');
+                    return;
+                }
+
+                // 顯示載入狀態
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                loadingText.classList.remove('hidden');
+
+                // 模擬 API 呼叫
+                setTimeout(() => {
+                    generatePositioningResult();
+                    
+                    // 恢復按鈕狀態
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    loadingText.classList.add('hidden');
+                }, 2000);
+            });
+
+            // 快速示例按鈕
+            document.querySelectorAll('#positioning-empty .quick-example-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const examples = {
+                        '科技新創公司': {
+                            industry: '科技新創',
+                            audience: '25-35歲科技工作者',
+                            pains: '工作壓力大、時間管理困難、缺乏工作生活平衡',
+                            tone: 'professional'
+                        },
+                        '線上教育平台': {
+                            industry: '線上教育',
+                            audience: '在職進修者',
+                            pains: '學習時間有限、缺乏系統性學習方法、難以堅持',
+                            tone: 'friendly'
+                        },
+                        '健康食品品牌': {
+                            industry: '健康食品',
+                            audience: '注重健康的消費者',
+                            pains: '市面產品良莠不齊、缺乏專業指導、效果不明顯',
+                            tone: 'authoritative'
+                        }
+                    };
+                    
+                    const exampleText = this.textContent.replace('快速示例：', '');
+                    const data = examples[exampleText];
+                    
+                    if (data) {
+                        document.getElementById('industry').value = data.industry;
+                        document.getElementById('audience').value = data.audience;
+                        document.getElementById('pains').value = data.pains;
+                        document.querySelector(`input[name="tone"][value="${data.tone}"]`).checked = true;
+                        updateToneSelection();
+                    }
+                });
+            });
+        }
+
+        function updateToneSelection() {
+            document.querySelectorAll('.tone-option').forEach(option => {
+                const radio = option.parentElement.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    option.parentElement.classList.add('border-primary', 'bg-primary', 'text-white');
+                    option.parentElement.classList.remove('border-gray-300', 'dark:border-gray-600');
+                } else {
+                    option.parentElement.classList.remove('border-primary', 'bg-primary', 'text-white');
+                    option.parentElement.classList.add('border-gray-300', 'dark:border-gray-600');
+                }
+            });
+        }
+
+        function generatePositioningResult() {
+            const form = document.getElementById('positioning-form');
+            const formData = new FormData(form);
+            
+            const industry = formData.get('industry');
+            const audience = formData.get('audience');
+            const pains = formData.get('pains');
+            const tone = formData.get('tone');
+            const competitors = formData.get('competitors');
+
+            // 生成假資料結果
+            const positioningSummary = `基於您的產業「${industry}」和目標受眾「${audience}」，建議定位為專業的解決方案提供者。針對受眾面臨的「${pains}」問題，提供具有差異化的價值主張。`;
+            
+            const toneGuidelines = {
+                professional: '使用專業術語，保持客觀理性，強調數據和事實，避免過於情緒化的表達。',
+                friendly: '採用親切友善的語調，使用「我們」、「您」等親近用詞，適當使用問候語和鼓勵性語言。',
+                humorous: '適度使用幽默元素，但保持專業性，避免過度玩笑，確保內容有價值且易於理解。',
+                authoritative: '展現專業權威，使用確定的語氣，引用專業數據和案例，建立可信度和影響力。'
+            };
+
+            // 顯示結果
+            document.getElementById('positioning-summary').textContent = positioningSummary;
+            document.getElementById('tone-guidelines').textContent = toneGuidelines[tone];
+            
+            document.getElementById('positioning-result').classList.remove('hidden');
+            document.getElementById('positioning-empty').classList.add('hidden');
+
+            // 派發事件
+            window.dispatchEvent(new CustomEvent('analyzePositioning', {
+                detail: { industry, audience, pains, tone, competitors }
+            }));
+
+            showToast('定位分析完成！', 'success');
+        }
+
+        // 選題助手功能
+        function initIdeation() {
+            const form = document.getElementById('ideation-form');
+            const submitBtn = document.getElementById('ideation-submit');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingText = submitBtn.querySelector('.loading-text');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const topic = form.querySelector('[name="topic"]').value.trim();
+                const count = parseInt(form.querySelector('[name="count"]').value);
+                const dedupe = form.querySelector('[name="dedupe"]').checked;
+
+                if (!topic || !count) {
+                    showToast('請填寫主題和選擇產出條數', 'error');
+                    return;
+                }
+
+                // 顯示載入狀態
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                loadingText.classList.remove('hidden');
+
+                setTimeout(() => {
+                    generateIdeas(topic, count, dedupe);
+                    
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    loadingText.classList.add('hidden');
+                }, 2000);
+            });
+
+            // 快速示例按鈕
+            document.querySelectorAll('#ideation-empty .quick-example-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const examples = ['減肥方法', '投資理財', '職場技能'];
+                    const randomExample = examples[Math.floor(Math.random() * examples.length)];
+                    document.getElementById('topic').value = randomExample;
+                    document.getElementById('count').value = '5';
+                });
+            });
+        }
+
+        function generateIdeas(topic, count, dedupe) {
+            const ideas = [
+                { hook: '你知道嗎？', angle: '數據統計', keyword: '驚人事實', why: '數據具有說服力，容易引起共鳴' },
+                { hook: '為什麼會這樣？', angle: '原因分析', keyword: '深度解析', why: '滿足好奇心，提供深度內容' },
+                { hook: '這樣做就對了！', angle: '實用技巧', keyword: '操作指南', why: '直接解決問題，實用性強' },
+                { hook: '別再犯這個錯誤', angle: '常見誤區', keyword: '避坑指南', why: '警示性強，容易引起注意' },
+                { hook: '成功案例分享', angle: '真實故事', keyword: '經驗分享', why: '真實性高，容易產生信任' },
+                { hook: '專家都這樣說', angle: '權威觀點', keyword: '專業建議', why: '權威性強，增加可信度' },
+                { hook: '最新趨勢來了', angle: '趨勢分析', keyword: '熱點話題', why: '時效性強，容易引起關注' },
+                { hook: '對比一下就知道', angle: '對比分析', keyword: '優劣比較', why: '直觀易懂，幫助決策' },
+                { hook: '小技巧大效果', angle: '實用技巧', keyword: '簡單方法', why: '操作簡單，效果明顯' },
+                { hook: '背後的秘密', angle: '深度挖掘', keyword: '內幕揭秘', why: '神秘感強，滿足好奇心' }
+            ];
+
+            let selectedIdeas = ideas.slice(0, count);
+            if (dedupe) {
+                selectedIdeas = selectedIdeas.filter((idea, index, self) => 
+                    index === self.findIndex(i => i.angle !== idea.angle)
+                );
+            }
+
+            const cardsContainer = document.getElementById('ideation-cards');
+            cardsContainer.innerHTML = '';
+
+            selectedIdeas.forEach((idea, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">#${index + 1}</span>
+                        <span class="text-xs bg-primary text-white px-2 py-1 rounded">${idea.keyword}</span>
+                    </div>
+                    <div class="font-semibold text-gray-900 dark:text-white">${idea.hook}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        <strong>角度：</strong>${idea.angle}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        <strong>為什麼可行：</strong>${idea.why}
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+
+            document.getElementById('ideation-result').classList.remove('hidden');
+            document.getElementById('ideation-empty').classList.add('hidden');
+
+            // 派發事件
+            window.dispatchEvent(new CustomEvent('generateIdeas', {
+                detail: { topic, count, dedupe }
+            }));
+
+            showToast(`已產生 ${selectedIdeas.length} 個選題建議！`, 'success');
+        }
+
+        // 腳本生成器功能
+        function initScript() {
+            // 模式選擇
+            document.querySelectorAll('input[name="mode"]').forEach(radio => {
+                radio.addEventListener('change', updateModeSelection);
+            });
+
+            // 模板選擇
+            document.querySelectorAll('input[name="template"]').forEach(radio => {
+                radio.addEventListener('change', updateTemplateSelection);
+            });
+
+            // 時長選擇
+            document.querySelectorAll('input[name="duration"]').forEach(radio => {
+                radio.addEventListener('change', updateDurationSelection);
+            });
+
+            // 套用設定按鈕
+            document.getElementById('apply-settings').addEventListener('click', function() {
+                const mode = document.querySelector('input[name="mode"]:checked').value;
+                const template = document.querySelector('input[name="template"]:checked').value;
+                const duration = document.querySelector('input[name="duration"]:checked').value;
+
+                const modeText = mode === 'guided' ? '引導模式' : '自由模式';
+                const templateText = `模板 ${template}`;
+                const durationText = `${duration} 秒`;
+
+                showToast(`已套用：${modeText}/${templateText}/${durationText}`, 'success');
+
+                // 派發事件
+                window.dispatchEvent(new CustomEvent('applySettings', {
+                    detail: { mode, template, duration: parseInt(duration) }
+                }));
+
+                // 生成預覽
+                generateScriptPreview(mode, template, duration);
+            });
+
+            // 鍵盤導航
+            initKeyboardNavigation();
+        }
+
+        function updateModeSelection() {
+            document.querySelectorAll('.mode-option').forEach(option => {
+                const radio = option.parentElement.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    option.classList.add('border-primary', 'bg-primary', 'text-white');
+                    option.classList.remove('border-gray-300', 'dark:border-gray-600');
+                } else {
+                    option.classList.remove('border-primary', 'bg-primary', 'text-white');
+                    option.classList.add('border-gray-300', 'dark:border-gray-600');
+                }
+            });
+        }
+
+        function updateTemplateSelection() {
+            document.querySelectorAll('.template-card').forEach(card => {
+                const radio = card.parentElement.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    card.classList.add('border-primary', 'bg-primary', 'text-white');
+                    card.classList.remove('border-gray-300', 'dark:border-gray-600');
+                } else {
+                    card.classList.remove('border-primary', 'bg-primary', 'text-white');
+                    card.classList.add('border-gray-300', 'dark:border-gray-600');
+                }
+            });
+        }
+
+        function updateDurationSelection() {
+            document.querySelectorAll('.duration-option').forEach(option => {
+                const radio = option.parentElement.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    option.classList.add('border-primary', 'bg-primary', 'text-white');
+                    option.classList.remove('border-gray-300', 'dark:border-gray-600');
+                } else {
+                    option.classList.remove('border-primary', 'bg-primary', 'text-white');
+                    option.classList.add('border-gray-300', 'dark:border-gray-600');
+                }
+            });
+        }
+
+        function generateScriptPreview(mode, template, duration) {
+            const modeText = mode === 'guided' ? '引導模式' : '自由模式';
+            const templateText = `模板 ${template}`;
+            const durationText = `${duration} 秒`;
+
+            document.getElementById('script-mode').textContent = modeText;
+            document.getElementById('script-template').textContent = templateText;
+            document.getElementById('script-duration').textContent = durationText;
+
+            // 生成假腳本內容
+            const scriptContent = generateScriptContent(template, duration);
+            document.getElementById('script-content').textContent = scriptContent;
+
+            document.getElementById('script-empty').classList.add('hidden');
+            document.getElementById('script-result').classList.remove('hidden');
+        }
+
+        function generateScriptContent(template, duration) {
+            const templates = {
+                A: {
+                    title: '三段式腳本',
+                    content: `開頭（0-${Math.floor(duration * 0.2)}秒）：
+大家好，今天要分享一個重要主題...
+
+主體（${Math.floor(duration * 0.2)}-${Math.floor(duration * 0.8)}秒）：
+首先，我們來看看...其次...最後...
+
+結尾（${Math.floor(duration * 0.8)}-${duration}秒）：
+總結一下，記住這三個重點...`
+                },
+                B: {
+                    title: '問題解決腳本',
+                    content: `問題（0-${Math.floor(duration * 0.3)}秒）：
+你是否遇到這樣的困擾...
+
+分析（${Math.floor(duration * 0.3)}-${Math.floor(duration * 0.7)}秒）：
+這個問題的根本原因是...
+
+解決（${Math.floor(duration * 0.7)}-${duration}秒）：
+解決方案很簡單，只需要...`
+                },
+                C: {
+                    title: 'Before-After 腳本',
+                    content: `Before（0-${Math.floor(duration * 0.4)}秒）：
+以前的我總是...
+
+After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
+現在的我學會了...
+
+轉變（${Math.floor(duration * 0.8)}-${duration}秒）：
+關鍵就在於...`
+                },
+                D: {
+                    title: '教學腳本',
+                    content: `介紹（0-${Math.floor(duration * 0.2)}秒）：
+今天教大家一個實用技巧...
+
+步驟一（${Math.floor(duration * 0.2)}-${Math.floor(duration * 0.4)}秒）：
+第一步...
+
+步驟二（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.6)}秒）：
+第二步...
+
+步驟三（${Math.floor(duration * 0.6)}-${Math.floor(duration * 0.8)}秒）：
+第三步...
+
+總結（${Math.floor(duration * 0.8)}-${duration}秒）：
+記住這三個步驟...`
+                },
+                E: {
+                    title: '故事腳本',
+                    content: `開場（0-${Math.floor(duration * 0.2)}秒）：
+讓我分享一個真實故事...
+
+故事（${Math.floor(duration * 0.2)}-${Math.floor(duration * 0.7)}秒）：
+有一天...當時我...結果...
+
+啟發（${Math.floor(duration * 0.7)}-${duration}秒）：
+這個故事告訴我們...`
+                },
+                F: {
+                    title: '爆點連發腳本',
+                    content: `爆點一（0-${Math.floor(duration * 0.25)}秒）：
+你知道嗎？驚人事實...
+
+爆點二（${Math.floor(duration * 0.25)}-${Math.floor(duration * 0.5)}秒）：
+更驚人的是...
+
+爆點三（${Math.floor(duration * 0.5)}-${Math.floor(duration * 0.75)}秒）：
+最關鍵的是...
+
+行動（${Math.floor(duration * 0.75)}-${duration}秒）：
+現在就開始...`
+                }
+            };
+
+            return templates[template].content;
+        }
+
+        // 鍵盤導航功能
+        function initKeyboardNavigation() {
+            // 為所有可選元素添加 tabindex
+            document.querySelectorAll('input[type="radio"], button, a').forEach(el => {
+                if (!el.hasAttribute('tabindex')) {
+                    el.setAttribute('tabindex', '0');
+                }
+            });
+
+            // 處理鍵盤事件
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const activeElement = document.activeElement;
+                    if (activeElement && activeElement.tagName === 'LABEL') {
+                        e.preventDefault();
+                        const radio = activeElement.querySelector('input[type="radio"]');
+                        if (radio) {
+                            radio.checked = true;
+                            radio.dispatchEvent(new Event('change'));
+                        }
+                    }
+                }
+            });
+        }
+
+        // 資料儲存與載入
+        function saveFormData() {
+            const forms = ['positioning-form', 'ideation-form'];
+            forms.forEach(formId => {
+                const form = document.getElementById(formId);
+                if (form) {
+                    const formData = new FormData(form);
+                    const data = {};
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+                    sessionStorage.setItem(formId, JSON.stringify(data));
+                }
+            });
+        }
+
+        function loadStoredData() {
+            const forms = ['positioning-form', 'ideation-form'];
+            forms.forEach(formId => {
+                const stored = sessionStorage.getItem(formId);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        const form = document.getElementById(formId);
+                        if (form) {
+                            Object.keys(data).forEach(key => {
+                                const input = form.querySelector(`[name="${key}"]`);
+                                if (input) {
+                                    if (input.type === 'radio') {
+                                        if (input.value === data[key]) {
+                                            input.checked = true;
+                                        }
+                                    } else {
+                                        input.value = data[key];
+                                    }
+                                }
+                            });
+                            
+                            // 更新視覺狀態
+                            if (formId === 'positioning-form') {
+                                updateToneSelection();
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('無法載入儲存的表單資料:', e);
+                    }
+                }
+            });
+        }
+
+        // 定期儲存表單資料
+        setInterval(saveFormData, 2000);
+
+        // 頁面切換時儲存資料
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('a[href^="#!"]') || e.target.closest('a[href^="#!"]')) {
+                setTimeout(saveFormData, 100);
+            }
+        });
+    </script>
+
+    <!-- 
+    後端串接事件監聽範例：
+    
+    // 監聽定位分析事件
+    window.addEventListener('analyzePositioning', function(event) {
+        const { industry, audience, pains, tone, competitors } = event.detail;
+        
+        // 發送 API 請求
+        fetch('/api/analyze-positioning', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ industry, audience, pains, tone, competitors })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 更新 UI 顯示結果
+            document.getElementById('positioning-summary').textContent = data.summary;
+            document.getElementById('tone-guidelines').textContent = data.guidelines;
+        })
+        .catch(error => {
+            console.error('定位分析失敗:', error);
+            showToast('分析失敗，請稍後再試', 'error');
+        });
+    });
+
+    // 監聽選題生成事件
+    window.addEventListener('generateIdeas', function(event) {
+        const { topic, count, dedupe } = event.detail;
+        
+        fetch('/api/generate-ideas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic, count, dedupe })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 更新選題卡片
+            updateIdeationCards(data.ideas);
+        })
+        .catch(error => {
+            console.error('選題生成失敗:', error);
+            showToast('生成失敗，請稍後再試', 'error');
+        });
+    });
+
+    // 監聽腳本設定套用事件
+    window.addEventListener('applySettings', function(event) {
+        const { mode, template, duration } = event.detail;
+        
+        fetch('/api/generate-script', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode, template, duration })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 更新腳本預覽
+            document.getElementById('script-content').textContent = data.script;
+        })
+        .catch(error => {
+            console.error('腳本生成失敗:', error);
+            showToast('生成失敗，請稍後再試', 'error');
+        });
+    });
+    -->
 </body>
 </html>
