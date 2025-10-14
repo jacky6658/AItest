@@ -2,7 +2,7 @@
 <html lang="zh-TW" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>AIJob短影音顧問智能</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,6 +39,11 @@
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+        /* iOS Safari 字體縮放與輸入框自動放大修正 */
+        html { -webkit-text-size-adjust: 100%; }
+        @media (max-width: 480px) {
+          input, textarea, select { font-size: 16px !important; }
         }
         .btn-chip {
             padding: 6px 12px;
