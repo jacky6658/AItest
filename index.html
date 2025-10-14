@@ -79,7 +79,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="#!home" class="focus:outline-none" data-page="home">
-                        <h1 class="font-bold text-white text-lg sm:text-xl md:text-2xl leading-tight">AIJob短影音顧問智能</h1>
+                        <h1 class="font-bold text-primary dark:text-white text-lg sm:text-xl md:text-2xl leading-tight">AIJob短影音顧問智能</h1>
                     </a>
                 </div>
                 
@@ -233,38 +233,32 @@
                 </div>
             </section>
 
-            <!-- 工具卡片區 -->
+            <!-- 統一聊天式介面 -->
             <section class="py-16">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <!-- 定位助手卡片 -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 active:scale-95">
-                            <div class="text-4xl mb-4">🎯</div>
-                            <h3 class="text-2xl font-bold mb-4">AI短影音定位顧問</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-6">透過引導式問答，幫您找到最適合的品牌定位與語氣風格</p>
-                            <a href="#!positioning" class="block w-full bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-                                開始使用
-                            </a>
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-xl font-semibold">🤖 AI短影音顧問智能</h3>
+                            <div class="flex gap-2">
+                                <button class="nav-chip btn-chip" data-page="positioning">🎯 定位顧問</button>
+                                <button class="nav-chip btn-chip" data-page="ideation">💡 選題助手</button>
+                                <button class="nav-chip btn-chip" data-page="script">📝 腳本大師</button>
+                            </div>
                         </div>
-
-                        <!-- 選題助手卡片 -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 active:scale-95">
-                            <div class="text-4xl mb-4">💡</div>
-                            <h3 class="text-2xl font-bold mb-4">AI選題小助手</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-6">輸入主題關鍵字，自動產生多個吸睛的內容角度與切入點</p>
-                            <a href="#!ideation" class="block w-full bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-                                開始使用
-                            </a>
-                        </div>
-
-                        <!-- 腳本生成器卡片 -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 active:scale-95">
-                            <div class="text-4xl mb-4">📝</div>
-                            <h3 class="text-2xl font-bold mb-4">AI腳本生成大師</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-6">多種模板與時長選擇，快速生成專業的內容腳本</p>
-                            <a href="#!script" class="block w-full bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-                                開始使用
-                            </a>
+                        <div id="home-chat" class="h-96 overflow-y-auto p-6 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
+                        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex flex-wrap gap-2 mb-3 text-sm">
+                                <button class="home-chip btn-chip">🚀 一鍵生成定位</button>
+                                <button class="home-chip btn-chip">💡 獲取選題靈感</button>
+                                <button class="home-chip btn-chip">📝 生成腳本</button>
+                                <button class="home-chip btn-chip">🎯 業務類型定位</button>
+                                <button class="home-chip btn-chip">👥 目標受眾分析</button>
+                                <button class="home-chip btn-chip">📱 平台策略建議</button>
+                            </div>
+                            <div class="flex gap-2">
+                                <input id="home-chat-input" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="告訴我你的業務、產品、目標或困惑...">
+                                <button id="home-chat-send" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">分析</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -364,39 +358,8 @@
 
                     <!-- 右側結果 -->
                     <div>
-                        <div id="positioning-result" class="hidden">
-                            <h3 class="text-xl font-bold mb-4">定位摘要</h3>
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 space-y-4">
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">品牌定位</h4>
-                                    <p class="text-gray-600 dark:text-gray-400" id="positioning-summary"></p>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">語氣守則</h4>
-                                    <p class="text-gray-600 dark:text-gray-400" id="tone-guidelines"></p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="positioning-empty" class="text-center py-12">
-                            <div class="text-6xl mb-4">🎯</div>
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備開始定位分析</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-6">填寫左側表單，我們將為您生成專業的定位摘要</p>
-                            <div class="space-y-2">
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：科技新創公司
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：線上教育平台
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：健康食品品牌
-                                </button>
-                            </div>
-                        </div>
-                        
                         <!-- 定位 顧問聊天室（強化版） -->
-                        <div class="mt-6">
+                        <div class="mb-6">
                             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">🎯 AI影音定位顧問</h3>
@@ -418,6 +381,41 @@
                                         <button id="chat-send-positioning" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">分析</button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <div id="positioning-result" class="hidden">
+                            <h3 class="text-xl font-bold mb-4">定位摘要</h3>
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">品牌定位</h4>
+                                    <p class="text-gray-600 dark:text-gray-400" id="positioning-summary"></p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">語氣守則</h4>
+                                    <p class="text-gray-600 dark:text-gray-400" id="tone-guidelines"></p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">執行建議</h4>
+                                    <p class="text-gray-600 dark:text-gray-400" id="execution-suggestions"></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="positioning-empty" class="text-center py-12">
+                            <div class="text-6xl mb-4">🎯</div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備開始定位分析</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">填寫左側表單，我們將為您生成專業的定位摘要</p>
+                            <div class="space-y-2">
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：科技新創公司
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：線上教育平台
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：健康食品品牌
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -485,29 +483,8 @@
 
                     <!-- 右側結果 -->
                     <div>
-                        <div id="ideation-result" class="hidden">
-                            <h3 class="text-xl font-bold mb-4">選題建議</h3>
-                            <div id="ideation-cards" class="space-y-4"></div>
-                        </div>
-                        
-                        <div id="ideation-empty" class="text-center py-12">
-                            <div class="text-6xl mb-4">💡</div>
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備產生創意選題</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-6">輸入主題關鍵字，我們將為您產生多個吸睛的角度</p>
-                            <div class="space-y-2">
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：減肥方法
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：投資理財
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：職場技能
-                                </button>
-                            </div>
-                        </div>
                         <!-- 選題 聊天室（強化版） -->
-                        <div class="mt-6">
+                        <div class="mb-6">
                             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">💡 AI選題小助手</h3>
@@ -527,6 +504,28 @@
                                         <button id="chat-send-ideation" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">獲取靈感</button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <div id="ideation-result" class="hidden">
+                            <h3 class="text-xl font-bold mb-4">選題建議</h3>
+                            <div id="ideation-cards" class="space-y-4"></div>
+                        </div>
+                        
+                        <div id="ideation-empty" class="text-center py-12">
+                            <div class="text-6xl mb-4">💡</div>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備產生創意選題</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">輸入主題關鍵字，我們將為您產生多個吸睛的角度</p>
+                            <div class="space-y-2">
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：減肥方法
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：投資理財
+                                </button>
+                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                    快速示例：職場技能
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -642,30 +641,8 @@
                     <!-- 右側預覽區 -->
                     <div>
                         <h3 class="text-xl font-bold mb-4">預覽結果</h3>
-                        <div id="script-preview" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-96">
-                            <div id="script-empty" class="text-center py-12">
-                                <div class="text-6xl mb-4">📝</div>
-                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">準備生成腳本</h4>
-                                <p class="text-gray-600 dark:text-gray-400">選擇左側設定，點擊「套用設定並開始」開始生成</p>
-                            </div>
-                            <div id="script-result" class="hidden">
-                                <div class="space-y-4">
-                                    <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
-                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本設定</h4>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">
-                                            <span id="script-mode"></span> • <span id="script-template"></span> • <span id="script-duration"></span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本內容</h4>
-                                        <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- 腳本 聊天室（強化版） -->
-                        <div class="mt-6">
+                        <div class="mb-6">
                             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">📝 AI腳本生成大師</h3>
@@ -687,6 +664,28 @@
                                     <div class="flex gap-2">
                                         <input id="chat-input-script" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（按鈕送出；Shift+Enter 換行）">
                                         <button id="chat-send-script" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">送出</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="script-preview" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-96">
+                            <div id="script-empty" class="text-center py-12">
+                                <div class="text-6xl mb-4">📝</div>
+                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">準備生成腳本</h4>
+                                <p class="text-gray-600 dark:text-gray-400">選擇左側設定，點擊「套用設定並開始」開始生成</p>
+                            </div>
+                            <div id="script-result" class="hidden">
+                                <div class="space-y-4">
+                                    <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本設定</h4>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                                            <span id="script-mode"></span> • <span id="script-template"></span> • <span id="script-duration"></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本內容</h4>
+                                        <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
                                     </div>
                                 </div>
                             </div>
@@ -769,6 +768,7 @@
             initScript();
             initAuth();
             initChats();
+            initHomeChat();
             loadStoredData();
         });
 
@@ -974,16 +974,61 @@
                 const input = document.getElementById(inputId);
                 const box = document.getElementById(boxId);
                 if (!send || !input || !box) return;
+                
+                function formatAIResponse(text) {
+                    // 將AI回覆格式化為段落分明，使用emoji做段落分配
+                    let formatted = text;
+                    
+                    // 常見的段落分隔符號
+                    const separators = [
+                        { pattern: /\n\n/g, emoji: '📝' },
+                        { pattern: /\n/g, emoji: '💡' },
+                        { pattern: /。/g, emoji: '✨' },
+                        { pattern: /！/g, emoji: '🎯' },
+                        { pattern: /？/g, emoji: '🤔' }
+                    ];
+                    
+                    // 先處理雙換行（段落分隔）
+                    formatted = formatted.replace(/\n\n+/g, '\n\n📝 ');
+                    
+                    // 處理單換行
+                    formatted = formatted.replace(/\n(?!\n)/g, '\n💡 ');
+                    
+                    // 處理句號後的段落
+                    formatted = formatted.replace(/。([^。！？\n])/g, '。\n✨ $1');
+                    
+                    // 處理驚嘆號後的段落
+                    formatted = formatted.replace(/！([^。！？\n])/g, '！\n🎯 $1');
+                    
+                    // 處理問號後的段落
+                    formatted = formatted.replace(/？([^。！？\n])/g, '？\n🤔 $1');
+                    
+                    // 確保每個段落都有適當的間距
+                    formatted = formatted.replace(/([📝💡✨🎯🤔]) /g, '$1 ');
+                    
+                    return formatted;
+                }
+                
                 function append(role, text) {
                     const item = document.createElement('div');
-                    item.className = role === 'user' ? 'text-right' : 'text-left';
+                    item.className = role === 'user' ? 'text-right mb-3' : 'text-left mb-3';
                     const bubble = document.createElement('div');
-                    bubble.className = `inline-block px-3 py-2 rounded-lg ${role==='user'?'bg-blue-50 text-blue-900':'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'} shadow-sm`;
-                    bubble.textContent = text;
+                    bubble.className = `inline-block px-4 py-3 rounded-lg max-w-[85%] ${role==='user'?'bg-blue-50 text-blue-900':'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'} shadow-sm`;
+                    
+                    if (role === 'ai') {
+                        // AI回覆使用格式化的內容
+                        const formattedText = formatAIResponse(text);
+                        bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${formattedText}</div>`;
+                    } else {
+                        // 用戶訊息保持原樣
+                        bubble.textContent = text;
+                    }
+                    
                     item.appendChild(bubble);
                     box.appendChild(item);
                     box.scrollTop = box.scrollHeight;
                 }
+                
                 send.addEventListener('click', () => {
                     const v = input.value.trim();
                     if (!v) return;
@@ -1015,7 +1060,28 @@
                 btn.addEventListener('click', () => {
                     const input = document.getElementById('chat-input-positioning');
                     const send = document.getElementById('chat-send-positioning');
-                    if (input && send) {
+                    const box = document.getElementById('chat-positioning');
+                    if (input && send && box) {
+                        // 如果是第一次使用，先顯示歡迎訊息
+                        if (box.children.length === 0) {
+                            const welcomeMsg = `🎯 歡迎使用AI短影音定位顧問！
+
+📝 我是您的專業定位顧問，可以幫助您：
+💡 分析業務類型與目標受眾
+✨ 建立品牌定位與內容策略
+🎯 規劃平台經營方向
+
+🤔 請告訴我您的業務、產品或想法，我會逐步引導您建立完整的定位檔案！`;
+                            
+                            const item = document.createElement('div');
+                            item.className = 'text-left mb-3';
+                            const bubble = document.createElement('div');
+                            bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
+                            bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${welcomeMsg}</div>`;
+                            item.appendChild(bubble);
+                            box.appendChild(item);
+                        }
+                        
                         input.value = btn.textContent;
                         send.click();
                     }
@@ -1026,7 +1092,29 @@
                 btn.addEventListener('click', () => {
                     const input = document.getElementById('chat-input-ideation');
                     const send = document.getElementById('chat-send-ideation');
-                    if (input && send) {
+                    const box = document.getElementById('chat-ideation');
+                    if (input && send && box) {
+                        // 如果是第一次使用，先顯示歡迎訊息
+                        if (box.children.length === 0) {
+                            const welcomeMsg = `💡 歡迎使用AI選題小助手！
+
+📝 我可以為您提供：
+✨ 個性化選題建議
+🎯 熱點結合創意
+💡 季節性內容規劃
+🤔 多種選題類型篩選
+
+📝 請告訴我您想要什麼類型的選題靈感，我會為您量身打造！`;
+                            
+                            const item = document.createElement('div');
+                            item.className = 'text-left mb-3';
+                            const bubble = document.createElement('div');
+                            bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
+                            bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${welcomeMsg}</div>`;
+                            item.appendChild(bubble);
+                            box.appendChild(item);
+                        }
+                        
                         input.value = btn.textContent;
                         send.click();
                     }
@@ -1037,10 +1125,107 @@
                 btn.addEventListener('click', () => {
                     const input = document.getElementById('chat-input-script');
                     const send = document.getElementById('chat-send-script');
-                    if (input && send) {
+                    const box = document.getElementById('chat-script');
+                    if (input && send && box) {
+                        // 如果是第一次使用，先顯示歡迎訊息
+                        if (box.children.length === 0) {
+                            const welcomeMsg = `📝 歡迎使用AI腳本生成大師！
+
+🎯 我可以為您提供：
+✨ 一鍵生成完整腳本
+💡 引導模式逐步創作
+📝 自由模式創意討論
+🎯 多種模板結構選擇
+🤔 30秒與60秒時長支援
+
+📝 請告訴我您的主題、目標、受眾或平台，我會為您量身打造專業腳本！`;
+                            
+                            const item = document.createElement('div');
+                            item.className = 'text-left mb-3';
+                            const bubble = document.createElement('div');
+                            bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
+                            bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${welcomeMsg}</div>`;
+                            item.appendChild(bubble);
+                            box.appendChild(item);
+                        }
+                        
                         input.value = btn.textContent;
                         send.click();
                     }
+                });
+            });
+        }
+
+        // 首頁統一聊天功能
+        function initHomeChat() {
+            const homeChat = document.getElementById('home-chat');
+            const homeInput = document.getElementById('home-chat-input');
+            const homeSend = document.getElementById('home-chat-send');
+            
+            if (!homeChat || !homeInput || !homeSend) return;
+            
+            // 顯示歡迎訊息
+            const welcomeMsg = `🤖 歡迎使用AI短影音顧問智能！
+
+📝 我是您的專業短影音顧問，可以幫助您：
+🎯 建立品牌定位與內容策略
+💡 提供個性化選題建議
+📝 生成專業腳本與文案
+
+✨ 請告訴我您的業務、產品或想法，我會為您提供專業建議！
+
+🎯 您也可以點擊上方按鈕快速切換到特定功能頁面。`;
+            
+            const welcomeItem = document.createElement('div');
+            welcomeItem.className = 'text-left mb-3';
+            const welcomeBubble = document.createElement('div');
+            welcomeBubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
+            welcomeBubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${welcomeMsg}</div>`;
+            welcomeItem.appendChild(welcomeBubble);
+            homeChat.appendChild(welcomeItem);
+            
+            function appendMessage(role, text) {
+                const item = document.createElement('div');
+                item.className = role === 'user' ? 'text-right mb-3' : 'text-left mb-3';
+                const bubble = document.createElement('div');
+                bubble.className = `inline-block px-4 py-3 rounded-lg max-w-[85%] ${role==='user'?'bg-blue-50 text-blue-900':'bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600'} shadow-sm`;
+                
+                if (role === 'ai') {
+                    const formattedText = formatAIResponse(text);
+                    bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${formattedText}</div>`;
+                } else {
+                    bubble.textContent = text;
+                }
+                
+                item.appendChild(bubble);
+                homeChat.appendChild(item);
+                homeChat.scrollTop = homeChat.scrollHeight;
+            }
+            
+            // 發送訊息
+            homeSend.addEventListener('click', () => {
+                const v = homeInput.value.trim();
+                if (!v) return;
+                appendMessage('user', v);
+                homeInput.value = '';
+                
+                // 調用後端API
+                callBackend('positioning', v).then(msg => appendMessage('ai', msg));
+            });
+            
+            // 快速按鈕
+            document.querySelectorAll('.home-chip').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    homeInput.value = btn.textContent;
+                    homeSend.click();
+                });
+            });
+            
+            // 導航按鈕
+            document.querySelectorAll('.nav-chip').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    navigateToPage(page);
                 });
             });
         }
@@ -1186,9 +1371,12 @@
                 authoritative: '展現專業權威，使用確定的語氣，引用專業數據和案例，建立可信度和影響力。'
             };
 
+            const executionSuggestions = `建議採用流量型與轉換型內容 7:3 配比，每週發布 3-5 次，專注於 Instagram Reels 平台。開場使用問句式鉤子，2-3秒換畫面，保持節奏緊湊。`;
+
             // 顯示結果
             document.getElementById('positioning-summary').textContent = positioningSummary;
             document.getElementById('tone-guidelines').textContent = toneGuidelines[tone];
+            document.getElementById('execution-suggestions').textContent = executionSuggestions;
             
             document.getElementById('positioning-result').classList.remove('hidden');
             document.getElementById('positioning-empty').classList.add('hidden');
