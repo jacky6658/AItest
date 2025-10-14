@@ -121,6 +121,9 @@
                         <button id="login-btn" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                             登入
                         </button>
+                        <button id="email-login-open" class="ml-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-150 hidden">
+                            以 Email 登入
+                        </button>
                         <!-- 登入後的下拉選單 -->
                         <div id="user-dropdown" class="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden z-50">
                             <div class="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -275,6 +278,32 @@
             </button>
         </div>
     </aside>
+
+    <!-- Email 登入 Modal -->
+    <div id="email-modal" class="fixed inset-0 hidden z-50">
+        <div id="email-modal-overlay" class="absolute inset-0 bg-black/40"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                    <h3 class="text-lg font-semibold">以 Email 登入</h3>
+                    <button id="email-modal-close" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="關閉">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="px-5 py-4 space-y-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">輸入您的 Email，我們會寄出一次性的登入連結（或驗證碼）到您的信箱。</p>
+                    <div>
+                        <label for="email-login-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                        <input type="email" id="email-login-input" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="you@example.com"/>
+                    </div>
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button id="email-modal-cancel" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">取消</button>
+                        <button id="email-login-submit" class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover">寄送登入連結</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 主要內容區域 -->
     <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -991,6 +1020,13 @@
             const overlay = document.getElementById('drawer-overlay');
             const drawerClose = document.getElementById('drawer-close');
             const drawerLogout = document.getElementById('drawer-logout-btn');
+            const emailOpen = document.getElementById('email-login-open');
+            const emailModal = document.getElementById('email-modal');
+            const emailClose = document.getElementById('email-modal-close');
+            const emailCancel = document.getElementById('email-modal-cancel');
+            const emailSubmit = document.getElementById('email-login-submit');
+            const emailInput = document.getElementById('email-login-input');
+            const emailOverlay = document.getElementById('email-modal-overlay');
             if (!loginBtn) return;
 
             function refreshUserUI() {
@@ -1013,22 +1049,53 @@
                     document.getElementById('acc-avatar').textContent = u.name ? u.name.charAt(0).toUpperCase() : 'G';
                     // 同步後端點數/方案
                     fetchAccountSummary(u).catch(()=>{});
+                    // 若本地已有點數，先行顯示（後端回來會覆蓋）
+                    if (typeof u.credits === 'number') {
+                        const navC = document.getElementById('nav-credits'); if (navC) navC.textContent = u.credits;
+                        const accC = document.getElementById('acc-credits'); if (accC) accC.textContent = u.credits;
+                    }
                 } else {
                     loginBtn.textContent = '登入';
                     loginBtn.classList.remove('bg-orange-100', 'text-orange-800', 'border-orange-200');
                     loginBtn.classList.add('bg-gray-100', 'text-gray-700');
+                    // 顯示 Email 登入按鈕（未登入時）
+                    if (emailOpen) emailOpen.classList.remove('hidden');
                 }
             }
 
             loginBtn.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (!isLoggedIn) {
-                    // 導向登入頁（同層 login.html）
-                    window.location.href = 'login.html';
+                    // 導向 Google 登入（保留原流程），也可以改為開啟 Email modal
+                    window.location.href = `${API_BASE}/auth/google/start?next=${encodeURIComponent(location.href)}`;
                 } else {
                     // 開啟帳號抽屜
                     drawer.classList.remove('translate-x-full');
                     overlay.classList.remove('hidden');
+                }
+            });
+
+            // Email 登入 Modal 控制
+            function openEmailModal(){ if (emailModal) emailModal.classList.remove('hidden'); emailInput?.focus(); }
+            function closeEmailModal(){ if (emailModal) emailModal.classList.add('hidden'); emailInput.value=''; }
+            emailOpen?.addEventListener('click', openEmailModal);
+            emailClose?.addEventListener('click', closeEmailModal);
+            emailCancel?.addEventListener('click', closeEmailModal);
+            emailOverlay?.addEventListener('click', closeEmailModal);
+
+            emailSubmit?.addEventListener('click', async () => {
+                const email = (emailInput?.value || '').trim();
+                if (!email) { showToast('請輸入 Email', 'error'); return; }
+                try{
+                    const res = await fetch(`${API_BASE}/auth/email/start`, {
+                        method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    if (!res.ok) throw new Error('send failed');
+                    showToast('已寄出登入連結，請至信箱查收', 'success');
+                    closeEmailModal();
+                }catch(e){
+                    showToast('寄送失敗，請稍後再試', 'error');
                 }
             });
 
@@ -1111,6 +1178,25 @@
             showToast(`已扣點 ${cost}，剩餘 ${u.credits}`, 'success');
             return true;
         }
+
+        // 測試輔助：在瀏覽器 Console 可呼叫下列方法模擬
+        window.setCredits = function(n){
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const userRaw = localStorage.getItem('user');
+            if (!isLoggedIn || !userRaw) { showToast('請先登入再設定點數', 'error'); return; }
+            const u = JSON.parse(userRaw); u.credits = Number(n)||0; localStorage.setItem('user', JSON.stringify(u));
+            const navC = document.getElementById('nav-credits'); if (navC) navC.textContent = u.credits;
+            const accC = document.getElementById('acc-credits'); if (accC) accC.textContent = u.credits;
+            showToast(`已設定點數為 ${u.credits}`, 'success');
+        };
+        window.getCredits = function(){
+            const userRaw = localStorage.getItem('user');
+            const u = userRaw ? JSON.parse(userRaw) : null;
+            return u?.credits ?? null;
+        };
+        window.mockConsume = function(agent){
+            if (!tryConsumeCredits(agent||'topics')) return false; return window.getCredits();
+        };
 
         // 共用聊天邏輯（前端模擬）
         function initChats() {
