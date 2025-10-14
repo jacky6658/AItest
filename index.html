@@ -279,7 +279,7 @@
         </div>
     </aside>
 
-    <!-- Email 登入 Modal -->
+    <!-- Email 登入 Modal（保留，不再使用） -->
     <div id="email-modal" class="fixed inset-0 hidden z-50">
         <div id="email-modal-overlay" class="absolute inset-0 bg-black/40"></div>
         <div class="absolute inset-0 flex items-center justify-center p-4">
@@ -299,6 +299,74 @@
                     <div class="flex items-center justify-end gap-2 pt-2">
                         <button id="email-modal-cancel" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">取消</button>
                         <button id="email-login-submit" class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover">寄送登入連結</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email 登入/註冊 全畫面頁（新） -->
+    <div id="email-auth-page" class="fixed inset-0 hidden z-50">
+        <div class="absolute inset-0 bg-gray-900/60"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-lg font-semibold">Email 登入 / 註冊</h3>
+                        <span class="text-xs px-2 py-1 rounded bg-primary text-white">Beta</span>
+                    </div>
+                    <button id="email-auth-close" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="關閉">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="grid md:grid-cols-2">
+                    <!-- 左：登入 -->
+                    <div class="p-6 border-r border-gray-200 dark:border-gray-700">
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-1">已有帳號？登入</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">輸入 Email 或 帳號 與密碼登入。</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm mb-1">Email 或 帳號</label>
+                                <input id="login-identifier" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="you@example.com 或 yourname"/>
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">密碼</label>
+                                <input id="login-password" type="password" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
+                            </div>
+                            <div class="pt-2 flex items-center justify-end gap-2">
+                                <button id="btn-email-login" class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover">登入</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 右：註冊 -->
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-1">沒有帳號？註冊</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">建立帳號需填寫電話、Email、帳號與密碼。</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm mb-1">電話</label>
+                                <input id="signup-phone" type="tel" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="09xx-xxx-xxx"/>
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">Email</label>
+                                <input id="signup-email" type="email" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="you@example.com"/>
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">帳號</label>
+                                <input id="signup-username" type="text" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="yourname"/>
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-1">密碼</label>
+                                <input id="signup-password" type="password" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
+                            </div>
+                            <div class="pt-2 flex items-center justify-end gap-2">
+                                <button id="btn-email-signup" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">建立帳號</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1039,6 +1107,10 @@
             const emailSubmit = document.getElementById('email-login-submit');
             const emailInput = document.getElementById('email-login-input');
             const emailOverlay = document.getElementById('email-modal-overlay');
+            const emailPage = document.getElementById('email-auth-page');
+            const emailPageClose = document.getElementById('email-auth-close');
+            const btnEmailLogin = document.getElementById('btn-email-login');
+            const btnEmailSignup = document.getElementById('btn-email-signup');
             if (!loginBtn) return;
 
             function refreshUserUI() {
@@ -1078,8 +1150,8 @@
             loginBtn.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (!isLoggedIn) {
-                    // 導向 Google 登入（保留原流程），也可以改為開啟 Email modal
-                    window.location.href = `${API_BASE}/auth/google/start?next=${encodeURIComponent(location.href)}`;
+                    // 顯示 Email 全畫面頁（使用者可改點右上角 Google 登入）
+                    if (emailPage) emailPage.classList.remove('hidden');
                 } else {
                     // 開啟帳號抽屜
                     drawer.classList.remove('translate-x-full');
@@ -1087,7 +1159,7 @@
                 }
             });
 
-            // Email 登入 Modal 控制
+            // Email 登入 Modal 控制（舊，暫保留）
             function openEmailModal(){ if (emailModal) emailModal.classList.remove('hidden'); emailInput?.focus(); }
             function closeEmailModal(){ if (emailModal) emailModal.classList.add('hidden'); emailInput.value=''; }
             emailOpen?.addEventListener('click', openEmailModal);
@@ -1109,6 +1181,36 @@
                 }catch(e){
                     showToast('寄送失敗，請稍後再試', 'error');
                 }
+            });
+
+            // Email 全畫面頁：關閉
+            emailPageClose?.addEventListener('click', ()=> emailPage.classList.add('hidden'));
+
+            // Email 登入：POST /auth/login
+            btnEmailLogin?.addEventListener('click', async ()=>{
+                const identifier = (document.getElementById('login-identifier')?.value||'').trim();
+                const password = (document.getElementById('login-password')?.value||'').trim();
+                if (!identifier || !password){ showToast('請輸入帳號與密碼', 'error'); return; }
+                try{
+                    const res = await fetch(`${API_BASE}/auth/login`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ identifier, password }) });
+                    if (!res.ok) throw new Error('login failed');
+                    const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=>r.ok?r.json():null);
+                    if (me){ localStorage.setItem('isLoggedIn','true'); localStorage.setItem('user', JSON.stringify(me)); emailPage.classList.add('hidden'); showToast('登入成功', 'success'); location.reload(); }
+                }catch(e){ showToast('登入失敗，請檢查帳密或稍後再試', 'error'); }
+            });
+
+            // Email 註冊：POST /auth/signup
+            btnEmailSignup?.addEventListener('click', async ()=>{
+                const phone = (document.getElementById('signup-phone')?.value||'').trim();
+                const email = (document.getElementById('signup-email')?.value||'').trim();
+                const username = (document.getElementById('signup-username')?.value||'').trim();
+                const password = (document.getElementById('signup-password')?.value||'').trim();
+                if (!phone || !email || !username || !password){ showToast('請完整填寫電話/Email/帳號/密碼', 'error'); return; }
+                try{
+                    const res = await fetch(`${API_BASE}/auth/signup`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ phone, email, username, password }) });
+                    if (!res.ok) throw new Error('signup failed');
+                    showToast('帳號建立成功，請以帳密登入', 'success');
+                }catch(e){ showToast('建立帳號失敗，請稍後再試', 'error'); }
             });
 
             // 登出功能
