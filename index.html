@@ -61,9 +61,9 @@
     .msg{ max-width:80%; padding:10px 12px; border-radius:14px; border:1px solid var(--border); background:#fff; box-shadow:var(--shadow); }
     .msg.user{ margin-left:auto; background:#eef4ff; border-color:#dbe6ff; }
     .msg .meta{ font-size:12px; color:var(--text-muted); margin-bottom:4px; }
-    .inputbar{ display:flex !important; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff; visibility:visible !important; }
-    .inputbar textarea{ flex:1; resize:none; border:1px solid var(--border); border-radius:12px; padding:10px 12px; min-height:46px; max-height:160px; font-size:16px; line-height:1.5; display:block !important; visibility:visible !important; }
-    .inputbar button{ flex-shrink:0; display:block !important; visibility:visible !important; }
+    .inputbar{ display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:#fff; }
+    .inputbar textarea{ flex:1; resize:none; border:1px solid var(--border); border-radius:12px; padding:10px 12px; min-height:46px; max-height:160px; font-size:16px; line-height:1.5; }
+    .inputbar button{ flex-shrink:0; }
     textarea{ flex:1; resize:none; border:1px solid var(--border); border-radius:12px; padding:10px 12px; min-height:46px; max-height:160px; font-size:16px; line-height:1.5; }
 
     .right-wrap{ display:flex; flex-direction:column; height:62vh; }
@@ -132,36 +132,17 @@
     .segctl{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
     .segctl .group{ display:flex; gap:6px; background:var(--muted); border:1px solid var(--border); border-radius:12px; padding:6px; }
     
-    /* 響應式設計 - GPT式對話框 */
+    /* 響應式設計 */
     @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        height: 100vh;
-        padding: 0;
-      }
-      
-      .left-wrap, .right-wrap {
-        width: 100%;
+      .chat-wrap, .right-wrap {
         height: 50vh;
-        border-radius: 0;
-        margin: 0;
-      }
-      
-      .chat-wrap {
-        height: calc(100% - 120px);
         min-height: 300px;
-      }
-      
-      .right-wrap {
-        height: 50vh;
-        border-top: 1px solid #eee;
       }
       
       .panel-head {
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
-        padding: 12px;
       }
       
       .settings {
@@ -171,94 +152,16 @@
       
       .tabs {
         justify-content: center;
-        flex-wrap: wrap;
       }
       
       .btn {
         min-height: 38px;
         font-size: 14px;
         padding: 8px 12px;
-        margin: 2px;
       }
       
       .chips {
         justify-content: center;
-        flex-wrap: wrap;
-      }
-      
-      /* GPT式對話框樣式 */
-      .message {
-        margin-bottom: 16px;
-        padding: 12px 16px;
-        border-radius: 12px;
-        max-width: 85%;
-        word-wrap: break-word;
-      }
-      
-      .message.user {
-        background: #007bff;
-        color: white;
-        margin-left: auto;
-        border-bottom-right-radius: 4px;
-      }
-      
-      .message.assistant {
-        background: #f8f9fa;
-        color: #333;
-        margin-right: auto;
-        border-bottom-left-radius: 4px;
-        border: 1px solid #e9ecef;
-      }
-      
-      /* 輸入框區域 */
-      .input-area {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: white;
-        padding: 12px;
-        border-top: 1px solid #eee;
-        z-index: 1000;
-      }
-      
-      .input-group {
-        display: flex;
-        gap: 8px;
-        align-items: flex-end;
-      }
-      
-      .input-group textarea {
-        flex: 1;
-        min-height: 40px;
-        max-height: 120px;
-        resize: vertical;
-        border: 1px solid #ddd;
-        border-radius: 20px;
-        padding: 10px 16px;
-        font-size: 14px;
-        display: block !important;
-        visibility: visible !important;
-      }
-      
-      /* 確保腳本頁面輸入框在手機版也可見 */
-      #page-script .inputbar {
-        display: flex !important;
-        visibility: visible !important;
-      }
-      
-      #page-script .inputbar textarea {
-        display: block !important;
-        visibility: visible !important;
-      }
-      
-      .input-group button {
-        padding: 10px 20px;
-        border-radius: 20px;
-        border: none;
-        background: #007bff;
-        color: white;
-        font-weight: 600;
       }
     }
     
@@ -267,30 +170,10 @@
         height: 45vh;
       }
       
-      .chat-wrap {
-        height: calc(100% - 100px);
-        min-height: 250px;
-      }
-      
       .btn {
         min-height: 36px;
         font-size: 12px;
         padding: 6px 10px;
-      }
-      
-      .message {
-        padding: 10px 12px;
-        font-size: 14px;
-      }
-      
-      .input-group textarea {
-        font-size: 13px;
-        padding: 8px 12px;
-      }
-      
-      .input-group button {
-        padding: 8px 16px;
-        font-size: 13px;
       }
       
       .panel-title {
@@ -299,37 +182,6 @@
       
       .brand {
         font-size: 18px;
-      }
-    }
-    
-    /* 桌面版GPT式對話框增強 */
-    @media (min-width: 769px) {
-      .message {
-        margin-bottom: 20px;
-        padding: 16px 20px;
-        border-radius: 16px;
-        max-width: 80%;
-        line-height: 1.6;
-      }
-      
-      .message.user {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
-        margin-left: auto;
-        box-shadow: 0 2px 8px rgba(0,123,255,0.3);
-      }
-      
-      .message.assistant {
-        background: #ffffff;
-        color: #333;
-        margin-right: auto;
-        border: 1px solid #e9ecef;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      }
-      
-      .chat-wrap {
-        height: calc(100% - 80px);
-        min-height: 400px;
       }
     }
     .segctl .group label{ 
@@ -342,6 +194,10 @@
       font-weight:500;
       writing-mode: horizontal-tb;
       text-orientation: mixed;
+    }
+    .segctl .group label:hover{
+      border-color:#2196F3;
+      background:#f5f5f5;
     }
     .segctl .group input{ display:none; }
     .segctl .group input:checked + span{ 
@@ -955,11 +811,22 @@
     state.lastAssistantScript = msg;
     
     // 確保輸入框可見
-    const inputScript = document.getElementById('inputScript');
-    if(inputScript) {
-      inputScript.style.display = 'block';
-      inputScript.style.visibility = 'visible';
-    }
+    setTimeout(() => {
+      const inputScript = document.getElementById('inputScript');
+      const inputbar = document.querySelector('#page-script .inputbar');
+      if(inputScript) {
+        inputScript.style.display = 'block';
+        inputScript.style.visibility = 'visible';
+        inputScript.style.opacity = '1';
+        console.log('腳本輸入框已顯示');
+      }
+      if(inputbar) {
+        inputbar.style.display = 'flex';
+        inputbar.style.visibility = 'visible';
+        inputbar.style.opacity = '1';
+        console.log('輸入框區域已顯示');
+      }
+    }, 100);
   }
 
   // 快速模板 / 快速問題（依模式更換）
@@ -1793,12 +1660,20 @@
   // 確保腳本頁面輸入框可見
   setTimeout(() => {
     const inputScript = document.getElementById('inputScript');
+    const inputbar = document.querySelector('#page-script .inputbar');
     if(inputScript) {
       console.log('腳本輸入框找到:', inputScript);
       inputScript.style.display = 'block';
       inputScript.style.visibility = 'visible';
+      inputScript.style.opacity = '1';
     } else {
       console.error('腳本輸入框未找到!');
+    }
+    if(inputbar) {
+      inputbar.style.display = 'flex';
+      inputbar.style.visibility = 'visible';
+      inputbar.style.opacity = '1';
+      console.log('輸入框區域已確保可見');
     }
   }, 100);
   </script>
