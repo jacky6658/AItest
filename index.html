@@ -1431,7 +1431,10 @@
                             item.className = 'text-left mb-3';
                             const bubble = document.createElement('div');
                             bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
-                            bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${welcomeMsg}</div>`;
+                            const safe = document.createElement('div');
+                            safe.className = 'whitespace-pre-line text-sm leading-relaxed';
+                            safe.textContent = welcomeMsg;
+                            bubble.appendChild(safe);
                             item.appendChild(bubble);
                             box.appendChild(item);
                         }
@@ -1464,7 +1467,10 @@
                             item.className = 'text-left mb-3';
                             const bubble = document.createElement('div');
                             bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
-                            bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${welcomeMsg}</div>`;
+                            const safe2 = document.createElement('div');
+                            safe2.className = 'whitespace-pre-line text-sm leading-relaxed';
+                            safe2.textContent = welcomeMsg;
+                            bubble.appendChild(safe2);
                             item.appendChild(bubble);
                             box.appendChild(item);
                         }
@@ -1498,7 +1504,10 @@
                             item.className = 'text-left mb-3';
                             const bubble = document.createElement('div');
                             bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
-                            bubble.innerHTML = `<div class="whitespace-pre-line text-sm leading-relaxed">${welcomeMsg}</div>`;
+                            const safe3 = document.createElement('div');
+                            safe3.className = 'whitespace-pre-line text-sm leading-relaxed';
+                            safe3.textContent = welcomeMsg;
+                            bubble.appendChild(safe3);
                             item.appendChild(bubble);
                             box.appendChild(item);
                         }
