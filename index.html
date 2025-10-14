@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -78,7 +79,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="#!home" class="focus:outline-none" data-page="home">
-                        <h1 class="font-bold text-primary text-lg sm:text-xl md:text-2xl leading-tight">AIJob短影音顧問智能</h1>
+                        <h1 class="font-bold text-white text-lg sm:text-xl md:text-2xl leading-tight">AIJob短影音顧問智能</h1>
                     </a>
                 </div>
                 
@@ -208,20 +209,20 @@
                 </div>
             </div>
             <!-- 手機下拉選單 -->
-            <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 dark:border-gray-700">
+            <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                 <div class="px-4 py-3 space-y-2">
-                    <a href="#!home" class="block nav-link" data-page="home">首頁</a>
-                    <a href="#!positioning" class="block nav-link" data-page="positioning">AI短影音定位顧問</a>
-                    <a href="#!ideation" class="block nav-link" data-page="ideation">AI選題小助手</a>
-                    <a href="#!script" class="block nav-link" data-page="script">AI腳本生成大師</a>
-                    <a href="#!guide" class="block nav-link" data-page="guide">說明/指南</a>
+                    <a href="#!home" class="block nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="home">首頁</a>
+                    <a href="#!positioning" class="block nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="positioning">AI短影音定位顧問</a>
+                    <a href="#!ideation" class="block nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="ideation">AI選題小助手</a>
+                    <a href="#!script" class="block nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="script">AI腳本生成大師</a>
+                    <a href="#!guide" class="block nav-link text-gray-700 dark:text-gray-300 hover:text-primary transition-colors duration-150" data-page="guide">說明/指南</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- 主要內容區域 -->
-    <main class="min-h-screen">
+    <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
         <!-- 首頁 -->
         <div id="page-home" class="page hidden">
             <!-- Hero 區 -->
@@ -740,11 +741,11 @@
     <footer class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 mt-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-wrap gap-3 mb-4">
-                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">AIJob 行銷自動化課程</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/UUwpEG">AIJob Discord社群討論</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-50" target="_blank" href="https://AIJobschool.short.gy/E49kA8">AIJob LINE官方帳號</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">AIJob 行銷自動化課程</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/UUwpEG">AIJob Discord社群討論</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/E49kA8">AIJob LINE官方帳號</a>
             </div>
             <div class="text-center text-gray-500 dark:text-gray-400">© 2025 AIJobSchool 版權所有</div>
         </div>
@@ -783,21 +784,34 @@
                 document.documentElement.classList.add('dark');
                 sunIcon.classList.add('hidden');
                 moonIcon.classList.remove('hidden');
+                console.log('初始化夜間模式'); // 調試信息
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                console.log('初始化日間模式'); // 調試信息
             }
 
             themeToggle.addEventListener('click', function() {
                 isDarkMode = !isDarkMode;
                 localStorage.setItem('darkMode', isDarkMode);
                 
+                console.log('切換夜間模式:', isDarkMode); // 調試信息
+                
                 if (isDarkMode) {
                     document.documentElement.classList.add('dark');
                     sunIcon.classList.add('hidden');
                     moonIcon.classList.remove('hidden');
+                    showToast('已切換到夜間模式', 'success');
                 } else {
                     document.documentElement.classList.remove('dark');
                     sunIcon.classList.remove('hidden');
                     moonIcon.classList.add('hidden');
+                    showToast('已切換到日間模式', 'success');
                 }
+                
+                // 強制重新渲染
+                document.body.offsetHeight;
             });
         }
 
