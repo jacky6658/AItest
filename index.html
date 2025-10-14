@@ -111,9 +111,9 @@
                         </svg>
                     </button>
                     
-                    <!-- 假 Credits -->
+                    <!-- Credits 顯示（可動態更新） -->
                     <div class="hidden sm:flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <span>Credits: 999</span>
+                        <span>Credits: <span id="nav-credits">999</span></span>
                     </div>
                     
                     <!-- 登入按鈕（最右側） -->
@@ -225,6 +225,56 @@
             </div>
         </div>
     </nav>
+
+    <!-- 帳號側邊抽屜（登入後） -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/40 hidden z-40"></div>
+    <aside id="account-drawer" class="fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 transform translate-x-full transition-transform duration-200 z-50">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div id="acc-avatar" class="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-semibold">A</div>
+                <div>
+                    <div id="acc-name" class="font-semibold text-gray-900 dark:text-white">使用者</div>
+                    <div id="acc-email" class="text-sm text-gray-500 dark:text-gray-400">user@email.com</div>
+                </div>
+            </div>
+            <button id="drawer-close" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="關閉">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-4 space-y-4">
+            <div class="flex items-center justify-between">
+                <span id="acc-plan" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">免費</span>
+                <button id="acc-upgrade" class="px-3 py-1 text-xs bg-black text-white rounded">升級</button>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                <span>點數</span>
+                <span id="acc-credits" class="font-semibold">300</span>
+            </div>
+            <nav class="pt-2 space-y-1 text-gray-700 dark:text-gray-300">
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span>知識</span>
+                </a>
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span>帳戶</span>
+                </a>
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span>設定</span>
+                </a>
+                <a href="#!home" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span>首頁</span>
+                </a>
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span>獲取幫助</span>
+                </a>
+            </nav>
+        </div>
+        <div class="mt-auto p-4 border-t border-gray-200 dark:border-gray-700">
+            <button id="drawer-logout-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded bg-red-50 text-red-600 hover:bg-red-100 dark:bg-gray-700 dark:text-red-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                登出
+            </button>
+        </div>
+    </aside>
 
     <!-- 主要內容區域 -->
     <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -786,6 +836,10 @@
     <script>
         // API Base（自動偵測本機或雲端）
         const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://aijobvideobackend.zeabur.app';
+        // 會員 API base（可與主 API 相同）
+        const ACCOUNT_API = API_BASE;
+        // 功能扣點設定（可依實際調整）
+        const CREDIT_COSTS = { positioning: 5, topics: 3, script: 8 };
 
         // 全域變數
         let currentPage = 'home';
@@ -933,6 +987,10 @@
             const loginBtn = document.getElementById('login-btn');
             const dropdown = document.getElementById('user-dropdown');
             const logoutBtn = document.getElementById('logout-btn');
+            const drawer = document.getElementById('account-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            const drawerClose = document.getElementById('drawer-close');
+            const drawerLogout = document.getElementById('drawer-logout-btn');
             if (!loginBtn) return;
 
             function refreshUserUI() {
@@ -949,6 +1007,12 @@
                     document.getElementById('user-name').textContent = u.name || 'Google 用戶';
                     document.getElementById('user-email').textContent = u.email || 'user@gmail.com';
                     document.getElementById('user-avatar').textContent = u.name ? u.name.charAt(0).toUpperCase() : 'G';
+                    // 更新抽屜內容
+                    document.getElementById('acc-name').textContent = u.name || 'Google 用戶';
+                    document.getElementById('acc-email').textContent = u.email || 'user@gmail.com';
+                    document.getElementById('acc-avatar').textContent = u.name ? u.name.charAt(0).toUpperCase() : 'G';
+                    // 同步後端點數/方案
+                    fetchAccountSummary(u).catch(()=>{});
                 } else {
                     loginBtn.textContent = '登入';
                     loginBtn.classList.remove('bg-orange-100', 'text-orange-800', 'border-orange-200');
@@ -962,8 +1026,9 @@
                     // 導向登入頁（同層 login.html）
                     window.location.href = 'login.html';
                 } else {
-                    // 顯示下拉選單
-                    dropdown.classList.toggle('hidden');
+                    // 開啟帳號抽屜
+                    drawer.classList.remove('translate-x-full');
+                    overlay.classList.remove('hidden');
                 }
             });
 
@@ -978,6 +1043,17 @@
                 });
             }
 
+            if (drawerLogout) {
+                drawerLogout.addEventListener('click', () => {
+                    localStorage.removeItem('user');
+                    localStorage.setItem('isLoggedIn', 'false');
+                    showToast('已登出', 'success');
+                    refreshUserUI();
+                    drawer.classList.add('translate-x-full');
+                    overlay.classList.add('hidden');
+                });
+            }
+
             // 點擊外部關閉下拉選單
             document.addEventListener('click', (e) => {
                 if (!loginBtn.contains(e.target) && !dropdown.contains(e.target)) {
@@ -985,7 +1061,55 @@
                 }
             });
 
+            // 抽屜關閉控制
+            if (drawerClose) drawerClose.addEventListener('click', () => { drawer.classList.add('translate-x-full'); overlay.classList.add('hidden'); });
+            if (overlay) overlay.addEventListener('click', () => { drawer.classList.add('translate-x-full'); overlay.classList.add('hidden'); });
+
             refreshUserUI();
+        }
+
+        // 從後端讀取使用者點數與方案
+        async function fetchAccountSummary(user){
+            if (!user || !user.id) return;
+            try {
+                const res = await fetch(`${ACCOUNT_API}/account/summary?user_id=${encodeURIComponent(user.id)}`, { credentials: 'include' });
+                const data = await res.json();
+                if (!data || data.error) return;
+                const credits = typeof data.credits === 'number' ? data.credits : (data.credits?.balance ?? undefined);
+                const plan = data.plan || data.subscription || '免費';
+                if (credits !== undefined) {
+                    const navC = document.getElementById('nav-credits');
+                    if (navC) navC.textContent = credits;
+                    const accC = document.getElementById('acc-credits');
+                    if (accC) accC.textContent = credits;
+                    // 也同步到 localStorage 方便模擬扣點
+                    const userRaw = localStorage.getItem('user');
+                    if (userRaw) {
+                        const u = JSON.parse(userRaw); u.credits = credits; localStorage.setItem('user', JSON.stringify(u));
+                    }
+                }
+                const accPlan = document.getElementById('acc-plan');
+                if (accPlan) accPlan.textContent = plan;
+            } catch(e) { /* 忽略錯誤，保持原樣 */ }
+        }
+
+        // 扣點（前端模擬）
+        function tryConsumeCredits(agent){
+            const userRaw = localStorage.getItem('user');
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn || !userRaw) return true; // 未登入就不扣，直接通過
+            const u = JSON.parse(userRaw);
+            const cost = CREDIT_COSTS[agent] || 0;
+            if ((u.credits ?? 0) < cost) {
+                showToast(`點數不足，無法執行（需要 ${cost} 點）`, 'error');
+                return false;
+            }
+            u.credits = (u.credits ?? 0) - cost;
+            localStorage.setItem('user', JSON.stringify(u));
+            const navC = document.getElementById('nav-credits'); if (navC) navC.textContent = u.credits;
+            const accC = document.getElementById('acc-credits'); if (accC) accC.textContent = u.credits;
+            showToast(`已扣點 ${cost}，剩餘 ${u.credits}`, 'success');
+            return true;
         }
 
         // 共用聊天邏輯（前端模擬）
@@ -1165,6 +1289,8 @@
                 send.addEventListener('click', () => {
                     const v = input.value.trim();
                     if (!v) return;
+                    // 扣點（若不足則阻擋）
+                    if (!tryConsumeCredits(agent)) return;
                     append('user', v);
                     input.value = '';
                     const pending = appendPending();
