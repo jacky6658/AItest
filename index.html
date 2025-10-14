@@ -256,6 +256,38 @@
     .profile-field:last-of-type {
       border-bottom: none;
     }
+    
+    /* 腳本模式按鈕樣式 - 強制覆蓋 */
+    #oneClickScript,
+    #guideMode,
+    #freeMode {
+      background: #2196F3 !important;
+      color: white !important;
+      border: none !important;
+      padding: 8px 16px !important;
+      border-radius: 6px !important;
+      margin-right: 10px !important;
+      cursor: pointer !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+      transition: all 0.2s ease !important;
+    }
+    
+    #oneClickScript:hover,
+    #guideMode:hover,
+    #freeMode:hover {
+      background: #1976D2 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    }
+    
+    /* 選中狀態 */
+    #oneClickScript.active,
+    #guideMode.active,
+    #freeMode.active {
+      background: #1976D2 !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    }
   </style>
 </head>
 <body>
@@ -433,9 +465,9 @@
             <!-- 模式切換 -->
             <div class="segctl">
               <div class="group" id="modeGroup">
-                <button class="mode-btn" id="oneClickScript" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">🚀 一鍵生成腳本</button>
-                <button class="mode-btn" id="guideMode" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">✍️ 引導模式</button>
-                <button class="mode-btn" id="freeMode" style="background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 6px; margin-right: 10px; cursor: pointer;">💬 自由模式</button>
+                <button class="mode-btn" id="oneClickScript">🚀 一鍵生成腳本</button>
+                <button class="mode-btn" id="guideMode">✍️ 引導模式</button>
+                <button class="mode-btn" id="freeMode">💬 自由模式</button>
               </div>
             </div>
           </div>
@@ -939,6 +971,18 @@
     const profileContent = document.getElementById('profileContent');
     if(state.userProfile){
       const profile = state.userProfile;
+      // 清理欄位（去除 ** 等 Markdown 殘留；空值顯示為未設定）
+      const cleanField = (v)=>{
+        if(v==null) return '未設定';
+        let s = String(v)
+          .replace(/^\*+\s*/g,'')
+          .replace(/\s*\*+$/g,'')
+          .replace(/^【.*?】/,'')
+          .trim();
+        if(!s || s === '—' || s === '-') return '未設定';
+        return s;
+      };
+
       const notes = (state.userNotes||[]).map(n=>{
         // 清理內容，移除開場白
         let cleanContent = n.content
@@ -987,12 +1031,12 @@
       
       profileContent.innerHTML = `
         ${statusText}
-        <div class="profile-field"><strong>業務類型：</strong>${profile.business_type || '未設定'}</div>
-        <div class="profile-field"><strong>目標受眾：</strong>${profile.target_audience || '未設定'}</div>
-        <div class="profile-field"><strong>品牌語氣：</strong>${profile.brand_voice || '未設定'}</div>
-        <div class="profile-field"><strong>主要平台：</strong>${profile.primary_platform || '未設定'}</div>
-        <div class="profile-field"><strong>內容目標：</strong>${profile.content_goals || '未設定'}</div>
-        <div class="profile-field"><strong>發文頻率：</strong>${profile.posting_frequency || '未設定'}</div>
+        <div class="profile-field"><strong>業務類型：</strong>${cleanField(profile.business_type)}</div>
+        <div class="profile-field"><strong>目標受眾：</strong>${cleanField(profile.target_audience)}</div>
+        <div class="profile-field"><strong>品牌語氣：</strong>${cleanField(profile.brand_voice)}</div>
+        <div class="profile-field"><strong>主要平台：</strong>${cleanField(profile.primary_platform)}</div>
+        <div class="profile-field"><strong>內容目標：</strong>${cleanField(profile.content_goals)}</div>
+        <div class="profile-field"><strong>發文頻率：</strong>${cleanField(profile.posting_frequency)}</div>
         <div style="margin-top:12px; padding-top:8px; border-top:1px solid #eee;"><strong>📝 定位筆記：</strong></div>
         <ul style="padding-left:18px; margin:6px 0 0">${notes}</ul>
       `;
@@ -1032,6 +1076,7 @@
         
         // 格式化段落
         cleanContent = cleanContent
+          .replace(/^/,'🔥 ')
           .replace(/\n/g, '<br>')
           .replace(/(\d+\.)/g, '<br><strong>$1</strong>')
           .replace(/(選題方向|爆點切入|內容發展|為什麼會爆)/g, '<br><strong>$1</strong>')
@@ -1408,9 +1453,9 @@
     // 切換到引導模式
     document.getElementById('guideBar').style.display = 'block';
     // 更新按鈕狀態
-    document.getElementById('guideMode').style.background = '#1976D2';
-    document.getElementById('freeMode').style.background = '#2196F3';
-    document.getElementById('oneClickScript').style.background = '#2196F3';
+    document.getElementById('guideMode').classList.add('active');
+    document.getElementById('freeMode').classList.remove('active');
+    document.getElementById('oneClickScript').classList.remove('active');
     // 更新全局狀態
     state.scriptMode = 'guide';
   };
@@ -1419,9 +1464,9 @@
     // 切換到自由模式
     document.getElementById('guideBar').style.display = 'none';
     // 更新按鈕狀態
-    document.getElementById('freeMode').style.background = '#1976D2';
-    document.getElementById('guideMode').style.background = '#2196F3';
-    document.getElementById('oneClickScript').style.background = '#2196F3';
+    document.getElementById('freeMode').classList.add('active');
+    document.getElementById('guideMode').classList.remove('active');
+    document.getElementById('oneClickScript').classList.remove('active');
     // 更新全局狀態
     state.scriptMode = 'free';
   };
@@ -1429,9 +1474,9 @@
   // 一鍵生成腳本功能
   document.getElementById('oneClickScript').onclick = async () => {
     // 更新按鈕狀態
-    document.getElementById('oneClickScript').style.background = '#1976D2';
-    document.getElementById('guideMode').style.background = '#2196F3';
-    document.getElementById('freeMode').style.background = '#2196F3';
+    document.getElementById('oneClickScript').classList.add('active');
+    document.getElementById('guideMode').classList.remove('active');
+    document.getElementById('freeMode').classList.remove('active');
     
     const theme = prompt('請輸入您的主題或腳本內容：', '');
     if (!theme || !theme.trim()) {
@@ -1471,9 +1516,19 @@
         // 顯示 AI 回應
         appendMsg(chat, 'assistant', data.assistant_message, true);
         
-        // 更新腳本分段顯示
+        // 更新腳本分段顯示（寫入狀態並渲染到「腳本分段 / 時間軸」）
         if (data.segments && data.segments.length > 0) {
-          updateScriptSegmentsDisplay(data.segments);
+          try {
+            state.segments = data.segments;
+            if (typeof renderSegments === 'function') {
+              renderSegments();
+            } else {
+              // 若舊版函數不存在，退而使用新渲染方式
+              updateScriptSegmentsDisplay(data.segments);
+            }
+          } catch(e) {
+            updateScriptSegmentsDisplay(data.segments);
+          }
         }
         
         // 刷新腳本筆記
@@ -1499,9 +1554,9 @@
   // 初始化腳本模式按鈕狀態
   function initScriptModeButtons() {
     // 設置初始狀態：引導模式為選中
-    document.getElementById('guideMode').style.background = '#1976D2';
-    document.getElementById('freeMode').style.background = '#2196F3';
-    document.getElementById('oneClickScript').style.background = '#2196F3';
+    document.getElementById('guideMode').classList.add('active');
+    document.getElementById('freeMode').classList.remove('active');
+    document.getElementById('oneClickScript').classList.remove('active');
     state.scriptMode = 'guide';
   }
 
