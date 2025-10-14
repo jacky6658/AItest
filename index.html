@@ -997,7 +997,40 @@
                         })
                     });
                     const data = await res.json();
-                    return data.assistant_message || '（後端已回覆，但無內容）';
+                    const msg = data.assistant_message || '（後端已回覆，但無內容）';
+                    // 將 AI 回覆同步到對應結果區塊（段落分明）
+                    try {
+                        if (agent === 'script') {
+                            const preview = document.getElementById('script-preview');
+                            if (preview) {
+                                document.getElementById('script-empty').classList.add('hidden');
+                                document.getElementById('script-result').classList.remove('hidden');
+                                const ctn = document.getElementById('script-content');
+                                if (ctn) ctn.textContent = msg; // whitespace-pre-line 已在樣式
+                                preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        } else if (agent === 'positioning') {
+                            const area = document.getElementById('positioning-result');
+                            if (area) {
+                                area.classList.remove('hidden');
+                                const s = document.getElementById('positioning-summary');
+                                if (s) s.textContent = msg;
+                                document.getElementById('positioning-loading')?.classList.add('hidden');
+                            }
+                        } else if (agent === 'topics') {
+                            const area = document.getElementById('ideation-result');
+                            const cards = document.getElementById('ideation-cards');
+                            if (area && cards) {
+                                area.classList.remove('hidden');
+                                const card = document.createElement('div');
+                                card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2';
+                                card.innerHTML = `<div class="font-semibold text-gray-900 dark:text-white mb-1">AI 生成建議</div><div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${msg}</div>`;
+                                cards.prepend(card);
+                                area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }
+                    } catch (_) {}
+                    return msg;
                 } catch (e) {
                     return '（後端不可用，這是前端示範回覆）';
                 }
@@ -1188,6 +1221,15 @@
                     }
                 });
             });
+            // 進入頁面時在右側聊天框給開場介紹（只顯示一次）
+            const ibox = document.getElementById('chat-ideation');
+            if (ibox && !ibox.dataset.intro){
+                const intro = '嗨！我是 AI 選題小助手。\n我會根據你的定位與需求，提供多元的內容角度與切入點。\n請在左側輸入主題和條數，或直接在下方跟我說你想討論的方向（例如熱門趨勢、教育分享…），我會即時回覆建議。';
+                const wrap = document.createElement('div');
+                wrap.className = 'text-left mb-3';
+                wrap.innerHTML = `<div class=\"inline-block px-3 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm whitespace-pre-line\">${intro}</div>`;
+                ibox.appendChild(wrap); ibox.dataset.intro = '1';
+            }
         }
 
 
@@ -1302,6 +1344,16 @@
                     }
                 });
             });
+
+            // 進入頁面時在右側聊天框給開場介紹（只顯示一次）
+            const box = document.getElementById('chat-positioning');
+            if (box && !box.dataset.intro) {
+                const intro = '嗨！我是你的 AI 影音定位顧問。\n我會根據你在左側填寫的資訊結合知識庫，幫你整理品牌定位、語氣守則與執行建議。\n填完表單按「生成定位摘要」，或在下方直接跟我聊天描述你的業務與受眾，我也能一步步引導你完成定位。';
+                const wrap = document.createElement('div');
+                wrap.className = 'text-left mb-3';
+                wrap.innerHTML = `<div class="inline-block px-3 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm whitespace-pre-line">${intro}</div>`;
+                box.appendChild(wrap); box.dataset.intro = '1';
+            }
         }
 
         // 讓右側聊天對話框高度與左側表單同高（桌面端）
@@ -1599,13 +1651,16 @@
 
                 showToast(`已套用：${modeText}/${templateText}/${durationText}`, 'success');
 
-                // 派發事件
-                window.dispatchEvent(new CustomEvent('applySettings', {
-                    detail: { mode, template, duration: parseInt(duration) }
-                }));
-
-                // 生成預覽
-                generateScriptPreview(mode, template, duration);
+                // 派發事件：先讓右側聊天框說明操作方式與下一步
+                const intro = `已套用設定：${modeText}／${templateText}／${durationText}\n\n請在下方聊天輸入你想拍攝的主題、受眾、平台與語氣，我會根據你剛剛的設定產生腳本，並與你互動優化。\n若你直接輸入主題，我會依知識庫輸出一份含金量高、段落分明的腳本。`;
+                const box = document.getElementById('chat-script');
+                if (box){
+                    const wrap = document.createElement('div');
+                    wrap.className = 'text-left mb-3';
+                    wrap.innerHTML = `<div class="inline-block px-3 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm whitespace-pre-line">${intro}</div>`;
+                    box.appendChild(wrap); box.scrollTop = box.scrollHeight;
+                }
+                window.dispatchEvent(new CustomEvent('applySettings', { detail: { mode, template, duration: parseInt(duration) } }));
             });
 
             // 鍵盤導航
