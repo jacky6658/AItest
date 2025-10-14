@@ -747,8 +747,13 @@
                     <!-- 右側預覽區 -->
                     <div class="lg:col-span-8">
                         <h3 class="text-xl font-bold mb-4">預覽結果</h3>
+                        <!-- 切換：AI 對話 / 一鍵生成 -->
+                        <div id="script-tabs" class="flex gap-2 mb-3">
+                            <button id="tab-script-chat" class="px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover">AI 對話</button>
+                            <button id="tab-script-oneclick" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">一鍵生成</button>
+                        </div>
                         <!-- 腳本 聊天室（強化版） -->
-                        <div class="mb-6">
+                        <div id="script-chat-panel" class="mb-6">
                             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">📝 AI腳本生成大師</h3>
@@ -757,9 +762,6 @@
                                 <div id="chat-script" class="h-80 sm:h-96 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
                                 <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                                     <div class="flex flex-wrap gap-2 mb-3 text-sm">
-                                        <button class="chip-s btn-chip">🚀 一鍵生成腳本</button>
-                                        <button class="chip-s btn-chip">✍️ 引導模式</button>
-                                        <button class="chip-s btn-chip">💬 自由模式</button>
                                         <button class="chip-s btn-chip">A 三段式</button>
                                         <button class="chip-s btn-chip">B 問題解決</button>
                                         <button class="chip-s btn-chip">C Before-After</button>
@@ -771,6 +773,16 @@
                                         <input id="chat-input-script" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（按鈕送出；Shift+Enter 換行）">
                                         <button id="chat-send-script" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">送出</button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 一鍵生成 面板 -->
+                        <div id="script-oneclick-panel" class="hidden mb-6">
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden p-4 border border-gray-200 dark:border-gray-700">
+                                <div class="mb-3 text-sm text-gray-600 dark:text-gray-400">輸入主題與重點，將依照左側的模板/時長設定一鍵生成腳本。</div>
+                                <div class="flex gap-2 mb-3">
+                                    <input id="oneclick-topic" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="例如：AI認證落地智能體的60秒短影音腳本">
+                                    <button id="oneclick-generate" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">生成腳本</button>
                                 </div>
                             </div>
                         </div>
@@ -1961,7 +1973,7 @@
                 showToast(`已套用：${modeText}/${templateText}/${durationText}`, 'success');
 
                 // 派發事件：先讓右側聊天框說明操作方式與下一步
-                const intro = `已套用設定：${modeText}／${templateText}／${durationText}\n\n請在下方聊天輸入你想拍攝的主題、受眾、平台與語氣，我會根據你剛剛的設定產生腳本，並與你互動優化。\n若你直接輸入主題，我會依知識庫輸出一份含金量高、段落分明的腳本。`;
+                const intro = `已套用設定：${modeText}／${templateText}／${durationText}\n\n可在「AI 對話」與「一鍵生成」兩種方式間切換。\n- AI 對話：在下方輸入主題與條件，我會根據左側設定生成並優化腳本。\n- 一鍵生成：切到「一鍵生成」頁，直接輸入主題快速產出腳本。`;
                 const box = document.getElementById('chat-script');
                 if (box){
                     const wrap = document.createElement('div');
@@ -1974,6 +1986,30 @@
 
             // 鍵盤導航
             initKeyboardNavigation();
+
+            // 切換面板事件
+            const tabChat = document.getElementById('tab-script-chat');
+            const tabOne = document.getElementById('tab-script-oneclick');
+            const panelChat = document.getElementById('script-chat-panel');
+            const panelOne = document.getElementById('script-oneclick-panel');
+            function activate(tab){
+                if (tab === 'chat') {
+                    panelChat.classList.remove('hidden');
+                    panelOne.classList.add('hidden');
+                    tabChat.classList.add('bg-primary','text-white');
+                    tabOne.classList.remove('bg-primary','text-white');
+                    tabOne.classList.add('border','border-gray-300','dark:border-gray-600');
+                } else {
+                    panelChat.classList.add('hidden');
+                    panelOne.classList.remove('hidden');
+                    tabOne.classList.remove('border','border-gray-300','dark:border-gray-600');
+                    tabOne.classList.add('bg-primary','text-white');
+                    tabChat.classList.remove('bg-primary','text-white');
+                }
+            }
+            tabChat?.addEventListener('click', ()=>activate('chat'));
+            tabOne?.addEventListener('click', ()=>activate('one'));
+            activate('chat');
         }
 
         function updateModeSelection() {
