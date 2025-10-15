@@ -111,18 +111,15 @@
                         </svg>
                     </button>
                     
-                    <!-- Credits 顯示（可動態更新） -->
-                    <div class="hidden sm:flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <span>Credits: <span id="nav-credits">999</span></span>
+                    <!-- Credits 顯示（登入後才顯示） -->
+                    <div id="nav-credits-wrap" class="hidden items-center text-sm text-gray-500 dark:text-gray-400">
+                        <span>Credits: <span id="nav-credits">0</span></span>
                     </div>
                     
                     <!-- 登入按鈕（最右側） -->
                     <div class="relative">
                         <button id="login-btn" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                             登入
-                        </button>
-                        <button id="email-login-open" class="ml-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-150 hidden">
-                            以 Email 登入
                         </button>
                         <!-- 登入後的下拉選單 -->
                         <div id="user-dropdown" class="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg hidden z-50">
@@ -279,31 +276,6 @@
         </div>
     </aside>
 
-    <!-- Email 登入 Modal（保留，不再使用） -->
-    <div id="email-modal" class="fixed inset-0 hidden z-50">
-        <div id="email-modal-overlay" class="absolute inset-0 bg-black/40"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
-                <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                    <h3 class="text-lg font-semibold">以 Email 登入</h3>
-                    <button id="email-modal-close" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="關閉">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-                <div class="px-5 py-4 space-y-4">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">輸入您的 Email，我們會寄出一次性的登入連結（或驗證碼）到您的信箱。</p>
-                    <div>
-                        <label for="email-login-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
-                        <input type="email" id="email-login-input" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent dark:bg-gray-700 dark:text-white" placeholder="you@example.com"/>
-                    </div>
-                    <div class="flex items-center justify-end gap-2 pt-2">
-                        <button id="email-modal-cancel" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">取消</button>
-                        <button id="email-login-submit" class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover">寄送登入連結</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Email 登入/註冊 全畫面頁（新） -->
     <div id="email-auth-page" class="fixed inset-0 hidden z-50">
@@ -1142,12 +1114,15 @@
             function refreshUserUI() {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 const userRaw = localStorage.getItem('user');
+                const creditsWrap = document.getElementById('nav-credits-wrap');
                 
                 if (isLoggedIn && userRaw) {
                     const u = JSON.parse(userRaw);
                     loginBtn.textContent = u.name || 'Google 用戶';
                     loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
                     loginBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                    // 顯示 Credits 區塊
+                    if (creditsWrap) creditsWrap.classList.remove('hidden');
                     
                     // 更新下拉選單內容
                     document.getElementById('user-name').textContent = u.name || 'Google 用戶';
@@ -1168,6 +1143,8 @@
                     loginBtn.textContent = '登入';
                     loginBtn.classList.remove('bg-orange-100', 'text-orange-800', 'border-orange-200');
                     loginBtn.classList.add('bg-gray-100', 'text-gray-700');
+                    // 未登入隱藏 Credits 區塊
+                    if (creditsWrap) creditsWrap.classList.add('hidden');
                     // 顯示 Email 登入按鈕（未登入時）
                     if (emailOpen) emailOpen.classList.remove('hidden');
                 }
@@ -1245,6 +1222,18 @@
             }
             document.getElementById('btn-google-login')?.addEventListener('click', ()=> startGoogle(location.href));
             document.getElementById('btn-google-signup')?.addEventListener('click', ()=> startGoogle(location.href));
+
+            // 顯示/隱藏密碼
+            function bindToggle(btnId, inputId){
+                const btn = document.getElementById(btnId);
+                const inp = document.getElementById(inputId);
+                if (!btn || !inp) return;
+                btn.addEventListener('click', ()=>{
+                    inp.type = (inp.type === 'password') ? 'text' : 'password';
+                });
+            }
+            bindToggle('toggle-login-pw','login-password');
+            bindToggle('toggle-signup-pw','signup-password');
 
             // 登出功能
             if (logoutBtn) {
