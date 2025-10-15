@@ -1217,8 +1217,23 @@
             });
 
             // Google 登入/註冊（皆導向同一 OAuth 起始端點，後端處理不存在帳號時自動建帳）
-            function startGoogle(nextUrl){
-                window.location.href = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
+            async function startGoogle(nextUrl){
+                const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
+                const features = 'width=520,height=640,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes';
+                const popup = window.open(url, 'google_auth', features);
+                // 輕量輪詢：等待後端設定好 session cookie 後，自動關閉視窗並刷新父頁
+                const timer = setInterval(async ()=>{
+                    try{
+                        const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                        if (me && me.id){
+                            localStorage.setItem('isLoggedIn','true');
+                            localStorage.setItem('user', JSON.stringify(me));
+                            clearInterval(timer);
+                            try{ popup && popup.close(); }catch(_){ }
+                            location.reload();
+                        }
+                    }catch(_){ /* 忽略暫時錯誤 */ }
+                }, 1000);
             }
             document.getElementById('btn-google-login')?.addEventListener('click', ()=> startGoogle(location.href));
             document.getElementById('btn-google-signup')?.addEventListener('click', ()=> startGoogle(location.href));
