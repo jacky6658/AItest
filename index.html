@@ -551,7 +551,7 @@
                                         <button class="chip-p btn-chip">🚀 一鍵生成定位</button>
                                     </div>
                                     <div class="flex gap-2">
-                                        <input id="chat-input-positioning" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="告訴我你的業務、產品、目標或困惑...">
+                                        <textarea id="chat-input-positioning" rows="2" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 resize-y" placeholder="告訴我你的業務、產品、目標或困惑...（Enter 送出；Shift+Enter 換行）"></textarea>
                                         <button id="chat-send-positioning" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">分析</button>
                                     </div>
                                 </div>
@@ -664,7 +664,7 @@
                                         <button class="chip-i btn-chip">🚀 一鍵生成選題</button>
                                     </div>
                                     <div class="flex gap-2">
-                                        <input id="chat-input-ideation" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="告訴我你想要什麼類型的選題靈感...">
+                                        <textarea id="chat-input-ideation" rows="2" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 resize-y" placeholder="告訴我你想要什麼類型的選題靈感...（Enter 送出；Shift+Enter 換行）"></textarea>
                                         <button id="chat-send-ideation" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">獲取靈感</button>
                                     </div>
                                 </div>
@@ -836,7 +836,7 @@
                                         <button class="chip-s btn-chip">F 爆點連發</button>
                                     </div>
                                     <div class="flex gap-2">
-                                        <input id="chat-input-script" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（按鈕送出；Shift+Enter 換行）">
+                                        <textarea id="chat-input-script" rows="2" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 resize-y" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（Enter 送出；Shift+Enter 換行）"></textarea>
                                         <button id="chat-send-script" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">送出</button>
                                     </div>
                                 </div>
@@ -961,6 +961,19 @@
             initIdeation();
             initScript();
             initAuth();
+            // 與後端 Session 對齊，避免 localStorage 殘留導致誤顯示已登入
+            (async function syncSession(){
+                try{
+                    const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                    if (me && me.id){
+                        localStorage.setItem('isLoggedIn','true');
+                        localStorage.setItem('user', JSON.stringify(me));
+                    } else {
+                        localStorage.setItem('isLoggedIn','false');
+                        localStorage.removeItem('user');
+                    }
+                }catch(_){ /* 忽略網路錯誤 */ }
+            })();
             initChats();
             loadStoredData();
             adjustPositioningHeights();
@@ -1218,6 +1231,8 @@
 
             // Google 登入/註冊（皆導向同一 OAuth 起始端點，後端處理不存在帳號時自動建帳）
             async function startGoogle(nextUrl){
+                // 先清除現有 session，避免因為已登入而被誤認為成功
+                try{ await fetch(`${API_BASE}/logout`, {method:'POST', credentials:'include'}); }catch(_){ }
                 const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
                 const features = 'width=520,height=640,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes';
                 const popup = window.open(url, 'google_auth', features);
@@ -1234,6 +1249,7 @@
                         }
                     }catch(_){ /* 忽略暫時錯誤 */ }
                 }, 1000);
+                showToast('請在彈窗完成 Google 登入', 'info');
             }
             document.getElementById('btn-google-login')?.addEventListener('click', ()=> startGoogle(location.href));
             document.getElementById('btn-google-signup')?.addEventListener('click', ()=> startGoogle(location.href));
@@ -1541,6 +1557,16 @@
                             append('ai', '抱歉，目前系統較繁忙，請稍後再試。');
                         });
                 });
+                // Enter 送出（Shift+Enter 不送出）
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        const v = input.value.trim();
+                        if (v) {
+                            send.click();
+                        }
+                    }
+                });
             }
             bindChat('chat-send-positioning','chat-input-positioning','chat-positioning','positioning');
             bindChat('chat-send-ideation','chat-input-ideation','chat-ideation','topics');
@@ -1709,18 +1735,34 @@
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // 驗證必填欄位
-                const requiredFields = ['industry', 'audience', 'pains', 'tone'];
+                // 驗證必填欄位（tone 以 checked 驗證）
+                const requiredFields = ['industry', 'audience', 'pains'];
                 let isValid = true;
                 
                 requiredFields.forEach(field => {
                     const input = form.querySelector(`[name="${field}"]`);
-                    if (!input.value.trim()) {
+                    if (!input || !input.value.trim()) {
                         isValid = false;
-                        input.classList.add('border-red-500');
-                        setTimeout(() => input.classList.remove('border-red-500'), 3000);
+                        if (input) {
+                            input.classList.add('border-red-500');
+                            setTimeout(() => input.classList.remove('border-red-500'), 3000);
+                        }
                     }
                 });
+                // tone（radio group）需至少選取一個
+                const toneChecked = form.querySelector('input[name="tone"]:checked');
+                if (!toneChecked) {
+                    isValid = false;
+                    try {
+                        document.querySelectorAll('.tone-option').forEach(opt => {
+                            const wrap = opt.parentElement;
+                            if (wrap) {
+                                wrap.classList.add('border-red-500');
+                                setTimeout(() => wrap.classList.remove('border-red-500'), 3000);
+                            }
+                        });
+                    } catch(_) {}
+                }
 
                 if (!isValid) {
                     showToast('請填寫所有必填欄位', 'error');
@@ -2142,6 +2184,68 @@
             tabChat?.addEventListener('click', ()=>activate('chat'));
             tabOne?.addEventListener('click', ()=>activate('one'));
             activate('chat');
+
+            // 一鍵生成：按鈕行為（顯示按鈕內轉圈圈與預覽結果）
+            const oneBtn = document.getElementById('oneclick-generate');
+            const oneTopic = document.getElementById('oneclick-topic');
+            oneBtn?.addEventListener('click', async ()=>{
+                const topic = (oneTopic?.value||'').trim();
+                if (!topic){ showToast('請先輸入主題', 'error'); return; }
+
+                // 讀取左側設定
+                const mode = document.querySelector('input[name="mode"]:checked')?.value || 'guided';
+                const template = document.querySelector('input[name="template"]:checked')?.value || 'A';
+                const duration = parseInt(document.querySelector('input[name="duration"]:checked')?.value || '30');
+
+                // 切換到一鍵生成頁，顯示下方預覽 loading
+                activate('one');
+                const preview = document.getElementById('script-preview');
+                if (preview){
+                    document.getElementById('script-empty')?.classList.add('hidden');
+                    document.getElementById('script-result')?.classList.add('hidden');
+                    document.getElementById('script-loading')?.classList.remove('hidden');
+                }
+
+                // 按鈕顯示轉圈圈
+                const original = oneBtn.innerHTML;
+                oneBtn.disabled = true;
+                oneBtn.innerHTML = `<svg class="loading-spinner w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> 生成中...`;
+
+                try{
+                    // 嘗試呼叫後端 /chat（agent: script），失敗則本地生成
+                    const user = JSON.parse(localStorage.getItem('user') || '{}');
+                    const userId = user.id || 'web';
+                    const prompt = `主題：${topic}\n模板：${template}\n時長：${duration}秒\n模式：${mode}`;
+                    let scriptText = '';
+                    try{
+                        const res = await fetch(`${API_BASE}/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_id: userId, agent_type: 'script', messages: [{ role:'user', content: prompt }] }) });
+                        const data = await res.json();
+                        scriptText = (data && data.assistant_message) ? data.assistant_message : '';
+                    }catch(_){ /* 後端不可用時走本地 */ }
+
+                    if (!scriptText){
+                        // 本地生成
+                        scriptText = generateScriptContent(template, duration);
+                    }
+
+                    // 更新預覽
+                    document.getElementById('script-loading')?.classList.add('hidden');
+                    const modeText = mode === 'guided' ? '引導模式' : '自由模式';
+                    const templateText = `模板 ${template}`;
+                    const durationText = `${duration} 秒`;
+                    const m = document.getElementById('script-mode'); if (m) m.textContent = modeText;
+                    const t = document.getElementById('script-template'); if (t) t.textContent = templateText;
+                    const d = document.getElementById('script-duration'); if (d) d.textContent = durationText;
+                    const c = document.getElementById('script-content'); if (c) c.textContent = scriptText;
+                    document.getElementById('script-result')?.classList.remove('hidden');
+                    showToast('腳本已生成，請查看預覽', 'success');
+                    setTimeout(()=>{ document.getElementById('script-result')?.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
+                } finally {
+                    // 還原按鈕
+                    oneBtn.disabled = false;
+                    oneBtn.innerHTML = original;
+                }
+            });
         }
 
         function updateModeSelection() {
@@ -2447,4 +2551,3 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
     -->
 </body>
 </html>
-
