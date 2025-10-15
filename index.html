@@ -75,7 +75,7 @@
 </head>
 <body class="font-sans bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-150">
     <!-- Toast 容器 -->
-    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <div id="toast-container" class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 pointer-events-none"></div>
 
     <!-- 頂部導覽列 -->
     <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
@@ -1684,18 +1684,11 @@
         function showToast(message, type = 'info') {
             const toastContainer = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
-            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
-            
-            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg fade-in`;
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-600';
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-2xl fade-in pointer-events-auto`;
             toast.textContent = message;
-            
             toastContainer.appendChild(toast);
-            
-            // 2 秒後自動移除
-            setTimeout(() => {
-                toast.remove();
-            }, 2000);
+            setTimeout(() => { toast.remove(); }, 2200);
         }
 
         // 定位助手功能
@@ -2454,3 +2447,4 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
     -->
 </body>
 </html>
+
