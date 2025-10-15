@@ -333,11 +333,22 @@
                             </div>
                             <div>
                                 <label class="block text-sm mb-1">密碼</label>
-                                <input id="login-password" type="password" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
+                                <div class="flex items-center gap-2">
+                                    <input id="login-password" type="password" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
+                                    <button id="toggle-login-pw" type="button" class="px-2 py-2 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700" aria-label="顯示/隱藏密碼">👁️</button>
+                                </div>
                             </div>
                             <div class="pt-2 flex items-center justify-end gap-2">
                                 <button id="btn-email-login" class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-hover">登入</button>
                             </div>
+                            <div class="flex items-center gap-3 pt-3">
+                                <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+                                <span class="text-xs text-gray-500">或</span>
+                                <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+                            </div>
+                            <button id="btn-google-login" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center gap-2">
+                                <span>使用 Google 登入</span>
+                            </button>
                         </div>
                     </div>
                     <!-- 右：註冊 -->
@@ -361,11 +372,22 @@
                             </div>
                             <div>
                                 <label class="block text-sm mb-1">密碼</label>
-                                <input id="signup-password" type="password" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
+                                <div class="flex items-center gap-2">
+                                    <input id="signup-password" type="password" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
+                                    <button id="toggle-signup-pw" type="button" class="px-2 py-2 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700" aria-label="顯示/隱藏密碼">👁️</button>
+                                </div>
                             </div>
                             <div class="pt-2 flex items-center justify-end gap-2">
                                 <button id="btn-email-signup" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">建立帳號</button>
                             </div>
+                            <div class="flex items-center gap-3 pt-3">
+                                <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+                                <span class="text-xs text-gray-500">或</span>
+                                <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
+                            </div>
+                            <button id="btn-google-signup" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center gap-2">
+                                <span>使用 Google 註冊</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1212,6 +1234,13 @@
                     showToast('帳號建立成功，請以帳密登入', 'success');
                 }catch(e){ showToast('建立帳號失敗，請稍後再試', 'error'); }
             });
+
+            // Google 登入/註冊（皆導向同一 OAuth 起始端點，後端處理不存在帳號時自動建帳）
+            function startGoogle(nextUrl){
+                window.location.href = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
+            }
+            document.getElementById('btn-google-login')?.addEventListener('click', ()=> startGoogle(location.href));
+            document.getElementById('btn-google-signup')?.addEventListener('click', ()=> startGoogle(location.href));
 
             // 登出功能
             if (logoutBtn) {
