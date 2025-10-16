@@ -2972,8 +2972,8 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         });
     </script>
 
-    <!-- 
-    後端串接事件監聽範例：
+    <script>
+    // 後端串接事件監聽範例：
     
     // 監聽定位分析事件
     window.addEventListener('analyzePositioning', function(event) {
@@ -3271,6 +3271,11 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
     
     // 初始化訂閱方案
     initSubscriptionPlans();
-    -->
+    
+    // 確保頁面載入後執行
+    document.addEventListener('DOMContentLoaded', function() {
+        initSubscriptionPlans();
+    });
+    </script>
 </body>
 </html>
