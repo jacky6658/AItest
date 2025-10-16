@@ -42,6 +42,18 @@
         }
         /* iOS Safari 字體縮放與輸入框自動放大修正 */
         html { -webkit-text-size-adjust: 100%; }
+        /* Safe Area 變數與工具 */
+        :root{
+          --safe-left: env(safe-area-inset-left, 0px);
+          --safe-right: env(safe-area-inset-right, 0px);
+          --safe-top: env(safe-area-inset-top, 0px);
+          --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        .safe-x{ padding-left: max(1rem, var(--safe-left)); padding-right: max(1rem, var(--safe-right)); }
+        .safe-t{ padding-top: var(--safe-top); }
+        .safe-b{ padding-bottom: var(--safe-bottom); }
+        /* 鎖背景捲動：登入彈窗開啟時在 <html> 加上 modal-open */
+        html.modal-open, html.modal-open body { overflow: hidden; }
         @media (max-width: 480px) {
           input, textarea, select { font-size: 16px !important; }
         }
@@ -78,8 +90,8 @@
     <div id="toast-container" class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 pointer-events-none"></div>
 
     <!-- 頂部導覽列 -->
-    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 safe-x safe-t">
+        <div class="max-w-7xl mx-auto w-full">
             <div class="flex justify-between items-center h-16 relative">
                 <!-- Logo -->
                 <div class="flex items-center">
@@ -937,8 +949,8 @@
     </main>
 
     <!-- 全站頁尾：外部連結 + 版權 -->
-    <footer class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 mt-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <footer class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 mt-8 safe-x safe-b">
+        <div class="max-w-7xl mx-auto w-full py-6">
             <div class="flex flex-wrap gap-3 mb-4">
                 <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
                 <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
