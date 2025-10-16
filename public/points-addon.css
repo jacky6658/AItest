@@ -1,0 +1,436 @@
+/* AI Points Addon Styles - 點數訂閱制樣式 */
+.aiPoints-badge {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 60;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  max-width: 200px;
+}
+
+.aiPoints-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.aiPoints-badge .balance {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.aiPoints-badge .expiring {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.aiPoints-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 70;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.aiPoints-modal.show {
+  display: flex;
+}
+
+.aiPoints-modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.aiPoints-modal-header {
+  padding: 24px 24px 0;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aiPoints-modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.aiPoints-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.aiPoints-modal-close:hover {
+  background-color: #f3f4f6;
+}
+
+.aiPoints-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  margin: 0 24px;
+}
+
+.aiPoints-tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.aiPoints-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.aiPoints-tab-content {
+  padding: 24px;
+}
+
+.aiPoints-packs {
+  display: grid;
+  gap: 16px;
+}
+
+.aiPoints-pack {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.aiPoints-pack:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.aiPoints-pack.selected {
+  border-color: #667eea;
+  background: #f8faff;
+}
+
+.aiPoints-pack-popular {
+  position: absolute;
+  top: -8px;
+  right: 16px;
+  background: #667eea;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.aiPoints-pack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.aiPoints-pack-points {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.aiPoints-pack-price {
+  font-size: 20px;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.aiPoints-pack-desc {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.aiPoints-pack-validity {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.aiPoints-plans {
+  display: grid;
+  gap: 16px;
+}
+
+.aiPoints-plan {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.aiPoints-plan:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.aiPoints-plan-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.aiPoints-plan-desc {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.aiPoints-plan-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.aiPoints-plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.aiPoints-plan-features li {
+  padding: 4px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.aiPoints-plan-features li:before {
+  content: "✓";
+  color: #10b981;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.aiPoints-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.aiPoints-btn {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.aiPoints-btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.aiPoints-btn-primary:hover {
+  background: #5a67d8;
+}
+
+.aiPoints-btn-secondary {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.aiPoints-btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.aiPoints-loading {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+.aiPoints-loading.show {
+  display: block;
+}
+
+/* 手機版適配 */
+@media (max-width: 640px) {
+  .aiPoints-badge {
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+    max-width: 150px;
+  }
+  
+  .aiPoints-modal {
+    padding: 10px;
+  }
+  
+  .aiPoints-modal-content {
+    max-height: 90vh;
+  }
+  
+  .aiPoints-modal-header {
+    padding: 16px 16px 0;
+  }
+  
+  .aiPoints-modal-title {
+    font-size: 20px;
+  }
+  
+  .aiPoints-tabs {
+    margin: 0 16px;
+  }
+  
+  .aiPoints-tab {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .aiPoints-tab-content {
+    padding: 16px;
+  }
+  
+  .aiPoints-pack {
+    padding: 16px;
+  }
+  
+  .aiPoints-pack-points {
+    font-size: 20px;
+  }
+  
+  .aiPoints-pack-price {
+    font-size: 18px;
+  }
+  
+  .aiPoints-plan {
+    padding: 16px;
+  }
+  
+  .aiPoints-plan-name {
+    font-size: 18px;
+  }
+  
+  .aiPoints-plan-price {
+    font-size: 28px;
+  }
+  
+  .aiPoints-actions {
+    flex-direction: column;
+  }
+}
+
+/* 暗色模式支援 */
+@media (prefers-color-scheme: dark) {
+  .aiPoints-modal-content {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .aiPoints-modal-header {
+    border-bottom-color: #374151;
+  }
+  
+  .aiPoints-modal-title {
+    color: #f9fafb;
+  }
+  
+  .aiPoints-modal-close {
+    color: #9ca3af;
+  }
+  
+  .aiPoints-modal-close:hover {
+    background-color: #374151;
+  }
+  
+  .aiPoints-tabs {
+    border-bottom-color: #374151;
+  }
+  
+  .aiPoints-tab {
+    color: #9ca3af;
+  }
+  
+  .aiPoints-tab.active {
+    color: #667eea;
+  }
+  
+  .aiPoints-pack {
+    border-color: #374151;
+    background: #111827;
+  }
+  
+  .aiPoints-pack:hover {
+    border-color: #667eea;
+  }
+  
+  .aiPoints-pack.selected {
+    background: #1e3a8a;
+  }
+  
+  .aiPoints-pack-points {
+    color: #f9fafb;
+  }
+  
+  .aiPoints-plan {
+    border-color: #374151;
+    background: #111827;
+  }
+  
+  .aiPoints-plan:hover {
+    border-color: #667eea;
+  }
+  
+  .aiPoints-plan-name {
+    color: #f9fafb;
+  }
+  
+  .aiPoints-plan-features li {
+    color: #9ca3af;
+  }
+  
+  .aiPoints-btn-secondary {
+    background: #374151;
+    color: #9ca3af;
+  }
+  
+  .aiPoints-btn-secondary:hover {
+    background: #4b5563;
+  }
+}
