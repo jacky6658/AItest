@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AI Points System -->
+    <link rel="stylesheet" href="/points-addon.css">
+    <script defer type="module" src="/src/boot/aiPoints_bootstrap.js"></script>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -291,6 +296,32 @@
     </aside>
 
 
+    <!-- 購買彈窗 -->
+    <div id="purchase-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">選擇訂閱方案</h3>
+                    <button onclick="closePurchaseModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="purchase-plans" class="space-y-4">
+                    <!-- 方案選項將由JavaScript動態生成 -->
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <button onclick="closePurchaseModal()" class="px-6 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Email 登入/註冊 全畫面頁（新） -->
     <div id="email-auth-page" class="fixed inset-0 hidden z-[100]">
         <div id="email-auth-overlay" class="absolute inset-0 bg-gray-900/60"></div>
@@ -430,6 +461,31 @@
                                 開始使用
                             </a>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 訂閱方案區塊 -->
+            <section class="py-16 bg-gray-50 dark:bg-gray-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                            選擇適合您的方案
+                        </h2>
+                        <p class="text-lg text-gray-600 dark:text-gray-300">
+                            解鎖更多AI功能，提升創作效率
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8" id="subscription-plans">
+                        <!-- 方案卡片將由JavaScript動態生成 -->
+                    </div>
+
+                    <!-- 購買按鈕區域 -->
+                    <div class="text-center mt-8">
+                        <button id="purchase-btn" class="bg-primary text-white text-lg px-8 py-3 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" onclick="showPurchaseModal()">
+                            💳 立即購買
+                        </button>
                     </div>
                 </div>
             </section>
@@ -2909,6 +2965,130 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             showToast('生成失敗，請稍後再試', 'error');
         });
     });
+
+    // 訂閱方案功能
+    let subscriptionPlans = [];
+
+    // 初始化訂閱方案
+    async function initSubscriptionPlans() {
+        try {
+            const response = await fetch(`${API_BASE}/api/plans`);
+            const data = await response.json();
+            subscriptionPlans = data.plans || [];
+            renderSubscriptionPlans();
+        } catch (error) {
+            console.error('載入訂閱方案失敗:', error);
+            // 如果API失敗，顯示預設方案
+            subscriptionPlans = [
+                { id: 1, name: '基礎方案', description: '適合個人創作者', price: 99, credits: 100, duration_days: 30 },
+                { id: 2, name: '專業方案', description: '適合小型團隊', price: 299, credits: 500, duration_days: 30 },
+                { id: 3, name: '企業方案', description: '適合大型企業', price: 999, credits: 2000, duration_days: 30 }
+            ];
+            renderSubscriptionPlans();
+        }
+    }
+
+    // 渲染訂閱方案
+    function renderSubscriptionPlans() {
+        const container = document.getElementById('subscription-plans');
+        if (!container) return;
+
+        container.innerHTML = subscriptionPlans.map(plan => `
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 ${plan.name === '專業方案' ? 'ring-2 ring-primary' : ''}">
+                ${plan.name === '專業方案' ? '<div class="text-center mb-4"><span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold">推薦</span></div>' : ''}
+                <div class="text-center">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">${plan.name}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">${plan.description}</p>
+                    <div class="text-4xl font-bold text-primary mb-2">NT$ ${plan.price}</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mb-6">${plan.credits} 點數 / ${plan.duration_days} 天</div>
+                    <button onclick="selectPlan(${plan.id})" class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                        選擇方案
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 顯示購買彈窗
+    function showPurchaseModal() {
+        const modal = document.getElementById('purchase-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('modal-open');
+        }
+    }
+
+    // 關閉購買彈窗
+    function closePurchaseModal() {
+        const modal = document.getElementById('purchase-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    // 選擇方案
+    function selectPlan(planId) {
+        const plan = subscriptionPlans.find(p => p.id === planId);
+        if (!plan) return;
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user.id) {
+            showToast('請先登入', 'error');
+            closePurchaseModal();
+            return;
+        }
+
+        // 確認購買
+        if (confirm(`確定要購買「${plan.name}」嗎？\n價格：NT$ ${plan.price}\n點數：${plan.credits} 點`)) {
+            purchasePlan(planId);
+        }
+    }
+
+    // 購買方案
+    async function purchasePlan(planId) {
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const response = await fetch(`${API_BASE}/api/purchase`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    user_id: user.id,
+                    plan_id: planId,
+                    payment_method: 'manual'
+                })
+            });
+
+            const data = await response.json();
+            if (data.ok) {
+                showToast(`購買成功！已獲得 ${data.credits_added} 點數`, 'success');
+                closePurchaseModal();
+                // 更新用戶點數顯示
+                updateUserCredits(data.new_balance);
+            } else {
+                showToast('購買失敗，請稍後再試', 'error');
+            }
+        } catch (error) {
+            console.error('購買失敗:', error);
+            showToast('購買失敗，請稍後再試', 'error');
+        }
+    }
+
+    // 更新用戶點數顯示
+    function updateUserCredits(balance) {
+        const creditsElement = document.querySelector('#user-credits');
+        if (creditsElement) {
+            creditsElement.textContent = balance;
+        }
+    }
+
+    // 初始化訂閱方案
+    initSubscriptionPlans();
     -->
 </body>
 </html>
