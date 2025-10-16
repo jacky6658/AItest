@@ -509,6 +509,360 @@
         </div>
     </div>
 
+    <!-- 帳戶視窗 -->
+    <div id="account-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <!-- 標題列 -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">帳戶管理</h2>
+                    <button id="account-modal-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 左側：個人資料 -->
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">個人資料</h3>
+                            
+                            <!-- 頭像區域 -->
+                            <div class="flex items-center space-x-4 mb-6">
+                                <div id="account-avatar-large" class="w-16 h-16 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-xl">A</div>
+                                <div>
+                                    <button class="text-sm text-primary hover:text-primary-hover">更換頭像</button>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">支援 JPG, PNG 格式</p>
+                                </div>
+                            </div>
+
+                            <!-- 基本資料表單 -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">姓名</label>
+                                    <input type="text" id="account-name-input" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="請輸入姓名">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">電子郵件</label>
+                                    <input type="email" id="account-email-input" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="請輸入電子郵件" readonly>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">電話號碼</label>
+                                    <input type="tel" id="account-phone-input" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="請輸入電話號碼">
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex space-x-3">
+                                <button id="save-profile" class="flex-1 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors">儲存變更</button>
+                                <button id="cancel-profile" class="flex-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors">取消</button>
+                            </div>
+                        </div>
+
+                        <!-- 密碼變更 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">密碼設定</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">目前密碼</label>
+                                    <input type="password" id="current-password" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="請輸入目前密碼">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">新密碼</label>
+                                    <input type="password" id="new-password" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="請輸入新密碼">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">確認新密碼</label>
+                                    <input type="password" id="confirm-password" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="請再次輸入新密碼">
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <button id="change-password" class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors">變更密碼</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側：帳戶資訊 -->
+                    <div class="space-y-6">
+                        <!-- 方案資訊 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">方案資訊</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">目前方案</span>
+                                    <span id="account-current-plan" class="px-3 py-1 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full text-sm">免費</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">點數餘額</span>
+                                    <span id="account-current-credits" class="text-lg font-bold text-primary">300</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">註冊日期</span>
+                                    <span id="account-register-date" class="text-gray-900 dark:text-white">2024-01-15</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">最後登入</span>
+                                    <span id="account-last-login" class="text-gray-900 dark:text-white">2024-01-20 14:30</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <button id="upgrade-plan-btn" class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors">升級方案</button>
+                            </div>
+                        </div>
+
+                        <!-- 使用統計 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">使用統計</h3>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">本月使用次數</span>
+                                    <span id="account-monthly-usage" class="text-gray-900 dark:text-white">15 次</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">定位顧問</span>
+                                    <span id="account-positioning-usage" class="text-gray-900 dark:text-white">5 次</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">選題助手</span>
+                                    <span id="account-topics-usage" class="text-gray-900 dark:text-white">6 次</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">腳本生成</span>
+                                    <span id="account-script-usage" class="text-gray-900 dark:text-white">4 次</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 帳戶操作 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">帳戶操作</h3>
+                            
+                            <div class="space-y-3">
+                                <button id="export-data" class="w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors">
+                                    <div class="flex items-center space-x-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <span>匯出資料</span>
+                                    </div>
+                                </button>
+                                
+                                <button id="delete-account" class="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                                    <div class="flex items-center space-x-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        <span>刪除帳戶</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 設定視窗 -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <!-- 標題列 -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">系統設定</h2>
+                    <button id="settings-modal-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 左側：一般設定 -->
+                    <div class="space-y-6">
+                        <!-- 外觀設定 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">外觀設定</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">深色模式</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">切換深色/淺色主題</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="dark-mode-toggle" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 dark:peer-focus:ring-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">自動切換</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">根據系統時間自動切換主題</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="auto-theme-toggle" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 dark:peer-focus:ring-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 通知設定 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">通知設定</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">電子郵件通知</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">接收重要更新和活動通知</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="email-notifications" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 dark:peer-focus:ring-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">點數不足提醒</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">點數即將用完時提醒</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="credit-alerts" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 dark:peer-focus:ring-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">功能更新通知</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">新功能和改進通知</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="feature-updates" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 dark:peer-focus:ring-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側：進階設定 -->
+                    <div class="space-y-6">
+                        <!-- 隱私設定 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">隱私設定</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">資料分析</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">允許匿名使用資料改善服務</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="data-analytics" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 dark:peer-focus:ring-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">使用記錄</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">儲存使用記錄以提供個人化服務</div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="usage-tracking" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/25 dark:peer-focus:ring-primary/25 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 語言設定 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">語言設定</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">介面語言</label>
+                                    <select id="language-select" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="zh-TW">繁體中文</option>
+                                        <option value="zh-CN">简体中文</option>
+                                        <option value="en">English</option>
+                                        <option value="ja">日本語</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">時區</label>
+                                    <select id="timezone-select" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                                        <option value="Asia/Taipei">台北時間 (UTC+8)</option>
+                                        <option value="Asia/Shanghai">北京時間 (UTC+8)</option>
+                                        <option value="Asia/Tokyo">東京時間 (UTC+9)</option>
+                                        <option value="America/New_York">紐約時間 (UTC-5)</option>
+                                        <option value="Europe/London">倫敦時間 (UTC+0)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 系統資訊 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">系統資訊</h3>
+                            
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">版本</span>
+                                    <span class="text-gray-900 dark:text-white">v1.0.0</span>
+                                </div>
+                                
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">最後更新</span>
+                                    <span class="text-gray-900 dark:text-white">2024-01-20</span>
+                                </div>
+                                
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">瀏覽器</span>
+                                    <span class="text-gray-900 dark:text-white" id="browser-info">Chrome 120.0</span>
+                                </div>
+                                
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">作業系統</span>
+                                    <span class="text-gray-900 dark:text-white" id="os-info">Windows 11</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按鈕 -->
+                        <div class="flex space-x-3">
+                            <button id="save-settings" class="flex-1 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors">儲存設定</button>
+                            <button id="reset-settings" class="flex-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors">重設</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Email 登入/註冊 全畫面頁（新） -->
     <div id="email-auth-page" class="fixed inset-0 hidden z-[100]">
         <div id="email-auth-overlay" class="absolute inset-0 bg-gray-900/60"></div>
@@ -3474,6 +3828,9 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         
         // 手機版手勢支援
         setupMobileGestures();
+        
+        // 帳戶和設定視窗事件
+        setupAccountAndSettingsModals();
     });
     
     // 設置付款頁面事件監聽器
@@ -3579,6 +3936,270 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             proceedBtn.textContent = originalText;
             proceedBtn.disabled = false;
         }, 2000);
+    }
+    
+    // 設置帳戶和設定視窗事件
+    function setupAccountAndSettingsModals() {
+        // 帳戶視窗
+        const accountModal = document.getElementById('account-modal');
+        const accountModalClose = document.getElementById('account-modal-close');
+        const accountLinks = document.querySelectorAll('a[href="#"]:has(span:contains("帳戶"))');
+        
+        // 設定視窗
+        const settingsModal = document.getElementById('settings-modal');
+        const settingsModalClose = document.getElementById('settings-modal-close');
+        const settingsLinks = document.querySelectorAll('a[href="#"]:has(span:contains("設定"))');
+        
+        // 開啟帳戶視窗
+        function showAccountModal() {
+            if (accountModal) {
+                accountModal.classList.remove('hidden');
+                accountModal.classList.add('flex');
+                document.body.classList.add('modal-open');
+                loadAccountData();
+            }
+        }
+        
+        // 關閉帳戶視窗
+        function hideAccountModal() {
+            if (accountModal) {
+                accountModal.classList.add('hidden');
+                accountModal.classList.remove('flex');
+                document.body.classList.remove('modal-open');
+            }
+        }
+        
+        // 開啟設定視窗
+        function showSettingsModal() {
+            if (settingsModal) {
+                settingsModal.classList.remove('hidden');
+                settingsModal.classList.add('flex');
+                document.body.classList.add('modal-open');
+                loadSettingsData();
+            }
+        }
+        
+        // 關閉設定視窗
+        function hideSettingsModal() {
+            if (settingsModal) {
+                settingsModal.classList.add('hidden');
+                settingsModal.classList.remove('flex');
+                document.body.classList.remove('modal-open');
+            }
+        }
+        
+        // 載入帳戶資料
+        function loadAccountData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            // 更新個人資料
+            document.getElementById('account-name-input').value = user.name || '';
+            document.getElementById('account-email-input').value = user.email || '';
+            document.getElementById('account-phone-input').value = user.phone || '';
+            document.getElementById('account-avatar-large').textContent = (user.name || 'A').charAt(0).toUpperCase();
+            
+            // 更新方案資訊
+            document.getElementById('account-current-plan').textContent = user.plan || '免費';
+            document.getElementById('account-current-credits').textContent = user.credits || '300';
+            document.getElementById('account-register-date').textContent = user.registerDate || '2024-01-15';
+            document.getElementById('account-last-login').textContent = user.lastLogin || '2024-01-20 14:30';
+            
+            // 更新使用統計
+            document.getElementById('account-monthly-usage').textContent = user.monthlyUsage || '15 次';
+            document.getElementById('account-positioning-usage').textContent = user.positioningUsage || '5 次';
+            document.getElementById('account-topics-usage').textContent = user.topicsUsage || '6 次';
+            document.getElementById('account-script-usage').textContent = user.scriptUsage || '4 次';
+        }
+        
+        // 載入設定資料
+        function loadSettingsData() {
+            // 載入深色模式設定
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            if (darkModeToggle) {
+                darkModeToggle.checked = isDarkMode;
+            }
+            
+            // 載入其他設定
+            const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+            document.getElementById('auto-theme-toggle').checked = settings.autoTheme || false;
+            document.getElementById('email-notifications').checked = settings.emailNotifications !== false;
+            document.getElementById('credit-alerts').checked = settings.creditAlerts !== false;
+            document.getElementById('feature-updates').checked = settings.featureUpdates !== false;
+            document.getElementById('data-analytics').checked = settings.dataAnalytics !== false;
+            document.getElementById('usage-tracking').checked = settings.usageTracking !== false;
+            document.getElementById('language-select').value = settings.language || 'zh-TW';
+            document.getElementById('timezone-select').value = settings.timezone || 'Asia/Taipei';
+            
+            // 更新系統資訊
+            updateSystemInfo();
+        }
+        
+        // 更新系統資訊
+        function updateSystemInfo() {
+            const browserInfo = getBrowserInfo();
+            const osInfo = getOSInfo();
+            
+            document.getElementById('browser-info').textContent = browserInfo;
+            document.getElementById('os-info').textContent = osInfo;
+        }
+        
+        // 獲取瀏覽器資訊
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Chrome')) return 'Chrome ' + ua.match(/Chrome\/(\d+)/)?.[1] || 'Unknown';
+            if (ua.includes('Firefox')) return 'Firefox ' + ua.match(/Firefox\/(\d+)/)?.[1] || 'Unknown';
+            if (ua.includes('Safari')) return 'Safari ' + ua.match(/Version\/(\d+)/)?.[1] || 'Unknown';
+            if (ua.includes('Edge')) return 'Edge ' + ua.match(/Edge\/(\d+)/)?.[1] || 'Unknown';
+            return 'Unknown Browser';
+        }
+        
+        // 獲取作業系統資訊
+        function getOSInfo() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Windows')) return 'Windows';
+            if (ua.includes('Mac')) return 'macOS';
+            if (ua.includes('Linux')) return 'Linux';
+            if (ua.includes('Android')) return 'Android';
+            if (ua.includes('iOS')) return 'iOS';
+            return 'Unknown OS';
+        }
+        
+        // 事件監聽器
+        if (accountModalClose) {
+            accountModalClose.addEventListener('click', hideAccountModal);
+        }
+        
+        if (settingsModalClose) {
+            settingsModalClose.addEventListener('click', hideSettingsModal);
+        }
+        
+        // 點擊背景關閉
+        if (accountModal) {
+            accountModal.addEventListener('click', function(e) {
+                if (e.target === accountModal) {
+                    hideAccountModal();
+                }
+            });
+        }
+        
+        if (settingsModal) {
+            settingsModal.addEventListener('click', function(e) {
+                if (e.target === settingsModal) {
+                    hideSettingsModal();
+                }
+            });
+        }
+        
+        // 帳戶相關按鈕
+        document.getElementById('save-profile')?.addEventListener('click', function() {
+            const name = document.getElementById('account-name-input').value;
+            const phone = document.getElementById('account-phone-input').value;
+            
+            if (name.trim()) {
+                // 更新本地儲存
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                user.name = name;
+                user.phone = phone;
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                // 更新UI
+                document.getElementById('acc-name').textContent = name;
+                document.getElementById('account-avatar-large').textContent = name.charAt(0).toUpperCase();
+                
+                showToast('個人資料已更新', 'success');
+                hideAccountModal();
+            } else {
+                showToast('請輸入姓名', 'error');
+            }
+        });
+        
+        document.getElementById('change-password')?.addEventListener('click', function() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showToast('請填寫所有密碼欄位', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showToast('新密碼與確認密碼不符', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showToast('密碼長度至少6位', 'error');
+                return;
+            }
+            
+            // 這裡應該調用後端API
+            showToast('密碼變更功能開發中', 'info');
+        });
+        
+        document.getElementById('upgrade-plan-btn')?.addEventListener('click', function() {
+            hideAccountModal();
+            showPurchaseModal();
+        });
+        
+        document.getElementById('export-data')?.addEventListener('click', function() {
+            showToast('資料匯出功能開發中', 'info');
+        });
+        
+        document.getElementById('delete-account')?.addEventListener('click', function() {
+            if (confirm('確定要刪除帳戶嗎？此操作無法復原。')) {
+                showToast('帳戶刪除功能開發中', 'info');
+            }
+        });
+        
+        // 設定相關按鈕
+        document.getElementById('save-settings')?.addEventListener('click', function() {
+            const settings = {
+                autoTheme: document.getElementById('auto-theme-toggle').checked,
+                emailNotifications: document.getElementById('email-notifications').checked,
+                creditAlerts: document.getElementById('credit-alerts').checked,
+                featureUpdates: document.getElementById('feature-updates').checked,
+                dataAnalytics: document.getElementById('data-analytics').checked,
+                usageTracking: document.getElementById('usage-tracking').checked,
+                language: document.getElementById('language-select').value,
+                timezone: document.getElementById('timezone-select').value
+            };
+            
+            localStorage.setItem('userSettings', JSON.stringify(settings));
+            showToast('設定已儲存', 'success');
+            hideSettingsModal();
+        });
+        
+        document.getElementById('reset-settings')?.addEventListener('click', function() {
+            if (confirm('確定要重設所有設定嗎？')) {
+                localStorage.removeItem('userSettings');
+                loadSettingsData();
+                showToast('設定已重設', 'success');
+            }
+        });
+        
+        // 深色模式切換
+        document.getElementById('dark-mode-toggle')?.addEventListener('change', function() {
+            isDarkMode = this.checked;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+            localStorage.setItem('darkMode', isDarkMode);
+        });
+        
+        // 為側邊欄的帳戶和設定連結添加點擊事件
+        document.querySelectorAll('a').forEach(link => {
+            if (link.textContent.includes('帳戶')) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showAccountModal();
+                });
+            }
+            if (link.textContent.includes('設定')) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showSettingsModal();
+                });
+            }
+        });
     }
     </script>
 </body>
