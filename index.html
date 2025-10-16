@@ -83,6 +83,8 @@
             color: #3b82f6;
             background: #1f2937;
         }
+        /* 媒體元素防止橫向溢出（iOS Safari 友好） */
+        img, video, canvas, svg { max-width: 100%; height: auto; }
     </style>
 </head>
 <body class="font-sans bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-150">
@@ -112,11 +114,11 @@
                 <!-- 右側按鈕群 -->
                 <div class="flex items-center space-x-2 md:space-x-4">
                     <!-- 手機選單 -->
-                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary" aria-label="開啟選單">
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary" aria-label="開啟選單">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
                     <!-- 暗色模式切換 -->
-                    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800" aria-label="切換暗色模式">
+                    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800" aria-label="切換暗色模式">
                         <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path id="sun-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                             <path id="moon-icon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
@@ -174,26 +176,26 @@
                                     </div>
                                 </div>
                                 <div class="space-y-1">
-                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 rounded">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                                         </svg>
                                         <span>知識</span>
                                     </a>
-                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 rounded">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                         <span>帳戶</span>
                                     </a>
-                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 rounded">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
                                         <span>設定</span>
                                     </a>
-                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 rounded">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                         </svg>
@@ -202,7 +204,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                         </svg>
                                     </a>
-                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 rounded">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
@@ -249,7 +251,7 @@
                     <div id="acc-email" class="text-sm text-gray-500 dark:text-gray-400">user@email.com</div>
                 </div>
             </div>
-            <button id="drawer-close" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="關閉">
+            <button id="drawer-close" class="p-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100" aria-label="關閉">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -263,19 +265,19 @@
                 <span id="acc-credits" class="font-semibold">300</span>
             </div>
             <nav class="pt-2 space-y-1 text-gray-700 dark:text-gray-300">
-                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100">
                     <span>知識</span>
                 </a>
-                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100">
                     <span>帳戶</span>
                 </a>
-                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100">
                     <span>設定</span>
                 </a>
                 <a href="#!home" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
                     <span>首頁</span>
                 </a>
-                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100">
                     <span>獲取幫助</span>
                 </a>
             </nav>
@@ -290,16 +292,16 @@
 
 
     <!-- Email 登入/註冊 全畫面頁（新） -->
-    <div id="email-auth-page" class="fixed inset-0 hidden z-50">
-        <div class="absolute inset-0 bg-gray-900/60"></div>
+    <div id="email-auth-page" class="fixed inset-0 hidden z-[100]">
+        <div id="email-auth-overlay" class="absolute inset-0 bg-gray-900/60"></div>
         <div class="absolute inset-0 flex items-center justify-center p-3 sm:p-4">
-            <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-y-auto max-h-[80vh]">
                 <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center gap-3">
                         <h3 class="text-lg font-semibold">Email 登入 / 註冊</h3>
                         <span class="text-xs px-2 py-1 rounded bg-primary text-white">Beta</span>
                     </div>
-                    <button id="email-auth-close" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="關閉">
+                    <button id="email-auth-close" class="p-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100" aria-label="關閉">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
@@ -319,7 +321,7 @@
                                 <label class="block text-sm mb-1">密碼</label>
                                 <div class="flex items-center gap-2">
                                     <input id="login-password" type="password" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
-                                    <button id="toggle-login-pw" type="button" class="px-2 py-2 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700" aria-label="顯示/隱藏密碼">
+                                    <button id="toggle-login-pw" type="button" class="px-2 py-2 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100" aria-label="顯示/隱藏密碼">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
                                     </button>
                                 </div>
@@ -332,7 +334,7 @@
                                 <span class="text-xs text-gray-500">或</span>
                                 <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
                             </div>
-                            <button id="btn-google-login" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center gap-2">
+                            <button id="btn-google-login" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 flex items-center justify-center gap-2">
                                 <span>使用 Google 登入</span>
                             </button>
                         </div>
@@ -360,13 +362,13 @@
                                 <label class="block text-sm mb-1">密碼</label>
                                 <div class="flex items-center gap-2">
                                     <input id="signup-password" type="password" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="********"/>
-                                    <button id="toggle-signup-pw" type="button" class="px-2 py-2 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700" aria-label="顯示/隱藏密碼">
+                                    <button id="toggle-signup-pw" type="button" class="px-2 py-2 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100" aria-label="顯示/隱藏密碼">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>
                                     </button>
                                 </div>
                             </div>
                             <div class="pt-2 flex flex-wrap items-center justify-end gap-2">
-                                <button id="btn-email-signup" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 w-full sm:w-auto">建立帳號</button>
+                                <button id="btn-email-signup" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 w-full sm:w-auto">建立帳號</button>
                             </div>
                             <div class="flex items-center gap-3 pt-3">
                                 <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
@@ -450,6 +452,11 @@
                 <div class="grid lg:grid-cols-12 gap-8">
                     <!-- 左側表單 -->
                     <div id="positioning-left" class="space-y-6 lg:col-span-4">
+                        <!-- 功能標題 -->
+                        <div class="text-center mb-4">
+                            <h2 id="positioning-title" class="text-2xl font-bold text-gray-900 dark:text-white">🎯 AI短影音定位顧問</h2>
+                            <p id="positioning-description" class="text-sm text-gray-600 dark:text-gray-400 mt-1">直接與AI對話，描述你的業務與受眾，我會一步步引導你完成定位分析</p>
+                        </div>
                         <!-- Tabs: AI 對話 / 一鍵生成 -->
                         <div id="positioning-tabs" class="flex flex-wrap md:flex-nowrap gap-2 mb-3 overflow-x-auto whitespace-nowrap">
                             <button id="tab-positioning-chat" class="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover">AI 對話</button>
@@ -522,31 +529,13 @@
                                 </span>
                             </button>
                         </form>
-                        
-                        <!-- 準備開始定位分析區塊 -->
-                        <div class="mt-6 text-center py-8">
-                            <div class="text-6xl mb-4">🎯</div>
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備開始定位分析</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-6">填寫左側表單，我們將為您生成專業的定位摘要</p>
-                            <div class="space-y-2">
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：科技新創公司
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：線上教育平台
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
-                                    快速示例：健康食品品牌
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- 右側結果 -->
                     <div class="lg:col-span-8">
                         <!-- 定位 顧問聊天室（強化版） -->
                         <div class="mb-6">
-                            <div id="positioning-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[420px] md:min-h-[600px]">
+                            <div id="positioning-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[500px] md:min-h-[600px] mx-auto max-w-4xl">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">🎯 AI影音定位顧問</h3>
                                     <button id="chat-clear-positioning" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
@@ -571,34 +560,38 @@
                         
                         <div id="positioning-result" class="hidden">
                             <h3 class="text-xl font-bold mb-4">定位摘要</h3>
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 space-y-4">
+                            <div class="space-y-4">
                                 <div id="positioning-loading" class="hidden text-center py-6 text-gray-500 dark:text-gray-400">
                                     <svg class="loading-spinner w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                     </svg>
                                     AI 回覆中...
                                 </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">品牌定位</h4>
-                                    <p class="text-gray-600 dark:text-gray-400 whitespace-pre-line" id="positioning-summary"></p>
+                                <div id="positioning-cards" class="space-y-4"></div>
                                 </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">語氣守則</h4>
-                                    <p class="text-gray-600 dark:text-gray-400 whitespace-pre-line" id="tone-guidelines"></p>
                                 </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">執行建議</h4>
-                                    <p class="text-gray-600 dark:text-gray-400 whitespace-pre-line" id="execution-suggestions"></p>
-                                </div>
-                            </div>
-                        </div>
+                        
                         
                         <!-- 一鍵生成面板（沿用既有表單區塊作為一鍵生成輸入）-->
                         <div id="positioning-oneclick-panel" class="hidden">
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4 text-sm text-gray-600 dark:text-gray-400">
-                                <p>輸入必要資訊後，直接送出即可快速產生定位摘要。</p>
-                                <!-- 使用同一份 form 的提交邏輯，維持 API 不變 -->
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-[380px] md:min-h-[500px] flex items-center justify-center text-center">
+                                <div>
+                                <div class="text-6xl mb-4">🎯</div>
+                                <h2 class="text-2xl sm:text-3xl font-bold mb-3">準備開始定位分析</h2>
+                                <p class="text-gray-500 dark:text-gray-400">輸入必要資訊後，直接送出即可快速產生定位摘要。</p>
+                                <div class="mt-4 space-y-2 text-primary">
+                                  <button type="button" class="quick-example-btn hover:text-primary-hover">
+                                    快速示例：科技新創公司
+                                  </button><br/>
+                                  <button type="button" class="quick-example-btn hover:text-primary-hover">
+                                    快速示例：線上教育平台
+                                  </button><br/>
+                                  <button type="button" class="quick-example-btn hover:text-primary-hover">
+                                    快速示例：健康食品品牌
+                                  </button>
+                                </div>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -611,6 +604,11 @@
                 <div class="grid lg:grid-cols-12 gap-8">
                     <!-- 左側表單 -->
                     <div id="ideation-left" class="space-y-6 lg:col-span-4">
+                        <!-- 功能標題 -->
+                        <div class="text-center mb-4">
+                            <h2 id="ideation-title" class="text-2xl font-bold text-gray-900 dark:text-white">💡 AI選題小助手</h2>
+                            <p id="ideation-description" class="text-sm text-gray-600 dark:text-gray-400 mt-1">直接與AI對話，描述你的主題與需求，我會一步步引導你完成選題分析</p>
+                        </div>
                         <!-- Tabs: AI 對話 / 一鍵生成 -->
                         <div id="ideation-tabs" class="flex flex-wrap md:flex-nowrap gap-2 mb-3 overflow-x-auto whitespace-nowrap">
                             <button id="tab-ideation-chat" class="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover">AI 對話</button>
@@ -667,12 +665,12 @@
                     <div class="lg:col-span-8">
                         <!-- 選題 聊天室（強化版） -->
                         <div class="mb-6">
-                            <div id="ideation-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden min-h-[380px] md:min-h-[500px] flex flex-col">
+                            <div id="ideation-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden min-h-[500px] md:min-h-[500px] flex flex-col mx-auto max-w-4xl">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">💡 AI選題小助手</h3>
                                     <button id="chat-clear-ideation" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
                                 </div>
-                                <div id="chat-ideation" class="h-80 sm:h-96 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
+                                <div id="chat-ideation" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
                                 <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                                     <div class="flex flex-wrap gap-2 mb-3 text-sm">
                                         <button class="chip-i btn-chip">熱門趨勢</button>
@@ -701,25 +699,24 @@
                             </div>
                         </div>
                         
-                        <div id="ideation-empty" class="text-center py-12">
+                        <div id="ideation-empty" class="hidden">
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-[380px] md:min-h-[500px] flex items-center justify-center text-center">
+                                <div>
                             <div class="text-6xl mb-4">💡</div>
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">準備產生創意選題</h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-6">輸入主題關鍵字，我們將為您產生多個吸睛的角度</p>
-                            <div class="space-y-2">
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                <h2 class="text-2xl sm:text-3xl font-bold mb-3">準備產生創意選題</h2>
+                                <p class="text-gray-500 dark:text-gray-400">輸入主題關鍵字，我們將為您產生多個吸睛的角度</p>
+                                <div class="mt-4 space-y-2 text-primary">
+                                  <button type="button" class="quick-example-btn hover:text-primary-hover">
                                     快速示例：減肥方法
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                  </button><br/>
+                                  <button type="button" class="quick-example-btn hover:text-primary-hover">
                                     快速示例：投資理財
-                                </button>
-                                <button class="quick-example-btn block w-full text-sm text-primary hover:text-primary-hover transition-colors duration-150">
+                                  </button><br/>
+                                  <button type="button" class="quick-example-btn hover:text-primary-hover">
                                     快速示例：職場技能
                                 </button>
-                            </div>
-                        </div>
-                        <div id="ideation-oneclick-panel" class="hidden">
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4 text-sm text-gray-600 dark:text-gray-400">
-                                <p>輸入主題或條件後，將直接產生精簡選題摘要。</p>
+                                </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -735,127 +732,33 @@
                     <div class="space-y-8 lg:col-span-4">
                         <div>
                             <h2 class="text-3xl font-bold mb-2">AI腳本生成大師</h2>
-                            <p class="text-gray-600 dark:text-gray-400">選擇模式、模板與時長，快速生成專業腳本</p>
+                            <p class="text-gray-600 dark:text-gray-400">直接與AI對話，描述你的腳本需求與風格，我會一步步引導你完成腳本創作</p>
                         </div>
-
-                        <!-- 模式選擇 -->
-                        <div>
-                            <h3 class="text-lg font-semibold mb-4">模式選擇</h3>
-                            <div class="flex space-x-2" role="radiogroup" aria-label="模式選擇">
-                                <label class="flex-1">
-                                    <input type="radio" name="mode" value="guided" class="sr-only" checked>
-                                    <div class="mode-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-150">
-                                        引導模式
-                                    </div>
-                                </label>
-                                <label class="flex-1">
-                                    <input type="radio" name="mode" value="free" class="sr-only">
-                                    <div class="mode-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-150">
-                                        自由模式
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 模板選擇 -->
-                        <div>
-                            <h3 class="text-lg font-semibold mb-4">選擇模板</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="模板選擇">
-                                <label class="template-option">
-                                    <input type="radio" name="template" value="A" class="sr-only" checked>
-                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        <div class="font-semibold mb-1">A 三段式</div>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">開頭-主體-結尾</div>
-                                    </div>
-                                </label>
-                                <label class="template-option">
-                                    <input type="radio" name="template" value="B" class="sr-only">
-                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        <div class="font-semibold mb-1">B 問題解決</div>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">問題-分析-解決</div>
-                                    </div>
-                                </label>
-                                <label class="template-option">
-                                    <input type="radio" name="template" value="C" class="sr-only">
-                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        <div class="font-semibold mb-1">C Before-After</div>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">對比呈現</div>
-                                    </div>
-                                </label>
-                                <label class="template-option">
-                                    <input type="radio" name="template" value="D" class="sr-only">
-                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        <div class="font-semibold mb-1">D 教學</div>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">步驟式教學</div>
-                                    </div>
-                                </label>
-                                <label class="template-option">
-                                    <input type="radio" name="template" value="E" class="sr-only">
-                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        <div class="font-semibold mb-1">E 故事</div>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">故事化敘述</div>
-                                    </div>
-                                </label>
-                                <label class="template-option">
-                                    <input type="radio" name="template" value="F" class="sr-only">
-                                    <div class="template-card p-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        <div class="font-semibold mb-1">F 爆點連發</div>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">多個亮點</div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 時長選擇 -->
-                        <div>
-                            <h3 class="text-lg font-semibold mb-4">時長選擇</h3>
-                            <div class="flex space-x-2" role="radiogroup" aria-label="時長選擇">
-                                <label class="flex-1">
-                                    <input type="radio" name="duration" value="30" class="sr-only" checked>
-                                    <div class="duration-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        30 秒
-                                    </div>
-                                </label>
-                                <label class="flex-1">
-                                    <input type="radio" name="duration" value="60" class="sr-only">
-                                    <div class="duration-option w-full text-center py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
-                                        60 秒
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 主要 CTA -->
-                        <button id="apply-settings" 
-                            class="w-full bg-primary text-white py-4 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800 active:scale-95">
-                            套用設定並開始
-                        </button>
                     </div>
 
                     <!-- 右側預覽區 -->
                     <div class="lg:col-span-8">
-                        <h3 class="text-xl font-bold mb-4">預覽結果</h3>
                         <!-- 切換：AI 對話 / 一鍵生成 -->
-                        <div id="script-tabs" class="flex gap-2 mb-3">
-                            <button id="tab-script-chat" class="px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover">AI 對話</button>
-                            <button id="tab-script-oneclick" class="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">一鍵生成</button>
+                        <div id="script-tabs" class="relative z-10 flex flex-wrap md:flex-nowrap gap-2 mb-3 overflow-x-auto whitespace-nowrap">
+                            <button id="tab-script-chat" onclick="window.switchScriptTab && window.switchScriptTab('chat')" class="pointer-events-auto shrink-0 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover">AI 對話</button>
+                            <button id="tab-script-oneclick" onclick="window.switchScriptTab && window.switchScriptTab('one')" class="pointer-events-auto shrink-0 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">一鍵生成</button>
                         </div>
                         <!-- 腳本 聊天室（強化版） -->
                         <div id="script-chat-panel" class="mb-6">
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mx-auto max-w-4xl">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">📝 AI腳本生成大師</h3>
                                     <button id="chat-clear-script" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
                                 </div>
-                                <div id="chat-script" class="h-80 sm:h-96 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
+                                <div id="chat-script" class="h-96 sm:h-96 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
                                 <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                                     <div class="flex flex-wrap gap-2 mb-3 text-sm">
-                                        <button class="chip-s btn-chip">A 三段式</button>
-                                        <button class="chip-s btn-chip">B 問題解決</button>
-                                        <button class="chip-s btn-chip">C Before-After</button>
-                                        <button class="chip-s btn-chip">D 教學</button>
-                                        <button class="chip-s btn-chip">E 敘事</button>
-                                        <button class="chip-s btn-chip">F 爆點連發</button>
+                                        <button class="chip-s btn-chip">如何寫出吸引人的開頭？</button>
+                                        <button class="chip-s btn-chip">腳本結構怎麼安排？</button>
+                                        <button class="chip-s btn-chip">如何增加觀眾互動？</button>
+                                        <button class="chip-s btn-chip">結尾怎麼設計？</button>
+                                        <button class="chip-s btn-chip">如何選擇合適的時長？</button>
+                                        <button class="chip-s btn-chip">如何讓腳本更有創意？</button>
                                     </div>
                                     <div class="flex gap-2">
                                         <textarea id="chat-input-script" rows="2" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 resize-y" placeholder="輸入主題/目標/受眾/平台/時長/語氣…（Enter 送出；Shift+Enter 換行）"></textarea>
@@ -866,38 +769,106 @@
                         </div>
                         <!-- 一鍵生成 面板 -->
                         <div id="script-oneclick-panel" class="hidden mb-6">
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden p-4 border border-gray-200 dark:border-gray-700">
-                                <div class="mb-3 text-sm text-gray-600 dark:text-gray-400">輸入主題與重點，將依照左側的模板/時長設定一鍵生成腳本。</div>
-                                <div class="flex gap-2 mb-3">
-                                    <input id="oneclick-topic" type="text" class="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="例如：AI認證落地智能體的60秒短影音腳本">
-                                    <button id="oneclick-generate" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover">生成腳本</button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="script-preview" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-96">
-                            <div id="script-empty" class="text-center py-12">
-                                <div class="text-6xl mb-4">📝</div>
-                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">準備生成腳本</h4>
-                                <p class="text-gray-600 dark:text-gray-400">選擇左側設定，點擊「套用設定並開始」開始生成</p>
-                            </div>
-                            <div id="script-loading" class="hidden text-center py-6 text-gray-500 dark:text-gray-400">
-                                <svg class="loading-spinner w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                </svg>
-                                AI 生成中...
-                            </div>
-                            <div id="script-result" class="hidden">
-                                <div class="space-y-4">
-                                    <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
-                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本設定</h4>
-                                        <div class="text-sm text-gray-600 dark:text-gray-400">
-                                            <span id="script-mode"></span> • <span id="script-template"></span> • <span id="script-duration"></span>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- 左側設定 -->
+                                <div class="space-y-6">
+                                    <!-- 模式選擇卡片 -->
+                                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                                        <h3 class="text-lg font-semibold mb-4">模式選擇</h3>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                            <label class="mode-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_mode" value="educational" class="hidden" checked>
+                                                <span class="text-center">教育型</span>
+                                            </label>
+                                            <label class="mode-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_mode" value="entertainment" class="hidden">
+                                                <span class="text-center">娛樂型</span>
+                                            </label>
+                                            <label class="mode-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_mode" value="promotional" class="hidden">
+                                                <span class="text-center">推廣型</span>
+                                            </label>
                                         </div>
                                     </div>
-                                    <div>
-                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">腳本內容</h4>
-                                        <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
+
+                                    <!-- 模板選擇卡片 -->
+                                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                                        <h3 class="text-lg font-semibold mb-4">模板選擇</h3>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                            <label class="template-card flex flex-col items-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="A" class="hidden" checked>
+                                                <span class="text-xl mb-2">A</span>
+                                                <span class="text-sm">三段式</span>
+                                            </label>
+                                            <label class="template-card flex flex-col items-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="B" class="hidden">
+                                                <span class="text-xl mb-2">B</span>
+                                                <span class="text-sm">問題解決</span>
+                                            </label>
+                                            <label class="template-card flex flex-col items-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="C" class="hidden">
+                                                <span class="text-xl mb-2">C</span>
+                                                <span class="text-sm">故事敘述</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- 時長選擇卡片 -->
+                                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                                        <h3 class="text-lg font-semibold mb-4">時長選擇</h3>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                            <label class="duration-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_duration" value="30" class="hidden" checked>
+                                                <span class="text-center">30秒</span>
+                                            </label>
+                                            <label class="duration-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_duration" value="60" class="hidden">
+                                                <span class="text-center">60秒</span>
+                                            </label>
+                                            <label class="duration-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_duration" value="90" class="hidden">
+                                                <span class="text-center">90秒</span>
+                                            </label>
+                                        </div>
+                                        
+                                        <!-- 套用設定按鈕 -->
+                                        <div class="mt-6">
+                                            <button id="apply-settings-generate" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                                <span class="apply-text">套用設定並生成腳本</span>
+                                                <span class="apply-loading hidden">
+                                                    <svg class="loading-spinner w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                    </svg>
+                                                    生成中...
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 右側主題輸入與結果 -->
+                                <div>
+                                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-[380px] md:min-h-[500px] flex flex-col">
+                                        <h3 class="text-lg font-semibold mb-4">輸入主題</h3>
+                                        <textarea id="script-topic-input" class="flex-1 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary resize-none" placeholder="請輸入您的腳本主題，例如：如何製作爆款短影音"></textarea>
+                                        
+                                        <div class="mt-4 flex justify-end">
+                                            <button id="oneclick-generate" class="bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                                <span class="submit-text">生成腳本</span>
+                                                <span class="loading-text hidden">
+                                                    <svg class="loading-spinner w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                    </svg>
+                                                    生成中...
+                                                </span>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- 結果顯示區域 -->
+                                        <div id="script-result" class="hidden mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                            <h4 class="font-semibold text-gray-900 dark:text-white mb-2">生成結果</h4>
+                                            <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -952,11 +923,11 @@
     <footer class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 mt-8 safe-x safe-b">
         <div class="max-w-7xl mx-auto w-full py-6">
             <div class="flex flex-wrap gap-3 mb-4">
-                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">AIJob 行銷自動化課程</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/UUwpEG">AIJob Discord社群討論</a>
-                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/E49kA8">AIJob LINE官方帳號</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/kBmUAL">AIJob YouTube</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/ytPY3U">AIJob 官方網站</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/KCYu7z">AIJob 行銷自動化課程</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/UUwpEG">AIJob Discord社群討論</a>
+                <a class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 text-gray-700 dark:text-gray-300" target="_blank" href="https://AIJobschool.short.gy/E49kA8">AIJob LINE官方帳號</a>
             </div>
             <div class="text-center text-gray-500 dark:text-gray-400">© 2025 AIJobSchool 版權所有</div>
         </div>
@@ -1124,6 +1095,42 @@
             if (brand) brand.addEventListener('click', (e)=>{ e.preventDefault(); navigateToPage('home'); });
         }
 
+        // 快速示例填入功能
+        function fillPositioningExample(type) {
+            const examples = {
+                'tech': {
+                    industry: '科技新創',
+                    audience: '25-35歲科技從業者、投資人、創業者',
+                    painPoints: '技術門檻高、市場競爭激烈、資金需求大、人才招募困難、產品市場契合度不確定'
+                },
+                'education': {
+                    industry: '線上教育',
+                    audience: '25-40歲上班族、學生家長、終身學習者',
+                    painPoints: '時間有限、學習效果不確定、課程品質參差不齊、缺乏互動性、學習動機不足'
+                },
+                'health': {
+                    industry: '健康食品',
+                    audience: '30-50歲注重健康的消費者、健身愛好者、慢性病患者',
+                    painPoints: '產品真偽難辨、效果不明顯、價格昂貴、缺乏專業指導、副作用擔憂'
+                }
+            };
+            
+            const example = examples[type];
+            if (!example) return;
+            
+            // 填入表單欄位
+            const industryInput = document.querySelector('input[name="industry"]');
+            const audienceInput = document.querySelector('input[name="audience"]');
+            const painPointsInput = document.querySelector('textarea[name="pains"]');
+            
+            if (industryInput) industryInput.value = example.industry;
+            if (audienceInput) audienceInput.value = example.audience;
+            if (painPointsInput) painPointsInput.value = example.painPoints;
+            
+            // 顯示成功提示
+            showToast('已填入示例資料', 'success');
+        }
+
         // 簡易登入系統（參考 login.html）
         function initAuth() {
             const loginBtn = document.getElementById('login-btn');
@@ -1142,9 +1149,15 @@
             const emailOverlay = document.getElementById('email-modal-overlay');
             const emailPage = document.getElementById('email-auth-page');
             const emailPageClose = document.getElementById('email-auth-close');
+            const emailPageOverlay = document.getElementById('email-auth-overlay');
             const btnEmailLogin = document.getElementById('btn-email-login');
             const btnEmailSignup = document.getElementById('btn-email-signup');
             if (!loginBtn) return;
+
+            function closeEmailPage(){
+                if (emailPage) emailPage.classList.add('hidden');
+                document.documentElement.classList.remove('modal-open');
+            }
 
             function refreshUserUI() {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -1189,7 +1202,10 @@
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (!isLoggedIn) {
                     // 顯示 Email 全畫面頁（使用者可改點右上角 Google 登入）
-                    if (emailPage) emailPage.classList.remove('hidden');
+                    if (emailPage) {
+                        emailPage.classList.remove('hidden');
+                        document.documentElement.classList.add('modal-open');
+                    }
                 } else {
                     // 開啟帳號抽屜
                     drawer.classList.remove('translate-x-full');
@@ -1222,7 +1238,13 @@
             });
 
             // Email 全畫面頁：關閉
-            emailPageClose?.addEventListener('click', ()=> emailPage.classList.add('hidden'));
+            emailPageClose?.addEventListener('click', closeEmailPage);
+            emailPageOverlay?.addEventListener('click', closeEmailPage);
+            document.addEventListener('keydown', (e)=>{
+                if (e.key === 'Escape' && emailPage && !emailPage.classList.contains('hidden')) {
+                    closeEmailPage();
+                }
+            });
 
             // Email 登入：POST /auth/login
             btnEmailLogin?.addEventListener('click', async ()=>{
@@ -1233,7 +1255,7 @@
                     const res = await fetch(`${API_BASE}/auth/login`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ identifier, password }) });
                     if (!res.ok) throw new Error('login failed');
                     const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=>r.ok?r.json():null);
-                    if (me){ localStorage.setItem('isLoggedIn','true'); localStorage.setItem('user', JSON.stringify(me)); emailPage.classList.add('hidden'); showToast('登入成功', 'success'); location.reload(); }
+                    if (me){ localStorage.setItem('isLoggedIn','true'); localStorage.setItem('user', JSON.stringify(me)); closeEmailPage(); showToast('登入成功', 'success'); location.reload(); }
                 }catch(e){ showToast('登入失敗，請檢查帳密或稍後再試', 'error'); }
             });
 
@@ -1766,8 +1788,8 @@
                     if (!input || !input.value.trim()) {
                         isValid = false;
                         if (input) {
-                            input.classList.add('border-red-500');
-                            setTimeout(() => input.classList.remove('border-red-500'), 3000);
+                        input.classList.add('border-red-500');
+                        setTimeout(() => input.classList.remove('border-red-500'), 3000);
                         }
                     }
                 });
@@ -1861,21 +1883,58 @@
 
             const tabChat = document.getElementById('tab-positioning-chat');
             const tabOne = document.getElementById('tab-positioning-oneclick');
-            const chatCard = document.getElementById('positioning-chat-card');
+            const leftForm = document.getElementById('positioning-form');
             const onePanel = document.getElementById('positioning-oneclick-panel');
-            if (tabChat && tabOne && chatCard && onePanel){
+            const resultPanel = document.getElementById('positioning-result');
+            const title = document.getElementById('positioning-title');
+            const description = document.getElementById('positioning-description');
+            if (tabChat && tabOne && leftForm && onePanel){
                 tabChat.addEventListener('click', ()=>{
+                    console.log('切換到 AI 對話模式');
                     tabChat.classList.add('bg-primary','text-white');
                     tabOne.classList.remove('bg-primary','text-white');
-                    chatCard.classList.remove('hidden');
+                    tabOne.classList.add('border','border-gray-300','dark:border-gray-600');
+                    tabChat.classList.remove('border');
+                    // 更新標題和說明顏色
+                    if (title) title.className = 'text-2xl font-bold text-gray-900 dark:text-white';
+                    if (description) description.textContent = '直接與AI對話，描述你的業務與受眾，我會一步步引導你完成定位分析';
+                    // 隱藏左側一鍵生成設定模板（只隱藏表單，保留標籤）
+                    leftForm.classList.add('hidden');
                     onePanel.classList.add('hidden');
+                    // 顯示聊天對話框
+                    const chatCard = document.getElementById('positioning-chat-card');
+                    if (chatCard) chatCard.classList.remove('hidden');
+                    if (resultPanel) resultPanel.classList.add('hidden');
+                    // 調整聊天對話框高度
+                    setTimeout(adjustPositioningHeights, 100);
                 });
                 tabOne.addEventListener('click', ()=>{
+                    console.log('切換到一鍵生成模式');
                     tabOne.classList.add('bg-primary','text-white');
                     tabChat.classList.remove('bg-primary','text-white');
-                    chatCard.classList.add('hidden');
+                    tabChat.classList.add('border','border-gray-300','dark:border-gray-600');
+                    tabOne.classList.remove('border');
+                    // 更新標題和說明顏色
+                    if (title) title.className = 'text-2xl font-bold text-gray-900 dark:text-white';
+                    if (description) description.textContent = '填寫必要資訊後，直接送出即可快速產生定位摘要';
+                    // 顯示左側一鍵生成設定模板
+                    leftForm.classList.remove('hidden');
                     onePanel.classList.remove('hidden');
+                    // 隱藏聊天對話框
+                    const chatCard = document.getElementById('positioning-chat-card');
+                    if (chatCard) chatCard.classList.add('hidden');
+                    // 顯示結果面板（一鍵生成模式下顯示結果）
+                    if (resultPanel) resultPanel.classList.remove('hidden');
+                    // 調整聊天對話框高度
+                    setTimeout(adjustPositioningHeights, 100);
                 });
+                // 預設：AI 對話 → 隱藏左側模板
+                console.log('初始化：設定為 AI 對話模式');
+                leftForm.classList.add('hidden');
+                onePanel.classList.add('hidden');
+                if (resultPanel) resultPanel.classList.add('hidden');
+            } else {
+                console.log('定位頁面元素未找到:', {tabChat, tabOne, leftForm, onePanel});
             }
         }
 
@@ -1886,11 +1945,19 @@
                 const chatCard = document.getElementById('positioning-chat-card');
                 if (!left || !chatCard) return;
                 if (window.innerWidth >= 1024) { // lg 斷點
+                    // 如果左側表單被隱藏，使用預設最小高度
+                    if (left.classList.contains('hidden')) {
+                        chatCard.style.height = '600px';
+                        chatCard.style.minHeight = '600px';
+                    } else {
                     // 保留最小高度，避免高度被壓到 0 導致整張卡片消失
                     const target = Math.max(left.offsetHeight, 600);
                     chatCard.style.height = target + 'px';
+                        chatCard.style.minHeight = '600px';
+                    }
                 } else {
                     chatCard.style.height = '';
+                    chatCard.style.minHeight = '500px';
                 }
             } catch (e) {
                 // 忽略
@@ -1950,9 +2017,24 @@
                             `平台策略：${audience} 活躍的平台優先；固定欄位（教學/案例/QA）輪播。`
                         ].join('\n');
                     }
-                    document.getElementById('positioning-summary').textContent = ps;
-                    document.getElementById('tone-guidelines').textContent = tg;
-                    document.getElementById('execution-suggestions').textContent = es;
+                    // 創建結果卡片
+                    const cards = document.getElementById('positioning-cards');
+                    if (cards) {
+                        cards.innerHTML = `
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                                <div class="font-semibold text-gray-900 dark:text-white mb-1">品牌定位</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${ps}</div>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                                <div class="font-semibold text-gray-900 dark:text-white mb-1">語氣守則</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${tg}</div>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                                <div class="font-semibold text-gray-900 dark:text-white mb-1">執行建議</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${es}</div>
+                            </div>
+                        `;
+                    }
                     document.getElementById('positioning-result').classList.remove('hidden');
                     showToast('定位分析完成！請查看右側結果', 'success');
                     setTimeout(() => {
@@ -1988,9 +2070,23 @@
             const executionSuggestions = `建議採用流量型與轉換型內容 7:3 配比，每週發布 3-5 次，專注於 Instagram Reels 平台。開場使用問句式鉤子，2-3秒換畫面，保持節奏緊湊。`;
 
             // 顯示結果
-            document.getElementById('positioning-summary').textContent = positioningSummary;
-            document.getElementById('tone-guidelines').textContent = toneGuidelines[tone];
-            document.getElementById('execution-suggestions').textContent = executionSuggestions;
+            const cards = document.getElementById('positioning-cards');
+            if (cards) {
+                cards.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                        <div class="font-semibold text-gray-900 dark:text-white mb-1">品牌定位</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${positioningSummary}</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                        <div class="font-semibold text-gray-900 dark:text-white mb-1">語氣守則</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${toneGuidelines[tone]}</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                        <div class="font-semibold text-gray-900 dark:text-white mb-1">執行建議</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${executionSuggestions}</div>
+                    </div>
+                `;
+            }
             
             document.getElementById('positioning-result').classList.remove('hidden');
             window.dispatchEvent(new CustomEvent('analyzePositioning', { detail: { industry, audience, pains, tone } }));
@@ -2043,7 +2139,7 @@
                 btn.addEventListener('click', function() {
                     const examples = {
                         '減肥方法': '減肥方法',
-                        '投資理財': '投資理財', 
+                        '投資理財': '投資理財',
                         '職場技能': '職場技能'
                     };
                     
@@ -2057,6 +2153,8 @@
                     }
                 });
             });
+
+            // 腳本生成大師快速示例按鈕（已移除，因為現在有專門的主題輸入框）
             // 讓右側高度與左側等高（桌面端）
             function adjustIdeationHeights(){
                 try{
@@ -2064,7 +2162,12 @@
                     const chat = document.getElementById('ideation-chat-card');
                     if(!left||!chat) return;
                     if (window.innerWidth >= 1024){
+                        // 如果左側表單被隱藏，使用預設高度
+                        if (left.classList.contains('hidden')) {
+                            chat.style.height = '600px';
+                        } else {
                         chat.style.height = Math.max(left.offsetHeight, 500) + 'px';
+                        }
                     } else {
                         chat.style.height = '';
                     }
@@ -2075,21 +2178,59 @@
 
             const tabChat = document.getElementById('tab-ideation-chat');
             const tabOne = document.getElementById('tab-ideation-oneclick');
-            const chatCard = document.getElementById('ideation-chat-card');
-            const onePanel = document.getElementById('ideation-oneclick-panel');
-            if (tabChat && tabOne && chatCard && onePanel){
+            const leftForm = document.getElementById('ideation-form');
+            const resultPanel = document.getElementById('ideation-result');
+            const emptyPanel = document.getElementById('ideation-empty');
+            const title = document.getElementById('ideation-title');
+            const description = document.getElementById('ideation-description');
+            if (tabChat && tabOne && leftForm && emptyPanel){
                 tabChat.addEventListener('click', ()=>{
+                    console.log('切換到 AI 對話模式（選題）');
                     tabChat.classList.add('bg-primary','text-white');
                     tabOne.classList.remove('bg-primary','text-white');
-                    chatCard.classList.remove('hidden');
-                    onePanel.classList.add('hidden');
+                    tabOne.classList.add('border','border-gray-300','dark:border-gray-600');
+                    tabChat.classList.remove('border');
+                    // 更新標題和說明顏色
+                    if (title) title.className = 'text-2xl font-bold text-gray-900 dark:text-white';
+                    if (description) description.textContent = '直接與AI對話，描述你的主題與需求，我會一步步引導你完成選題分析';
+                    // 隱藏左側一鍵生成設定模板（只隱藏表單，保留標籤）
+                    leftForm.classList.add('hidden');
+                    emptyPanel.classList.add('hidden');
+                    // 顯示聊天對話框
+                    const chatCard = document.getElementById('ideation-chat-card');
+                    if (chatCard) chatCard.classList.remove('hidden');
+                    if (resultPanel) resultPanel.classList.add('hidden');
+                    if (emptyPanel) emptyPanel.classList.add('hidden');
+                    // 調整聊天對話框高度
+                    setTimeout(adjustIdeationHeights, 100);
                 });
                 tabOne.addEventListener('click', ()=>{
+                    console.log('切換到一鍵生成模式（選題）');
                     tabOne.classList.add('bg-primary','text-white');
                     tabChat.classList.remove('bg-primary','text-white');
-                    chatCard.classList.add('hidden');
-                    onePanel.classList.remove('hidden');
+                    tabChat.classList.add('border','border-gray-300','dark:border-gray-600');
+                    tabOne.classList.remove('border');
+                    // 更新標題和說明顏色
+                    if (title) title.className = 'text-2xl font-bold text-gray-900 dark:text-white';
+                    if (description) description.textContent = '填寫必要資訊後，直接送出即可快速產生選題建議';
+                    // 顯示左側一鍵生成設定模板
+                    leftForm.classList.remove('hidden');
+                    emptyPanel.classList.remove('hidden');
+                    // 隱藏聊天對話框
+                    const chatCard = document.getElementById('ideation-chat-card');
+                    if (chatCard) chatCard.classList.add('hidden');
+                    // 顯示結果面板（一鍵生成模式下顯示結果）
+                    if (resultPanel) resultPanel.classList.remove('hidden');
+                    if (emptyPanel) emptyPanel.classList.remove('hidden');
+                    // 調整聊天對話框高度
+                    setTimeout(adjustIdeationHeights, 100);
                 });
+                // 預設：AI 對話 → 隱藏左側模板
+                console.log('初始化：設定為 AI 對話模式（選題）');
+                leftForm.classList.add('hidden');
+                emptyPanel.classList.add('hidden');
+                if (resultPanel) resultPanel.classList.add('hidden');
+                if (emptyPanel) emptyPanel.classList.add('hidden');
             }
         }
 
@@ -2180,43 +2321,202 @@
         // 腳本生成器功能
         function initScript() {
             // 模式選擇
-            document.querySelectorAll('input[name="mode"]').forEach(radio => {
+            document.querySelectorAll('input[name="script_mode"]').forEach(radio => {
                 radio.addEventListener('change', updateModeSelection);
             });
 
             // 模板選擇
-            document.querySelectorAll('input[name="template"]').forEach(radio => {
+            document.querySelectorAll('input[name="script_template"]').forEach(radio => {
                 radio.addEventListener('change', updateTemplateSelection);
             });
 
             // 時長選擇
-            document.querySelectorAll('input[name="duration"]').forEach(radio => {
+            document.querySelectorAll('input[name="script_duration"]').forEach(radio => {
                 radio.addEventListener('change', updateDurationSelection);
             });
 
-            // 套用設定按鈕
-            document.getElementById('apply-settings').addEventListener('click', function() {
-                const mode = document.querySelector('input[name="mode"]:checked').value;
-                const template = document.querySelector('input[name="template"]:checked').value;
-                const duration = document.querySelector('input[name="duration"]:checked').value;
+            // 套用設定按鈕（右側主題輸入）
+            const oneclickBtn = document.getElementById('oneclick-generate');
+            if (oneclickBtn) {
+                oneclickBtn.addEventListener('click', function() {
+                const mode = document.querySelector('input[name="script_mode"]:checked')?.value || 'educational';
+                const template = document.querySelector('input[name="script_template"]:checked')?.value || 'A';
+                const duration = document.querySelector('input[name="script_duration"]:checked')?.value || '30';
 
-                const modeText = mode === 'guided' ? '引導模式' : '自由模式';
-                const templateText = `模板 ${template}`;
-                const durationText = `${duration} 秒`;
-
-                showToast(`已套用：${modeText}/${templateText}/${durationText}`, 'success');
-
-                // 派發事件：先讓右側聊天框說明操作方式與下一步
-                const intro = `已套用設定：${modeText}／${templateText}／${durationText}\n\n可在「AI 對話」與「一鍵生成」兩種方式間切換。\n- AI 對話：在下方輸入主題與條件，我會根據左側設定生成並優化腳本。\n- 一鍵生成：切到「一鍵生成」頁，直接輸入主題快速產出腳本。`;
-                const box = document.getElementById('chat-script');
-                if (box){
-                    const wrap = document.createElement('div');
-                    wrap.className = 'text-left mb-3';
-                    wrap.innerHTML = `<div class="inline-block px-3 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm whitespace-pre-line">${intro}</div>`;
-                    box.appendChild(wrap); box.scrollTop = box.scrollHeight;
+                // 讀取主題輸入
+                const topic = document.getElementById('script-topic-input')?.value?.trim();
+                if (!topic) {
+                    showToast('請先輸入腳本主題', 'error');
+                    return;
                 }
-                window.dispatchEvent(new CustomEvent('applySettings', { detail: { mode, template, duration: parseInt(duration) } }));
-            });
+
+                // 顯示載入狀態
+                const loadingText = oneclickBtn.querySelector('.loading-text');
+                const submitText = oneclickBtn.querySelector('.submit-text');
+                if (loadingText) loadingText.classList.remove('hidden');
+                if (submitText) submitText.classList.add('hidden');
+                oneclickBtn.disabled = true;
+
+                // 顯示結果區域
+                const scriptResult = document.getElementById('script-result');
+                const scriptContent = document.getElementById('script-content');
+                if (scriptResult) scriptResult.classList.remove('hidden');
+                if (scriptContent) scriptContent.innerHTML = '<p class="text-gray-500 dark:text-gray-400">生成中...</p>';
+
+                // 生成腳本
+                generateScript(topic, mode, template, duration, oneclickBtn, scriptContent);
+                });
+            }
+
+            // 套用設定並生成腳本按鈕（左側設定區域）
+            const applySettingsBtn = document.getElementById('apply-settings-generate');
+            if (applySettingsBtn) {
+                applySettingsBtn.addEventListener('click', function() {
+                    const mode = document.querySelector('input[name="script_mode"]:checked')?.value || 'educational';
+                    const template = document.querySelector('input[name="script_template"]:checked')?.value || 'A';
+                    const duration = document.querySelector('input[name="script_duration"]:checked')?.value || '30';
+
+                    // 顯示載入狀態
+                    const loadingText = applySettingsBtn.querySelector('.apply-loading');
+                    const applyText = applySettingsBtn.querySelector('.apply-text');
+                    if (loadingText) loadingText.classList.remove('hidden');
+                    if (applyText) applyText.classList.add('hidden');
+                    applySettingsBtn.disabled = true;
+
+                    // 生成主題和腳本
+                    generateScriptWithTopic(mode, template, duration, applySettingsBtn);
+                });
+            }
+
+            // 生成主題和腳本函數
+            async function generateScriptWithTopic(mode, template, duration, button) {
+                try {
+                    // 先生成主題
+                    const topicResponse = await fetch(`${API_BASE}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            user_id: JSON.parse(localStorage.getItem('user') || '{}').id || 'web',
+                            agent_type: 'script',
+                            messages: [{
+                                role: 'user',
+                                content: `請為我生成一個適合${mode}模式、${template}模板、${duration}秒時長的短影音腳本主題。請直接回覆主題，不要其他說明。`
+                            }]
+                        })
+                    });
+
+                    if (!topicResponse.ok) {
+                        throw new Error('生成主題失敗');
+                    }
+
+                    const topicData = await topicResponse.json();
+                    const generatedTopic = topicData.assistant_message || topicData.response || '短影音腳本主題';
+
+                    // 將生成的主題填入右側輸入框
+                    const topicInput = document.getElementById('script-topic-input');
+                    if (topicInput) {
+                        topicInput.value = generatedTopic;
+                    }
+
+                    // 顯示結果區域
+                    const scriptResult = document.getElementById('script-result');
+                    const scriptContent = document.getElementById('script-content');
+                    if (scriptResult) scriptResult.classList.remove('hidden');
+                    if (scriptContent) scriptContent.innerHTML = '<p class="text-gray-500 dark:text-gray-400">正在生成腳本...</p>';
+
+                    // 生成腳本
+                    const scriptResponse = await fetch(`${API_BASE}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            user_id: JSON.parse(localStorage.getItem('user') || '{}').id || 'web',
+                            agent_type: 'script',
+                            messages: [{
+                                role: 'user',
+                                content: `請為我生成一個腳本。主題：${generatedTopic}，模式：${mode}，模板：${template}，時長：${duration}秒`
+                            }]
+                        })
+                    });
+
+                    if (!scriptResponse.ok) {
+                        throw new Error('生成腳本失敗');
+                    }
+
+                    const scriptData = await scriptResponse.json();
+                    if (scriptContent) {
+                        scriptContent.innerHTML = marked.parse(scriptData.assistant_message || scriptData.response || '生成失敗');
+                    }
+                    
+                    showToast('腳本生成成功！', 'success');
+                } catch (error) {
+                    console.error('Error generating script with topic:', error);
+                    const scriptContent = document.getElementById('script-content');
+                    if (scriptContent) {
+                        scriptContent.innerHTML = `<p class="text-red-500">生成失敗: ${error.message}</p>`;
+                    }
+                    showToast(`生成失敗: ${error.message}`, 'error');
+                } finally {
+                    // 還原按鈕狀態
+                    const loadingText = button.querySelector('.apply-loading');
+                    const applyText = button.querySelector('.apply-text');
+                    if (loadingText) loadingText.classList.add('hidden');
+                    if (applyText) applyText.classList.remove('hidden');
+                    button.disabled = false;
+                }
+            }
+
+            // 生成腳本函數
+            async function generateScript(topic, mode, template, duration, button, contentElement) {
+                try {
+                    // 使用 /chat 端點，因為 /agent/content/generate 可能不存在或需要不同的參數
+                    const response = await fetch(`${API_BASE}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            user_id: JSON.parse(localStorage.getItem('user') || '{}').id || 'web',
+                            agent_type: 'script',
+                            messages: [{
+                                role: 'user',
+                                content: `請為我生成一個腳本。主題：${topic}，模式：${mode}，模板：${template}，時長：${duration}秒`
+                            }]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || '生成腳本失敗');
+                    }
+
+                    const data = await response.json();
+                    contentElement.innerHTML = marked.parse(data.assistant_message || data.response || '生成失敗');
+                    showToast('腳本生成成功！', 'success');
+                } catch (error) {
+                    console.error('Error generating script:', error);
+                    contentElement.innerHTML = `<p class="text-red-500">生成腳本失敗: ${error.message}</p>`;
+                    showToast(`生成腳本失敗: ${error.message}`, 'error');
+                } finally {
+                    // 還原按鈕狀態
+                    const loadingText = button.querySelector('.loading-text');
+                    const submitText = button.querySelector('.submit-text');
+                    if (loadingText) loadingText.classList.add('hidden');
+                    if (submitText) submitText.classList.remove('hidden');
+                    button.disabled = false;
+                }
+            }
+
+            // 初始化時更新選擇狀態
+            updateModeSelection();
+            updateTemplateSelection();
+            updateDurationSelection();
 
             // 鍵盤導航
             initKeyboardNavigation();
@@ -2226,123 +2526,112 @@
             const tabOne = document.getElementById('tab-script-oneclick');
             const panelChat = document.getElementById('script-chat-panel');
             const panelOne = document.getElementById('script-oneclick-panel');
-            function activate(tab){
-                if (tab === 'chat') {
-                    panelChat.classList.remove('hidden');
-                    panelOne.classList.add('hidden');
+            const resultPanel = document.getElementById('script-result');
+            // 標題和描述元素已移除，不再需要更新
+            
+            if (tabChat && tabOne && panelChat && panelOne){
+                // 提供全域切換函式（onclick 後援）
+                window.switchScriptTab = (mode)=>{
+                    console.log('switchScriptTab called with mode:', mode);
+                    if (mode === 'one') {
+                        console.log('Switching to one-click mode');
+                        tabOne.click();
+                    } else {
+                        console.log('Switching to chat mode');
+                        tabChat.click();
+                    }
+                };
+                tabChat.addEventListener('click', ()=>{
+                    console.log('切換到 AI 對話模式（腳本）');
                     tabChat.classList.add('bg-primary','text-white');
                     tabOne.classList.remove('bg-primary','text-white');
                     tabOne.classList.add('border','border-gray-300','dark:border-gray-600');
-                } else {
-                    panelChat.classList.add('hidden');
-                    panelOne.classList.remove('hidden');
-                    tabOne.classList.remove('border','border-gray-300','dark:border-gray-600');
+                    tabChat.classList.remove('border');
+                    // 標題和描述已移除，不需要更新
+                    // 隱藏一鍵生成面板
+                    panelOne.classList.add('hidden');
+                    // 顯示聊天對話框
+                    panelChat.classList.remove('hidden');
+                    // 無藍色提示區塊（與其他頁一致）
+                    if (resultPanel) resultPanel.classList.add('hidden');
+                });
+                
+                tabOne.addEventListener('click', ()=>{
+                    console.log('切換到一鍵生成模式（腳本）');
                     tabOne.classList.add('bg-primary','text-white');
                     tabChat.classList.remove('bg-primary','text-white');
-                }
-            }
-            tabChat?.addEventListener('click', ()=>activate('chat'));
-            tabOne?.addEventListener('click', ()=>activate('one'));
-            activate('chat');
-
-            // 一鍵生成：按鈕行為（顯示按鈕內轉圈圈與預覽結果）
-            const oneBtn = document.getElementById('oneclick-generate');
-            const oneTopic = document.getElementById('oneclick-topic');
-            oneBtn?.addEventListener('click', async ()=>{
-                const topic = (oneTopic?.value||'').trim();
-                if (!topic){ showToast('請先輸入主題', 'error'); return; }
-
-                // 讀取左側設定
-                const mode = document.querySelector('input[name="mode"]:checked')?.value || 'guided';
-                const template = document.querySelector('input[name="template"]:checked')?.value || 'A';
-                const duration = parseInt(document.querySelector('input[name="duration"]:checked')?.value || '30');
-
-                // 切換到一鍵生成頁，顯示下方預覽 loading
-                activate('one');
-                const preview = document.getElementById('script-preview');
-                if (preview){
-                    document.getElementById('script-empty')?.classList.add('hidden');
-                    document.getElementById('script-result')?.classList.add('hidden');
-                    document.getElementById('script-loading')?.classList.remove('hidden');
-                }
-
-                // 按鈕顯示轉圈圈
-                const original = oneBtn.innerHTML;
-                oneBtn.disabled = true;
-                oneBtn.innerHTML = `<svg class="loading-spinner w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> 生成中...`;
-
-                try{
-                    // 嘗試呼叫後端 /chat（agent: script），失敗則本地生成
-                    const user = JSON.parse(localStorage.getItem('user') || '{}');
-                    const userId = user.id || 'web';
-                    const prompt = `主題：${topic}\n模板：${template}\n時長：${duration}秒\n模式：${mode}`;
-                    let scriptText = '';
-                    try{
-                        const res = await fetch(`${API_BASE}/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_id: userId, agent_type: 'script', messages: [{ role:'user', content: prompt }] }) });
-                        const data = await res.json();
-                        scriptText = (data && data.assistant_message) ? data.assistant_message : '';
-                    }catch(_){ /* 後端不可用時走本地 */ }
-
-                    if (!scriptText){
-                        // 本地生成
-                        scriptText = generateScriptContent(template, duration);
+                    tabChat.classList.add('border','border-gray-300','dark:border-gray-600');
+                    tabOne.classList.remove('border');
+                    // 標題和描述已移除，不需要更新
+                    // 顯示一鍵生成面板
+                    panelOne.classList.remove('hidden');
+                    // 隱藏聊天對話框
+                    panelChat.classList.add('hidden');
+                    // 顯示結果面板（一鍵生成模式下顯示結果）
+                    if (resultPanel) resultPanel.classList.remove('hidden');
+                });
+                
+                // 保障點擊事件（事件委派備援）
+                const scriptTabs = document.getElementById('script-tabs');
+                scriptTabs?.addEventListener('click', (evt)=>{
+                    const btn = evt.target?.closest('button');
+                    if (!btn) return;
+                    if (btn.id === 'tab-script-oneclick') {
+                        tabOne?.click();
+                    } else if (btn.id === 'tab-script-chat') {
+                        tabChat?.click();
                     }
+                });
+                
+                // 預設：AI 對話 → 隱藏一鍵生成面板
+                console.log('初始化：設定為 AI 對話模式（腳本）');
+                panelOne.classList.add('hidden');
+                if (resultPanel) resultPanel.classList.add('hidden');
+            }
 
-                    // 更新預覽
-                    document.getElementById('script-loading')?.classList.add('hidden');
-                    const modeText = mode === 'guided' ? '引導模式' : '自由模式';
-                    const templateText = `模板 ${template}`;
-                    const durationText = `${duration} 秒`;
-                    const m = document.getElementById('script-mode'); if (m) m.textContent = modeText;
-                    const t = document.getElementById('script-template'); if (t) t.textContent = templateText;
-                    const d = document.getElementById('script-duration'); if (d) d.textContent = durationText;
-                    const c = document.getElementById('script-content'); if (c) c.textContent = scriptText;
-                    document.getElementById('script-result')?.classList.remove('hidden');
-                    showToast('腳本已生成，請查看預覽', 'success');
-                    setTimeout(()=>{ document.getElementById('script-result')?.scrollIntoView({behavior:'smooth', block:'start'}); }, 200);
-                } finally {
-                    // 還原按鈕
-                    oneBtn.disabled = false;
-                    oneBtn.innerHTML = original;
-                }
-            });
         }
 
         function updateModeSelection() {
-            document.querySelectorAll('.mode-option').forEach(option => {
-                const radio = option.parentElement.querySelector('input[type="radio"]');
-                if (radio.checked) {
-                    option.classList.add('border-primary', 'bg-primary', 'text-white');
-                    option.classList.remove('border-gray-300', 'dark:border-gray-600');
-                } else {
-                    option.classList.remove('border-primary', 'bg-primary', 'text-white');
-                    option.classList.add('border-gray-300', 'dark:border-gray-600');
+            document.querySelectorAll('input[name="script_mode"]').forEach(radio => {
+                const label = radio.closest('label');
+                if (label) {
+                    if (radio.checked) {
+                        label.classList.add('border-primary', 'bg-primary', 'text-white');
+                        label.classList.remove('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
+                    } else {
+                        label.classList.remove('border-primary', 'bg-primary', 'text-white');
+                        label.classList.add('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
+                    }
                 }
             });
         }
 
         function updateTemplateSelection() {
-            document.querySelectorAll('.template-card').forEach(card => {
-                const radio = card.parentElement.querySelector('input[type="radio"]');
-                if (radio.checked) {
-                    card.classList.add('border-primary', 'bg-primary', 'text-white');
-                    card.classList.remove('border-gray-300', 'dark:border-gray-600');
-                } else {
-                    card.classList.remove('border-primary', 'bg-primary', 'text-white');
-                    card.classList.add('border-gray-300', 'dark:border-gray-600');
+            document.querySelectorAll('input[name="script_template"]').forEach(radio => {
+                const label = radio.closest('label');
+                if (label) {
+                    if (radio.checked) {
+                        label.classList.add('border-primary', 'bg-primary', 'text-white');
+                        label.classList.remove('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
+                    } else {
+                        label.classList.remove('border-primary', 'bg-primary', 'text-white');
+                        label.classList.add('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
+                    }
                 }
             });
         }
 
         function updateDurationSelection() {
-            document.querySelectorAll('.duration-option').forEach(option => {
-                const radio = option.parentElement.querySelector('input[type="radio"]');
-                if (radio.checked) {
-                    option.classList.add('border-primary', 'bg-primary', 'text-white');
-                    option.classList.remove('border-gray-300', 'dark:border-gray-600');
-                } else {
-                    option.classList.remove('border-primary', 'bg-primary', 'text-white');
-                    option.classList.add('border-gray-300', 'dark:border-gray-600');
+            document.querySelectorAll('input[name="script_duration"]').forEach(radio => {
+                const label = radio.closest('label');
+                if (label) {
+                    if (radio.checked) {
+                        label.classList.add('border-primary', 'bg-primary', 'text-white');
+                        label.classList.remove('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
+                    } else {
+                        label.classList.remove('border-primary', 'bg-primary', 'text-white');
+                        label.classList.add('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
+                    }
                 }
             });
         }
@@ -2560,8 +2849,20 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         .then(response => response.json())
         .then(data => {
             // 更新 UI 顯示結果
-            document.getElementById('positioning-summary').textContent = data.summary;
-            document.getElementById('tone-guidelines').textContent = data.guidelines;
+            const cards = document.getElementById('positioning-cards');
+            if (cards) {
+                cards.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                        <div class="font-semibold text-gray-900 dark:text-white mb-1">品牌定位</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${data.summary}</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-2">
+                        <div class="font-semibold text-gray-900 dark:text-white mb-1">語氣守則</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line">${data.guidelines}</div>
+                    </div>
+                `;
+            }
+            document.getElementById('positioning-result').classList.remove('hidden');
         })
         .catch(error => {
             console.error('定位分析失敗:', error);
