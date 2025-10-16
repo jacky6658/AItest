@@ -10,8 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- AI Points System -->
-    <link rel="stylesheet" href="/points-addon.css">
-    <script defer type="module" src="/src/boot/aiPoints_bootstrap.js"></script>
+    <link rel="stylesheet" href="./public/points-addon.css">
+    <script defer type="module" src="./public/src/boot/aiPoints_bootstrap.js"></script>
     
     <script>
         tailwind.config = {
@@ -161,7 +161,7 @@
                             <div class="p-2">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">免費</span>
-                                    <button class="bg-black text-white text-xs px-3 py-1 rounded">升級</button>
+                                    <button class="bg-black text-white text-xs px-3 py-1 rounded hover:bg-gray-800 transition-colors" onclick="showPurchaseModal()">升級</button>
                                 </div>
                                 <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center space-x-2">
@@ -261,13 +261,57 @@
             </button>
         </div>
         <div class="p-4 space-y-4">
-            <div class="flex items-center justify-between">
-                <span id="acc-plan" class="text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">免費</span>
-                <button id="acc-upgrade" class="px-3 py-1 text-xs bg-black text-white rounded">升級</button>
+            <!-- 方案狀態區塊 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">方案狀態</span>
+                    <span id="acc-plan" class="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">免費</span>
+                </div>
+                <button id="acc-upgrade" class="w-full px-3 py-2 text-xs bg-black text-white rounded hover:bg-gray-800 transition-colors" onclick="showPurchaseModal()">
+                    升級方案
+                </button>
             </div>
-            <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                <span>點數</span>
-                <span id="acc-credits" class="font-semibold">300</span>
+
+            <!-- 點數資訊區塊 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">點數餘額</span>
+                    </div>
+                    <span id="acc-credits" class="text-lg font-bold text-primary">300</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <span>免費點數</span>
+                    <span id="acc-free-credits">0</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <span>每日刷新積分</span>
+                    <span>每天 00:00 刷新為 300</span>
+                </div>
+            </div>
+
+            <!-- 使用統計區塊 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">本月使用統計</h4>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-500 dark:text-gray-400">定位顧問</span>
+                        <span id="acc-positioning-count" class="font-medium">0 次</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-500 dark:text-gray-400">選題助手</span>
+                        <span id="acc-topics-count" class="font-medium">0 次</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-500 dark:text-gray-400">腳本生成</span>
+                        <span id="acc-script-count" class="font-medium">0 次</span>
+                    </div>
+                </div>
             </div>
             <nav class="pt-2 space-y-1 text-gray-700 dark:text-gray-300">
                 <a href="#" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100">
@@ -466,26 +510,51 @@
             </section>
 
             <!-- 訂閱方案區塊 -->
-            <section class="py-16 bg-gray-50 dark:bg-gray-800">
+            <section class="py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-12">
-                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                             選擇適合您的方案
                         </h2>
-                        <p class="text-lg text-gray-600 dark:text-gray-300">
+                        <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
                             解鎖更多AI功能，提升創作效率
                         </p>
+                        <div class="w-24 h-1 bg-primary mx-auto rounded-full"></div>
                     </div>
 
-                    <div class="grid md:grid-cols-3 gap-8" id="subscription-plans">
-                        <!-- 方案卡片將由JavaScript動態生成 -->
+                    <!-- 點數包方案 -->
+                    <div class="mb-16">
+                        <h3 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">
+                            💎 點數包方案
+                        </h3>
+                        <div class="grid md:grid-cols-3 gap-8" id="subscription-plans">
+                            <!-- 方案卡片將由JavaScript動態生成 -->
+                        </div>
                     </div>
 
-                    <!-- 購買按鈕區域 -->
-                    <div class="text-center mt-8">
-                        <button id="purchase-btn" class="bg-primary text-white text-lg px-8 py-3 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" onclick="showPurchaseModal()">
-                            💳 立即購買
+                    <!-- 訂閱方案 -->
+                    <div class="mb-16">
+                        <h3 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">
+                            🚀 訂閱方案
+                        </h3>
+                        <div class="grid md:grid-cols-3 gap-8" id="subscription-plans-advanced">
+                            <!-- 進階方案卡片將由JavaScript動態生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 主要購買按鈕 -->
+                    <div class="text-center">
+                        <button id="purchase-btn" class="bg-gradient-to-r from-primary to-primary-hover text-white text-xl px-12 py-4 rounded-2xl hover:from-primary-hover hover:to-primary transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50 shadow-2xl hover:shadow-primary/25 transform hover:-translate-y-1" onclick="showPurchaseModal()">
+                            <span class="flex items-center justify-center gap-3">
+                                💳 立即購買點數
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                            </span>
                         </button>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                            安全支付 • 即時到帳 • 24/7 客服支援
+                        </p>
                     </div>
                 </div>
             </section>
@@ -1424,7 +1493,21 @@
                 }
                 const accPlan = document.getElementById('acc-plan');
                 if (accPlan) accPlan.textContent = plan;
+                
+                // 更新使用統計
+                updateUsageStats(data.usage_stats || {});
             } catch(e) { /* 忽略錯誤，保持原樣 */ }
+        }
+        
+        // 更新使用統計顯示
+        function updateUsageStats(stats) {
+            const positioningCount = document.getElementById('acc-positioning-count');
+            const topicsCount = document.getElementById('acc-topics-count');
+            const scriptCount = document.getElementById('acc-script-count');
+            
+            if (positioningCount) positioningCount.textContent = `${stats.positioning || 0} 次`;
+            if (topicsCount) topicsCount.textContent = `${stats.topics || 0} 次`;
+            if (scriptCount) scriptCount.textContent = `${stats.script || 0} 次`;
         }
 
         // 扣點（前端模擬）
@@ -2993,20 +3076,75 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         const container = document.getElementById('subscription-plans');
         if (!container) return;
 
-        container.innerHTML = subscriptionPlans.map(plan => `
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-150 ${plan.name === '專業方案' ? 'ring-2 ring-primary' : ''}">
-                ${plan.name === '專業方案' ? '<div class="text-center mb-4"><span class="bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold">推薦</span></div>' : ''}
+        // 點數包方案
+        const pointPacks = [
+            { id: 1, name: '小額包', description: '適合輕度使用者', price: 399, credits: 300, duration_days: 180, popular: false },
+            { id: 2, name: '標準包', description: '適合一般創作者', price: 1099, credits: 1000, duration_days: 180, popular: true },
+            { id: 3, name: '大額包', description: '適合重度使用者', price: 3399, credits: 3000, duration_days: 180, popular: false }
+        ];
+
+        container.innerHTML = pointPacks.map(pack => `
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 ${pack.popular ? 'ring-2 ring-primary transform scale-105' : ''} relative">
+                ${pack.popular ? '<div class="absolute -top-4 left-1/2 transform -translate-x-1/2"><span class="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">🔥 推薦</span></div>' : ''}
                 <div class="text-center">
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">${plan.name}</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">${plan.description}</p>
-                    <div class="text-4xl font-bold text-primary mb-2">NT$ ${plan.price}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-400 mb-6">${plan.credits} 點數 / ${plan.duration_days} 天</div>
-                    <button onclick="selectPlan(${plan.id})" class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-                        選擇方案
+                    <div class="text-4xl mb-4">${pack.name === '小額包' ? '💎' : pack.name === '標準包' ? '💎💎' : '💎💎💎'}</div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">${pack.name}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">${pack.description}</p>
+                    <div class="text-4xl font-bold text-primary mb-2">NT$ ${pack.price.toLocaleString()}</div>
+                    <div class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">${pack.credits.toLocaleString()} 點數</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400 mb-6">有效期 ${pack.duration_days} 天</div>
+                    <button onclick="selectPointPack(${pack.id})" class="w-full bg-gradient-to-r from-primary to-primary-hover text-white py-3 px-6 rounded-xl hover:from-primary-hover hover:to-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transform hover:-translate-y-1">
+                        立即購買
                     </button>
                 </div>
             </div>
         `).join('');
+
+        // 訂閱方案
+        const subscriptionPlans = [
+            { id: 1, name: '基礎方案', description: '適合個人創作者', monthly_points: 100, batch_limit: 10, roles_limit: 1, price: 299 },
+            { id: 2, name: '專業方案', description: '適合小型團隊', monthly_points: 500, batch_limit: 50, roles_limit: 3, price: 999 },
+            { id: 3, name: '企業方案', description: '適合大型企業', monthly_points: 2000, batch_limit: 200, roles_limit: 10, price: 2999 }
+        ];
+
+        const advancedContainer = document.getElementById('subscription-plans-advanced');
+        if (advancedContainer) {
+            advancedContainer.innerHTML = subscriptionPlans.map(plan => `
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 ${plan.name === '專業方案' ? 'ring-2 ring-primary transform scale-105' : ''} relative">
+                    ${plan.name === '專業方案' ? '<div class="absolute -top-4 left-1/2 transform -translate-x-1/2"><span class="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">⭐ 熱門</span></div>' : ''}
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">${plan.name === '基礎方案' ? '🚀' : plan.name === '專業方案' ? '🚀🚀' : '🚀🚀🚀'}</div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">${plan.name}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">${plan.description}</p>
+                        <div class="text-4xl font-bold text-primary mb-2">NT$ ${plan.price.toLocaleString()}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-6">每月</div>
+                        <ul class="text-left space-y-2 mb-6">
+                            <li class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                每月 ${plan.monthly_points} 點數
+                            </li>
+                            <li class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                批次上限 ${plan.batch_limit} 次
+                            </li>
+                            <li class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                角色上限 ${plan.roles_limit} 個
+                            </li>
+                        </ul>
+                        <button onclick="selectSubscriptionPlan(${plan.id})" class="w-full bg-gradient-to-r from-primary to-primary-hover text-white py-3 px-6 rounded-xl hover:from-primary-hover hover:to-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transform hover:-translate-y-1">
+                            選擇方案
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
     }
 
     // 顯示購買彈窗
@@ -3087,6 +3225,50 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         }
     }
 
+    // 選擇點數包
+    function selectPointPack(packId) {
+        const packs = [
+            { id: 1, name: '小額包', price: 399, credits: 300 },
+            { id: 2, name: '標準包', price: 1099, credits: 1000 },
+            { id: 3, name: '大額包', price: 3399, credits: 3000 }
+        ];
+        
+        const pack = packs.find(p => p.id === packId);
+        if (!pack) return;
+        
+        if (confirm(`確定要購買「${pack.name}」嗎？\n價格：NT$ ${pack.price.toLocaleString()}\n點數：${pack.credits.toLocaleString()} 點`)) {
+            // 這裡可以調用購買API
+            showToast(`正在處理「${pack.name}」購買...`, 'info');
+            // 實際購買邏輯會由點數系統處理
+        }
+    }
+    
+    // 選擇訂閱方案
+    function selectSubscriptionPlan(planId) {
+        const plans = [
+            { id: 1, name: '基礎方案', price: 299 },
+            { id: 2, name: '專業方案', price: 999 },
+            { id: 3, name: '企業方案', price: 2999 }
+        ];
+        
+        const plan = plans.find(p => p.id === planId);
+        if (!plan) return;
+        
+        if (confirm(`確定要選擇「${plan.name}」嗎？\n價格：NT$ ${plan.price.toLocaleString()}/月`)) {
+            showToast(`正在處理「${plan.name}」訂閱...`, 'info');
+            // 這裡可以跳轉到訂閱付款頁面
+        }
+    }
+    
+    // 顯示購買彈窗（全域函數）
+    function showPurchaseModal() {
+        if (window.aiPoints && window.aiPoints.showModal) {
+            window.aiPoints.showModal();
+        } else {
+            showToast('點數系統載入中，請稍後再試', 'info');
+        }
+    }
+    
     // 初始化訂閱方案
     initSubscriptionPlans();
     -->
