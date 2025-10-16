@@ -617,8 +617,9 @@
                                 </div>
                             </div>
 
-                            <div class="mt-6">
+                            <div class="mt-6 space-y-2">
                                 <button id="upgrade-plan-btn" class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-hover transition-colors">升級方案</button>
+                                <button id="quick-charge-btn" class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors">⚡ 快速充值</button>
                             </div>
                         </div>
 
@@ -859,6 +860,72 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速充值視窗 -->
+    <div id="quick-charge-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
+            <div class="p-6">
+                <!-- 標題列 -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">⚡ 快速充值</h2>
+                    <button id="quick-charge-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- 充值選項 -->
+                <div class="space-y-4">
+                    <div class="text-center text-gray-600 dark:text-gray-400 mb-4">
+                        選擇充值點數包
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="charge-option p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors" data-credits="100">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary">100</div>
+                                <div class="text-xs text-gray-500">點數</div>
+                            </div>
+                        </button>
+                        
+                        <button class="charge-option p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors" data-credits="500">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary">500</div>
+                                <div class="text-xs text-gray-500">點數</div>
+                            </div>
+                        </button>
+                        
+                        <button class="charge-option p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors" data-credits="1000">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary">1,000</div>
+                                <div class="text-xs text-gray-500">點數</div>
+                            </div>
+                        </button>
+                        
+                        <button class="charge-option p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors" data-credits="5000">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-primary">5,000</div>
+                                <div class="text-xs text-gray-500">點數</div>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <!-- 自定義金額 -->
+                    <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">自定義金額</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="custom-credits" placeholder="輸入點數" min="1" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <button id="custom-charge-btn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">充值</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 結果顯示 -->
+                <div id="charge-result" class="mt-4 p-3 rounded-lg hidden"></div>
             </div>
         </div>
     </div>
@@ -4142,6 +4209,10 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             showPurchaseModal();
         });
         
+        document.getElementById('quick-charge-btn')?.addEventListener('click', function() {
+            showQuickChargeModal();
+        });
+        
         document.getElementById('export-data')?.addEventListener('click', function() {
             showToast('資料匯出功能開發中', 'info');
         });
@@ -4200,6 +4271,169 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
                 });
             }
         });
+        
+        // 快速充值功能
+        setupQuickChargeModal();
+    }
+    
+    // 設置快速充值視窗
+    function setupQuickChargeModal() {
+        const quickChargeModal = document.getElementById('quick-charge-modal');
+        const quickChargeClose = document.getElementById('quick-charge-close');
+        const chargeOptions = document.querySelectorAll('.charge-option');
+        const customChargeBtn = document.getElementById('custom-charge-btn');
+        const customCreditsInput = document.getElementById('custom-credits');
+        const chargeResult = document.getElementById('charge-result');
+        
+        // 開啟快速充值視窗
+        function showQuickChargeModal() {
+            if (quickChargeModal) {
+                quickChargeModal.classList.remove('hidden');
+                quickChargeModal.classList.add('flex');
+                document.body.classList.add('modal-open');
+                // 重置選中狀態
+                chargeOptions.forEach(btn => btn.classList.remove('border-primary', 'bg-primary/10'));
+                chargeResult.classList.add('hidden');
+            }
+        }
+        
+        // 關閉快速充值視窗
+        function hideQuickChargeModal() {
+            if (quickChargeModal) {
+                quickChargeModal.classList.add('hidden');
+                quickChargeModal.classList.remove('flex');
+                document.body.classList.remove('modal-open');
+            }
+        }
+        
+        // 執行充值
+        async function executeCharge(credits) {
+            if (!credits || credits <= 0) {
+                showChargeResult('請輸入有效的點數', 'error');
+                return;
+            }
+            
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!user.email) {
+                showChargeResult('請先登入', 'error');
+                return;
+            }
+            
+            try {
+                showChargeResult('正在處理充值請求...', 'info');
+                
+                const response = await fetch(`${API_BASE}/admin/user/add_credits`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        identifier: user.email,
+                        credits: credits,
+                        reason: '用戶快速充值'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showChargeResult(
+                        `✅ 充值成功！<br/>
+                        💰 充值點數: +${data.credits_added}<br/>
+                        📊 新餘額: ${data.new_balance}`, 
+                        'success'
+                    );
+                    
+                    // 更新本地用戶資料
+                    user.credits = data.new_balance;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    // 更新UI顯示
+                    updateCreditsDisplay(data.new_balance);
+                    
+                    // 3秒後關閉視窗
+                    setTimeout(() => {
+                        hideQuickChargeModal();
+                    }, 3000);
+                } else {
+                    showChargeResult(`❌ 充值失敗: ${data.message || data.error || '未知錯誤'}`, 'error');
+                }
+            } catch (error) {
+                showChargeResult(`❌ 請求失敗: ${error.message}`, 'error');
+            }
+        }
+        
+        // 顯示充值結果
+        function showChargeResult(message, type) {
+            chargeResult.classList.remove('hidden');
+            chargeResult.innerHTML = message;
+            
+            // 根據類型設置樣式
+            chargeResult.className = `mt-4 p-3 rounded-lg ${
+                type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' :
+                type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' :
+                'bg-blue-100 text-blue-800 border border-blue-200'
+            }`;
+        }
+        
+        // 更新點數顯示
+        function updateCreditsDisplay(credits) {
+            const navCredits = document.getElementById('nav-credits');
+            const accCredits = document.getElementById('acc-credits');
+            const accountCurrentCredits = document.getElementById('account-current-credits');
+            
+            if (navCredits) navCredits.textContent = credits;
+            if (accCredits) accCredits.textContent = credits;
+            if (accountCurrentCredits) accountCurrentCredits.textContent = credits;
+        }
+        
+        // 事件監聽器
+        if (quickChargeClose) {
+            quickChargeClose.addEventListener('click', hideQuickChargeModal);
+        }
+        
+        // 點擊背景關閉
+        if (quickChargeModal) {
+            quickChargeModal.addEventListener('click', function(e) {
+                if (e.target === quickChargeModal) {
+                    hideQuickChargeModal();
+                }
+            });
+        }
+        
+        // 充值選項按鈕
+        chargeOptions.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除其他選中的樣式
+                chargeOptions.forEach(b => b.classList.remove('border-primary', 'bg-primary/10'));
+                // 添加選中樣式
+                this.classList.add('border-primary', 'bg-primary/10');
+                
+                const credits = parseInt(this.dataset.credits);
+                executeCharge(credits);
+            });
+        });
+        
+        // 自定義充值按鈕
+        if (customChargeBtn) {
+            customChargeBtn.addEventListener('click', function() {
+                const credits = parseInt(customCreditsInput.value);
+                executeCharge(credits);
+            });
+        }
+        
+        // 自定義金額輸入框回車事件
+        if (customCreditsInput) {
+            customCreditsInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const credits = parseInt(this.value);
+                    executeCharge(credits);
+                }
+            });
+        }
+        
+        // 將函數設為全域，供其他部分調用
+        window.showQuickChargeModal = showQuickChargeModal;
     }
     </script>
 </body>
