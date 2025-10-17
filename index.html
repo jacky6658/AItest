@@ -1630,6 +1630,169 @@
         // 功能扣點設定（可依實際調整）
         const CREDIT_COSTS = { positioning: 5, topics: 3, script: 8 };
 
+        // 點數系統 API 調用
+        async function fetchWalletInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/points/wallet`, {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    updateCreditsDisplay(data.balance);
+                    return data;
+                }
+            } catch (error) {
+                console.error('獲取錢包資訊失敗:', error);
+            }
+            return null;
+        }
+
+        async function authorizeUsage(module, mode, count) {
+            try {
+                const response = await fetch(`${API_BASE}/points/authorize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ module, mode, count })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data;
+                }
+            } catch (error) {
+                console.error('授權檢查失敗:', error);
+            }
+            return { authorized: false, reason: 'API_ERROR' };
+        }
+
+        async function consumePoints(module, mode, count) {
+            try {
+                const response = await fetch(`${API_BASE}/points/consume`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        usage_id: `usage_${Date.now()}`,
+                        module, 
+                        mode, 
+                        count,
+                        points: CREDIT_COSTS[module] * count
+                    })
+                });
+                if (response.ok) {
+                    // 更新本地點數顯示
+                    const wallet = await fetchWalletInfo();
+                    return true;
+                }
+            } catch (error) {
+                console.error('扣點失敗:', error);
+            }
+            return false;
+        }
+
+        async function fetchPointPacks() {
+            try {
+                const response = await fetch(`${API_BASE}/points/packs`, {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data;
+                }
+            } catch (error) {
+                console.error('獲取點數包失敗:', error);
+            }
+            return [];
+        }
+
+        async function createCheckout(packId) {
+            try {
+                const response = await fetch(`${API_BASE}/points/checkout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ pack_id: packId })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data;
+                }
+            } catch (error) {
+                console.error('創建訂單失敗:', error);
+            }
+            return null;
+        }
+
+        // 顯示購買彈窗
+        async function showPurchaseModal() {
+            try {
+                const packs = await fetchPointPacks();
+                if (packs.length === 0) {
+                    showToast('暫無可購買的點數包', 'error');
+                    return;
+                }
+                
+                // 使用現有的購買彈窗或創建新的
+                if (window.aiPoints && window.aiPoints.showModal) {
+                    window.aiPoints.showModal();
+                } else {
+                    // 簡化的購買彈窗
+                    showSimplePurchaseModal(packs);
+                }
+            } catch (error) {
+                console.error('顯示購買彈窗失敗:', error);
+                showToast('載入購買頁面失敗', 'error');
+            }
+        }
+
+        // 簡化購買彈窗
+        function showSimplePurchaseModal(packs) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+                    <h3 class="text-lg font-semibold mb-4">購買點數</h3>
+                    <div class="space-y-3">
+                        ${packs.map(pack => `
+                            <div class="border rounded-lg p-3 flex justify-between items-center">
+                                <div>
+                                    <div class="font-medium">${pack.name}</div>
+                                    <div class="text-sm text-gray-600">${pack.points} 點</div>
+                                </div>
+                                <button onclick="selectPack(${pack.pack_id}, ${pack.price_ntd})" 
+                                        class="bg-blue-500 text-white px-4 py-2 rounded">
+                                    NT$ ${pack.price_ntd}
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="this.closest('.fixed').remove()" 
+                                class="px-4 py-2 border rounded">取消</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // 選擇點數包
+        async function selectPack(packId, price) {
+            try {
+                showToast('正在處理訂單...', 'info');
+                const checkout = await createCheckout(packId);
+                if (checkout) {
+                    showToast('訂單創建成功！', 'success');
+                    // 這裡可以跳轉到支付頁面或顯示支付資訊
+                    console.log('Checkout URL:', checkout.checkout_url);
+                } else {
+                    showToast('訂單創建失敗', 'error');
+                }
+            } catch (error) {
+                console.error('選擇點數包失敗:', error);
+                showToast('處理失敗', 'error');
+            }
+        }
+
         // 全域變數
         let currentPage = 'home';
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -1667,6 +1830,13 @@
                 console.log('聊天功能初始化完成');
             } catch (error) {
                 console.error('聊天功能初始化錯誤:', error);
+            }
+            // 載入錢包資訊
+            try {
+                fetchWalletInfo();
+                console.log('錢包資訊載入完成');
+            } catch (error) {
+                console.error('錢包資訊載入錯誤:', error);
             }
             loadStoredData();
             adjustPositioningHeights();
@@ -2512,22 +2682,35 @@
                     return item;
                 }
                 
-                send.addEventListener('click', () => {
+                send.addEventListener('click', async () => {
                     const v = input.value.trim();
                     if (!v) return;
-                    // 扣點（若不足則阻擋）
-                    if (!tryConsumeCredits(agent)) return;
+                    
+                    // 點數授權檢查
+                    const authResult = await authorizeUsage(agent, 'chat', 1);
+                    if (!authResult.authorized) {
+                        if (authResult.needTopup) {
+                            showPurchaseModal();
+                        } else {
+                            showToast(`點數不足，無法執行（需要 ${CREDIT_COSTS[agent]} 點）`, 'error');
+                        }
+                        return;
+                    }
+                    
                     append('user', v);
                     input.value = '';
                     const pending = appendPending();
                     callBackend(agent, v)
-                        .then(msg => {
+                        .then(async msg => {
                             if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
                             append('ai', msg);
+                            // 成功後扣點
+                            await consumePoints(agent, 'chat', 1);
                         })
-                        .catch(() => {
+                        .catch(async () => {
                             if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
                             append('ai', '抱歉，目前系統較繁忙，請稍後再試。');
+                            // 失敗不扣點
                         });
                 });
                 // Enter 送出（Shift+Enter 不送出）
@@ -2907,6 +3090,17 @@
         }
 
         async function generatePositioningResult() {
+            // 點數授權檢查
+            const authResult = await authorizeUsage('positioning', 'oneclick', 1);
+            if (!authResult.authorized) {
+                if (authResult.needTopup) {
+                    showPurchaseModal();
+                } else {
+                    showToast(`點數不足，無法執行（需要 ${CREDIT_COSTS['positioning']} 點）`, 'error');
+                }
+                return;
+            }
+
             const form = document.getElementById('positioning-form');
             const formData = new FormData(form);
             
@@ -2966,6 +3160,8 @@
                     }
                     document.getElementById('positioning-result').classList.remove('hidden');
                     showToast('定位分析完成！請查看右側結果', 'success');
+                    // 成功後扣點
+                    await consumePoints('positioning', 'oneclick', 1);
                     setTimeout(() => {
                         document.getElementById('positioning-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 300);
