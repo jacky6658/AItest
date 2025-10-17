@@ -30,7 +30,7 @@ const state = {
 localStorage.setItem('userId', state.userId);
 
 // 頁面管理
-const pages = ['home', 'positioning', 'topics', 'script', 'copy', 'guide'];
+const pages = ['home', 'positioning', 'topics', 'script', 'guide'];
 
 // 工具函數
 function escapeHTML(text) {
@@ -102,8 +102,15 @@ function hideLoadingMsg(chatEl) {
 }
 
 // 頁面切換
-document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goPage(b.dataset.go));
+document.querySelectorAll('[data-go]').forEach(b=>{
+  b.onclick=()=>{
+    console.log('頁面切換到:', b.dataset.go);
+    goPage(b.dataset.go);
+  };
+});
+
 function goPage(name){
+  console.log('執行goPage:', name);
   pages.forEach(p=>{
     const elPage = document.getElementById(`page-${p}`);
     if(elPage) elPage.style.display = (p===name)?'block':'none';
@@ -337,7 +344,7 @@ document.getElementById('saveProfile').onclick = async () => {
 };
 
 // 清空定位對話
-document.getElementById('clearPositioning').onclick = () => {
+document.getElementById('clearPositioningChat').onclick = () => {
   if (confirm('確定要清空對話記錄嗎？')) {
     const chat = document.getElementById('chatPositioning');
     chat.innerHTML = '';
@@ -415,10 +422,16 @@ function updateTopicsNotesDisplay(){
     topicsContent.innerHTML = `
       <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
         <strong>📚 歷史紀錄</strong>
-        <button onclick="clearTopicsHistory()" style="font-size: 12px; color: #666; background: none; border: none; cursor: pointer;">清空</button>
+        <button id="clearTopicsHistoryBtn" style="font-size: 12px; color: #666; background: none; border: none; cursor: pointer;">清空</button>
       </div>
       <div style="max-height: 400px; overflow-y: auto;">${historyItems}</div>
     `;
+    
+    // 添加清空按鈕事件監聽器
+    const clearBtn = document.getElementById('clearTopicsHistoryBtn');
+    if(clearBtn) {
+      clearBtn.onclick = clearTopicsHistory;
+    }
   } else {
     topicsContent.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">點擊「獲取靈感」開始生成選題建議。</div>';
   }
@@ -617,13 +630,8 @@ document.getElementById('btnStartGuide').onclick = async ()=>{
   showToast('已套用模板與時長設定');
 };
 
-// 模式切換
-document.getElementById('modeGroup').addEventListener('change', e=>{
-  if(e.target.name!=='scriptMode') return;
-  state.scriptMode = e.target.value;       // guide | free
-  document.getElementById('guideBar').style.display = (state.scriptMode==='guide')?'block':'none';
-  renderChips();
-});
+// 模式切換 - 移除錯誤的事件監聽器，因為modeGroup是div不是表單元素
+// 模式切換邏輯已經在各自的按鈕事件中處理
 
 // 送出：改走增強版 API，能回傳分段 → 右側顯示
 const chatScript = document.getElementById('chatScript');
@@ -789,6 +797,7 @@ function updateScriptSegmentsDisplay(segments) {
 
 function updateScriptNotesDisplay(){
   const scriptContent = document.getElementById('scriptContent');
+  if(!scriptContent) return; // 如果元素不存在則直接返回
   if(state.scriptNotes && state.scriptNotes.length > 0){
     const notes = state.scriptNotes.map(n=>{
       // 清理內容，移除開場白和JSON代碼
@@ -937,7 +946,73 @@ function initScriptModeButtons() {
   state.scriptMode = 'guide';
 }
 
+// 檢查登入狀態
+function checkLoginStatus() {
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  
+  if (isLoggedIn === 'true' && user.id) {
+    // 已登入，顯示用戶信息
+    console.log('用戶已登入:', user);
+    updateUserId(user.id);
+    showUserInfo(user);
+  } else {
+    // 未登入，使用訪客模式
+    console.log('訪客模式');
+  }
+}
+
+// 更新用戶ID
+function updateUserId(userId) {
+  state.userId = userId;
+  localStorage.setItem('userId', userId);
+}
+
+// 顯示用戶信息
+function showUserInfo(user) {
+  // 在頁面頂部顯示用戶信息
+  const userInfo = document.createElement('div');
+  userInfo.id = 'userInfo';
+  userInfo.style.cssText = `
+    position: fixed; top: 10px; right: 10px; z-index: 1000;
+    background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+    border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 12px; display: flex; align-items: center; gap: 8px;
+  `;
+  
+  userInfo.innerHTML = `
+    <img src="${user.avatar || 'https://via.placeholder.com/20'}" style="width:20px;height:20px;border-radius:50%;">
+    <span>${user.name}</span>
+    <button onclick="logout()" style="background:none;border:none;color:#666;cursor:pointer;font-size:12px;">登出</button>
+    <button onclick="window.open('admin.html', '_blank')" style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:12px;">後台</button>
+  `;
+  
+  document.body.appendChild(userInfo);
+}
+
+// 登出功能
+function logout() {
+  if (confirm('確定要登出嗎？')) {
+    localStorage.removeItem('user');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userId');
+    
+    const userInfo = document.getElementById('userInfo');
+    if (userInfo) {
+      userInfo.remove();
+    }
+    
+    // 重新生成訪客ID
+    state.userId = DEFAULT_USER_ID;
+    localStorage.setItem('userId', state.userId);
+    
+    alert('已登出');
+    window.location.reload();
+  }
+}
+
 // 初始化
+checkLoginStatus();
 goPage('home');
 initScriptModeButtons();
 

@@ -263,10 +263,10 @@
         <div class="p-4 space-y-4">
             <!-- 方案狀態區塊 -->
             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
-                <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between">
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">方案狀態</span>
                     <span id="acc-plan" class="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300">免費</span>
-                </div>
+            </div>
                 <button id="acc-upgrade" class="w-full px-3 py-2 text-xs bg-black text-white rounded hover:bg-gray-800 transition-colors" onclick="showPurchaseModal()">
                     升級方案
                 </button>
@@ -1477,7 +1477,7 @@
                                                 <input type="radio" name="script_mode" value="promotional" class="hidden">
                                                 <span class="text-center">推廣型</span>
                                             </label>
-                                        </div>
+                                </div>
                                     </div>
 
                                     <!-- 模板選擇卡片 -->
@@ -1499,9 +1499,9 @@
                                                 <span class="text-xl mb-2">C</span>
                                                 <span class="text-sm">故事敘述</span>
                                             </label>
-                                        </div>
-                                    </div>
-
+                            </div>
+                        </div>
+                        
                                     <!-- 時長選擇卡片 -->
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
                                         <h3 class="text-lg font-semibold mb-4">時長選擇</h3>
@@ -1518,7 +1518,7 @@
                                                 <input type="radio" name="script_duration" value="90" class="hidden">
                                                 <span class="text-center">90秒</span>
                                             </label>
-                                        </div>
+                            </div>
                                         
                                         <!-- 套用設定按鈕 -->
                                         <div class="mt-6">
@@ -1526,17 +1526,17 @@
                                                 <span class="apply-text">套用設定並生成腳本</span>
                                                 <span class="apply-loading hidden">
                                                     <svg class="loading-spinner w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                                    </svg>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
                                                     生成中...
                                                 </span>
                                             </button>
+                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 
                                 <!-- 右側主題輸入與結果 -->
-                                <div>
+                                    <div>
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-[380px] md:min-h-[500px] flex flex-col">
                                         <h3 class="text-lg font-semibold mb-4">輸入主題</h3>
                                         <textarea id="script-topic-input" class="flex-1 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary resize-none" placeholder="請輸入您的腳本主題，例如：如何製作爆款短影音"></textarea>
@@ -1556,7 +1556,7 @@
                                         <!-- 結果顯示區域 -->
                                         <div id="script-result" class="hidden mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                                             <h4 class="font-semibold text-gray-900 dark:text-white mb-2">生成結果</h4>
-                                            <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
+                                        <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -2112,12 +2112,215 @@
             if (!tryConsumeCredits(agent||'topics')) return false; return window.getCredits();
         };
 
+        // 串流連線管理全域變數
+        let currentEventSource = null;
+        let currentWebSocket = null;
+        let currentStreamType = null; // 'sse' 或 'websocket'
+
+        // 關閉現有串流連線
+        function closeCurrentStream() {
+            if (currentEventSource) {
+                currentEventSource.close();
+                currentEventSource = null;
+                console.log('EventSource 連線已關閉');
+            }
+            if (currentWebSocket) {
+                currentWebSocket.close(1000, 'new stream');
+                currentWebSocket = null;
+                console.log('WebSocket 連線已關閉');
+            }
+            currentStreamType = null;
+        }
+
+        // 頁面關閉/刷新時自動關閉串流
+        window.addEventListener('beforeunload', closeCurrentStream);
+        window.addEventListener('pagehide', closeCurrentStream);
+        window.addEventListener('unload', closeCurrentStream);
+
+        // 頁面可見性變化時關閉串流（用戶切換到其他標籤頁）
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                closeCurrentStream();
+            }
+        });
+
+        // 暴露全域函數供外部調用
+        window.closeCurrentStream = closeCurrentStream;
+        window.getCurrentStreamStatus = function() {
+            return {
+                hasEventSource: currentEventSource !== null,
+                hasWebSocket: currentWebSocket !== null,
+                streamType: currentStreamType
+            };
+        };
+
+        // 路由切換時關閉串流（如果使用 SPA 路由）
+        if (window.history && window.history.pushState) {
+            const originalPushState = window.history.pushState;
+            const originalReplaceState = window.history.replaceState;
+            
+            window.history.pushState = function(...args) {
+                closeCurrentStream();
+                return originalPushState.apply(this, args);
+            };
+            
+            window.history.replaceState = function(...args) {
+                closeCurrentStream();
+                return originalReplaceState.apply(this, args);
+            };
+        }
+
         // 共用聊天邏輯（前端模擬）
         function initChats() {
             async function callBackend(agent, content) {
+                // 發送新提問前先關閉現有串流連線
+                closeCurrentStream();
+                
                 try {
                     const user = JSON.parse(localStorage.getItem('user') || '{}');
                     const userId = user.id || 'web';
+                    
+                    // 嘗試使用串流 API，優先使用 EventSource，失敗則嘗試 WebSocket，最後回退到普通 API
+                    try {
+                        return await callBackendStream(agent, content, userId);
+                    } catch (streamError) {
+                        console.log('EventSource 不可用，嘗試 WebSocket:', streamError);
+                        try {
+                            return await callBackendWebSocket(agent, content, userId);
+                        } catch (wsError) {
+                            console.log('WebSocket 不可用，使用普通 API:', wsError);
+                            return await callBackendNormal(agent, content, userId);
+                        }
+                    }
+                } catch (e) {
+                    return '（後端不可用，這是前端示範回覆）';
+                }
+            }
+
+            // 串流 API 調用
+            async function callBackendStream(agent, content, userId) {
+                return new Promise((resolve, reject) => {
+                    const sessionId = `session_${userId}_${Date.now()}`;
+                    const streamUrl = `${API_BASE}/api/stream?session_id=${encodeURIComponent(sessionId)}&q=${encodeURIComponent(content)}`;
+                    
+                    // 使用 EventSource 進行串流
+                    currentEventSource = new EventSource(streamUrl);
+                    currentStreamType = 'sse';
+                    
+                    let fullResponse = '';
+                    let isComplete = false;
+                    
+                    currentEventSource.onmessage = function(event) {
+                        if (event.data === '[DONE]') {
+                            currentEventSource.close();
+                            currentEventSource = null;
+                            currentStreamType = null;
+                            if (!isComplete) {
+                                isComplete = true;
+                                resolve(fullResponse || '（串流完成但無內容）');
+                            }
+                            return;
+                        }
+                        
+                        if (event.data && !event.data.startsWith('錯誤：')) {
+                            fullResponse += event.data;
+                            // 可以選擇即時更新 UI，這裡先累積完整回應
+                        }
+                    };
+                    
+                    currentEventSource.onerror = function(event) {
+                        console.error('EventSource 錯誤:', event);
+                        currentEventSource.close();
+                        currentEventSource = null;
+                        currentStreamType = null;
+                        if (!isComplete) {
+                            isComplete = true;
+                            reject(new Error('串流連線錯誤'));
+                        }
+                    };
+                    
+                    // 設定超時
+                    setTimeout(() => {
+                        if (!isComplete) {
+                            isComplete = true;
+                            closeCurrentStream();
+                            reject(new Error('串流超時'));
+                        }
+                    }, 30000); // 30秒超時
+                });
+            }
+
+            // WebSocket API 調用（替代方案）
+            async function callBackendWebSocket(agent, content, userId) {
+                return new Promise((resolve, reject) => {
+                    const sessionId = `session_${userId}_${Date.now()}`;
+                    const wsUrl = `${API_BASE.replace('http://', 'ws://').replace('https://', 'wss://')}/api/ws`;
+                    
+                    // 使用 WebSocket 進行串流
+                    currentWebSocket = new WebSocket(wsUrl);
+                    currentStreamType = 'websocket';
+                    
+                    let fullResponse = '';
+                    let isComplete = false;
+                    
+                    currentWebSocket.onopen = function() {
+                        // 發送訊息
+                        const message = {
+                            session_id: sessionId,
+                            q: content
+                        };
+                        currentWebSocket.send(JSON.stringify(message));
+                    };
+                    
+                    currentWebSocket.onmessage = function(event) {
+                        if (event.data === '[DONE]') {
+                            currentWebSocket.close(1000, 'stream complete');
+                            currentWebSocket = null;
+                            currentStreamType = null;
+                            if (!isComplete) {
+                                isComplete = true;
+                                resolve(fullResponse || '（串流完成但無內容）');
+                            }
+                            return;
+                        }
+                        
+                        if (event.data && !event.data.startsWith('錯誤：')) {
+                            fullResponse += event.data;
+                            // 可以選擇即時更新 UI，這裡先累積完整回應
+                        }
+                    };
+                    
+                    currentWebSocket.onerror = function(event) {
+                        console.error('WebSocket 錯誤:', event);
+                        currentWebSocket.close();
+                        currentWebSocket = null;
+                        currentStreamType = null;
+                        if (!isComplete) {
+                            isComplete = true;
+                            reject(new Error('WebSocket 連線錯誤'));
+                        }
+                    };
+                    
+                    currentWebSocket.onclose = function(event) {
+                        if (!isComplete && event.code !== 1000) {
+                            isComplete = true;
+                            reject(new Error('WebSocket 連線關閉'));
+                        }
+                    };
+                    
+                    // 設定超時
+                    setTimeout(() => {
+                        if (!isComplete) {
+                            isComplete = true;
+                            closeCurrentStream();
+                            reject(new Error('WebSocket 超時'));
+                        }
+                    }, 30000); // 30秒超時
+                });
+            }
+
+            // 普通 API 調用（回退方案）
+            async function callBackendNormal(agent, content, userId) {
                     const res = await fetch(`${API_BASE}/chat`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -2842,7 +3045,7 @@
                 btn.addEventListener('click', function() {
                     const examples = {
                         '減肥方法': '減肥方法',
-                        '投資理財': '投資理財',
+                        '投資理財': '投資理財', 
                         '職場技能': '職場技能'
                     };
                     
@@ -3298,10 +3501,10 @@
             document.querySelectorAll('input[name="script_mode"]').forEach(radio => {
                 const label = radio.closest('label');
                 if (label) {
-                    if (radio.checked) {
+                if (radio.checked) {
                         label.classList.add('border-primary', 'bg-primary', 'text-white');
                         label.classList.remove('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
-                    } else {
+                } else {
                         label.classList.remove('border-primary', 'bg-primary', 'text-white');
                         label.classList.add('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
                     }
@@ -3313,10 +3516,10 @@
             document.querySelectorAll('input[name="script_template"]').forEach(radio => {
                 const label = radio.closest('label');
                 if (label) {
-                    if (radio.checked) {
+                if (radio.checked) {
                         label.classList.add('border-primary', 'bg-primary', 'text-white');
                         label.classList.remove('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
-                    } else {
+                } else {
                         label.classList.remove('border-primary', 'bg-primary', 'text-white');
                         label.classList.add('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
                     }
@@ -3328,10 +3531,10 @@
             document.querySelectorAll('input[name="script_duration"]').forEach(radio => {
                 const label = radio.closest('label');
                 if (label) {
-                    if (radio.checked) {
+                if (radio.checked) {
                         label.classList.add('border-primary', 'bg-primary', 'text-white');
                         label.classList.remove('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
-                    } else {
+                } else {
                         label.classList.remove('border-primary', 'bg-primary', 'text-white');
                         label.classList.add('border-gray-300', 'dark:border-gray-600', 'hover:bg-gray-50', 'dark:hover:bg-gray-700', 'hover:text-gray-900', 'dark:hover:text-gray-100');
                     }
