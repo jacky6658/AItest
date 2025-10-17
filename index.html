@@ -3207,8 +3207,28 @@
                                 execTxt.split(/\r?\n/).forEach(l => {
                                     const t = l.trim();
                                     if (!t) return;
-                                    const key = t.replace(/^[📌•\-\d\s]+/, '').replace(/：|:/, ':');
-                                    if (!seen.has(key)) { seen.add(key); dedup.push(t); }
+                                    
+                                    // 更精確的關鍵字匹配來識別重複內容
+                                    let key = t;
+                                    
+                                    // 識別常見的重複模式
+                                    if (t.includes('發文頻率') || t.includes('**發文頻率**')) {
+                                        key = '發文頻率';
+                                    } else if (t.includes('實作建議') || t.includes('**實作建議**')) {
+                                        key = '實作建議';
+                                    } else if (t.includes('內容策略') || t.includes('**內容策略**')) {
+                                        key = '內容策略';
+                                    } else if (t.includes('平台策略') || t.includes('**平台策略**')) {
+                                        key = '平台策略';
+                                    } else {
+                                        // 對於其他內容，使用更寬鬆的匹配
+                                        key = t.replace(/^[📌•\-\d\s]+/, '').replace(/：|:/, ':');
+                                    }
+                                    
+                                    if (!seen.has(key)) { 
+                                        seen.add(key); 
+                                        dedup.push(t); 
+                                    }
                                 });
                                 execTxt = dedup.join('\n');
 
