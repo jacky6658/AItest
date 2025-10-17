@@ -2399,24 +2399,23 @@
             const dropdown = document.getElementById('user-dropdown');
             const creditsWrap = document.getElementById('nav-credits-wrap');
             
-            console.log('登入按鈕元素:', loginBtn);
-            console.log('用戶下拉選單元素:', dropdown);
-            console.log('點數顯示區元素:', creditsWrap);
-            
             if (loginBtn) {
                 loginBtn.classList.remove('hidden');
+                loginBtn.style.display = 'block';
+                loginBtn.style.visibility = 'visible';
+                loginBtn.style.opacity = '1';
                 console.log('登入按鈕已顯示');
-            } else {
-                console.error('找不到登入按鈕元素');
             }
             
             if (dropdown) {
                 dropdown.classList.add('hidden');
+                dropdown.style.display = 'none';
                 console.log('用戶下拉選單已隱藏');
             }
             
             if (creditsWrap) {
                 creditsWrap.classList.add('hidden');
+                creditsWrap.style.display = 'none';
                 console.log('點數顯示區已隱藏');
             }
             
@@ -2726,8 +2725,28 @@
                     localStorage.setItem('isLoggedIn', 'false');
                     
                     // 強制更新UI為登出狀態
-                    updateUIForLoggedOutUser();
+                    const loginBtn = document.getElementById('login-btn');
+                    const dropdown = document.getElementById('user-dropdown');
+                    const creditsWrap = document.getElementById('nav-credits-wrap');
                     
+                    if (loginBtn) {
+                        loginBtn.classList.remove('hidden');
+                        loginBtn.style.display = 'block';
+                        loginBtn.style.visibility = 'visible';
+                        loginBtn.style.opacity = '1';
+                    }
+                    
+                    if (dropdown) {
+                        dropdown.classList.add('hidden');
+                        dropdown.style.display = 'none';
+                    }
+                    
+                    if (creditsWrap) {
+                        creditsWrap.classList.add('hidden');
+                        creditsWrap.style.display = 'none';
+                    }
+                    
+                    updateCreditsDisplay(0);
                     showToast('已登出', 'success');
                 });
             }
