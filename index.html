@@ -2363,14 +2363,23 @@
             
             if (loginBtn) {
                 loginBtn.classList.add('hidden');
+                loginBtn.style.display = 'none';
+                loginBtn.style.visibility = 'hidden';
+                loginBtn.style.opacity = '0';
                 console.log('登入按鈕已隱藏');
             }
             if (dropdown) {
                 dropdown.classList.remove('hidden');
+                dropdown.style.display = 'block';
+                dropdown.style.visibility = 'visible';
+                dropdown.style.opacity = '1';
                 console.log('用戶下拉選單已顯示');
             }
             if (creditsWrap) {
                 creditsWrap.classList.remove('hidden');
+                creditsWrap.style.display = 'block';
+                creditsWrap.style.visibility = 'visible';
+                creditsWrap.style.opacity = '1';
                 console.log('點數顯示區已顯示');
             }
             
