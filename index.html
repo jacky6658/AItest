@@ -2356,18 +2356,29 @@
         function updateUIForLoggedInUser(user) {
             console.log('更新UI為登入狀態，用戶:', user);
             
-            // 隱藏登入按鈕，顯示用戶資訊
+            // 更新登入按鈕為用戶按鈕
             const loginBtn = document.getElementById('login-btn');
             const dropdown = document.getElementById('user-dropdown');
             const creditsWrap = document.getElementById('nav-credits-wrap');
             
             if (loginBtn) {
-                loginBtn.classList.add('hidden');
-                loginBtn.style.display = 'none';
-                loginBtn.style.visibility = 'hidden';
-                loginBtn.style.opacity = '0';
-                console.log('登入按鈕已隱藏');
+                // 顯示登入按鈕但改為用戶名稱
+                loginBtn.classList.remove('hidden');
+                loginBtn.style.display = 'block';
+                loginBtn.style.visibility = 'visible';
+                loginBtn.style.opacity = '1';
+                
+                // 更新按鈕文字為用戶名稱
+                const displayName = user.name || user.email || '用戶';
+                loginBtn.textContent = displayName;
+                
+                // 更新按鈕樣式為已登入狀態
+                loginBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
+                
+                console.log('登入按鈕已更新為用戶按鈕:', displayName);
             }
+            
             if (dropdown) {
                 dropdown.classList.remove('hidden');
                 dropdown.style.display = 'block';
@@ -2375,6 +2386,7 @@
                 dropdown.style.opacity = '1';
                 console.log('用戶下拉選單已顯示');
             }
+            
             if (creditsWrap) {
                 creditsWrap.classList.remove('hidden');
                 creditsWrap.style.display = 'block';
@@ -2403,7 +2415,7 @@
         function updateUIForLoggedOutUser() {
             console.log('更新UI為登出狀態');
             
-            // 顯示登入按鈕，隱藏用戶資訊
+            // 恢復登入按鈕為原始狀態
             const loginBtn = document.getElementById('login-btn');
             const dropdown = document.getElementById('user-dropdown');
             const creditsWrap = document.getElementById('nav-credits-wrap');
@@ -2413,7 +2425,15 @@
                 loginBtn.style.display = 'block';
                 loginBtn.style.visibility = 'visible';
                 loginBtn.style.opacity = '1';
-                console.log('登入按鈕已顯示');
+                
+                // 恢復按鈕文字為"登入"
+                loginBtn.textContent = '登入';
+                
+                // 恢復按鈕樣式為未登入狀態
+                loginBtn.classList.remove('bg-orange-100', 'text-orange-800', 'border-orange-200');
+                loginBtn.classList.add('bg-gray-100', 'text-gray-700');
+                
+                console.log('登入按鈕已恢復為登入狀態');
             }
             
             if (dropdown) {
@@ -2575,8 +2595,13 @@
                     if (me){ 
                         localStorage.setItem('isLoggedIn','true'); 
                         localStorage.setItem('user', JSON.stringify(me)); 
+                        
+                        // 更新UI為登入狀態
+                        updateUIForLoggedInUser(me);
+                        
                         closeEmailPage(); 
                         showToast('登入成功', 'success'); 
+                        
                         // 登入成功後立即獲取點數資訊
                         try {
                             const walletData = await fetchWalletInfo();
@@ -2586,7 +2611,6 @@
                         } catch (error) {
                             console.error('登入後點數載入失敗:', error);
                         }
-                        location.reload(); 
                     }
                 }catch(e){ showToast('登入失敗，請檢查帳密或稍後再試', 'error'); }
             });
@@ -2598,11 +2622,40 @@
                 const username = (document.getElementById('signup-username')?.value||'').trim();
                 const password = (document.getElementById('signup-password')?.value||'').trim();
                 if (!phone || !email || !username || !password){ showToast('請完整填寫電話/Email/帳號/密碼', 'error'); return; }
+                
+                // 顯示載入狀態
+                const originalText = btnEmailSignup.textContent;
+                btnEmailSignup.textContent = '建立中...';
+                btnEmailSignup.disabled = true;
+                
                 try{
                     const res = await fetch(`${API_BASE}/auth/signup`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ phone, email, username, password }) });
                     if (!res.ok) throw new Error('signup failed');
-                    showToast('帳號建立成功，請以帳密登入', 'success');
-                }catch(e){ showToast('建立帳號失敗，請稍後再試', 'error'); }
+                    
+                    // 註冊成功後自動登入
+                    const loginRes = await fetch(`${API_BASE}/auth/login`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password }) });
+                    if (loginRes.ok) {
+                        const user = await loginRes.json();
+                        localStorage.setItem('isLoggedIn','true');
+                        localStorage.setItem('user', JSON.stringify(user));
+                        
+                        // 更新UI為登入狀態
+                        updateUIForLoggedInUser(user);
+                        
+                        // 關閉註冊頁面
+                        closeEmailPage();
+                        
+                        showToast('帳號建立成功並已自動登入！', 'success');
+                    } else {
+                        showToast('帳號建立成功，請手動登入', 'success');
+                    }
+                }catch(e){ 
+                    showToast('建立帳號失敗，請稍後再試', 'error'); 
+                } finally {
+                    // 恢復按鈕狀態
+                    btnEmailSignup.textContent = originalText;
+                    btnEmailSignup.disabled = false;
+                }
             });
 
             // Google 登入/註冊（皆導向同一 OAuth 起始端點，後端處理不存在帳號時自動建帳）
@@ -2734,28 +2787,7 @@
                     localStorage.setItem('isLoggedIn', 'false');
                     
                     // 強制更新UI為登出狀態
-                    const loginBtn = document.getElementById('login-btn');
-                    const dropdown = document.getElementById('user-dropdown');
-                    const creditsWrap = document.getElementById('nav-credits-wrap');
-                    
-                    if (loginBtn) {
-                        loginBtn.classList.remove('hidden');
-                        loginBtn.style.display = 'block';
-                        loginBtn.style.visibility = 'visible';
-                        loginBtn.style.opacity = '1';
-                    }
-                    
-                    if (dropdown) {
-                        dropdown.classList.add('hidden');
-                        dropdown.style.display = 'none';
-                    }
-                    
-                    if (creditsWrap) {
-                        creditsWrap.classList.add('hidden');
-                        creditsWrap.style.display = 'none';
-                    }
-                    
-                    updateCreditsDisplay(0);
+                    updateUIForLoggedOutUser();
                     showToast('已登出', 'success');
                 });
             }
