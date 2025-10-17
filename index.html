@@ -1636,13 +1636,19 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            initTheme();
-            initRouter();
-            initMobileMenu();
-            initPositioning();
-            initIdeation();
-            initScript();
-            initAuth();
+            try {
+                console.log('開始初始化頁面...');
+                initTheme();
+                initRouter();
+                initMobileMenu();
+                initPositioning();
+                initIdeation();
+                initScript();
+                initAuth();
+                console.log('基本初始化完成');
+            } catch (error) {
+                console.error('初始化錯誤:', error);
+            }
             // 與後端 Session 對齊，避免 localStorage 殘留導致誤顯示已登入
             (async function syncSession(){
                 try{
@@ -1656,10 +1662,25 @@
                     }
                 }catch(_){ /* 忽略網路錯誤 */ }
             })();
-            initChats();
+            try {
+                initChats();
+                console.log('聊天功能初始化完成');
+            } catch (error) {
+                console.error('聊天功能初始化錯誤:', error);
+            }
             loadStoredData();
             adjustPositioningHeights();
             window.addEventListener('resize', adjustPositioningHeights);
+        });
+
+        // 全域錯誤處理
+        window.addEventListener('error', function(event) {
+            console.error('全域 JavaScript 錯誤:', event.error);
+            console.error('錯誤位置:', event.filename, '行號:', event.lineno);
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('未處理的 Promise 拒絕:', event.reason);
         });
 
         // 主題切換功能
@@ -2201,7 +2222,7 @@
             async function callBackendStream(agent, content, userId) {
                 return new Promise((resolve, reject) => {
                     const sessionId = `session_${userId}_${Date.now()}`;
-                    const streamUrl = `${API_BASE}/api/stream?session_id=${encodeURIComponent(sessionId)}&q=${encodeURIComponent(content)}`;
+                    const streamUrl = `${API_BASE}/api/stream?session_id=${encodeURIComponent(sessionId)}&q=${encodeURIComponent(content)}&agent_type=${encodeURIComponent(agent)}`;
                     
                     // 使用 EventSource 進行串流
                     currentEventSource = new EventSource(streamUrl);
@@ -2267,7 +2288,8 @@
                         // 發送訊息
                         const message = {
                             session_id: sessionId,
-                            q: content
+                            q: content,
+                            agent_type: agent
                         };
                         currentWebSocket.send(JSON.stringify(message));
                     };
@@ -2321,6 +2343,7 @@
 
             // 普通 API 調用（回退方案）
             async function callBackendNormal(agent, content, userId) {
+                try {
                     const res = await fetch(`${API_BASE}/chat`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
