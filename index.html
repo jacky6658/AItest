@@ -10,9 +10,52 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- AI Points System -->
-    <link rel="stylesheet" href="./public/points-addon.css">
-    <script defer type="module" src="./public/src/boot/aiPoints_bootstrap.js"></script>
+    <!-- AI Points System - 內嵌樣式 -->
+    <style>
+        /* 點數系統樣式 */
+        .points-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .points-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .points-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+        .points-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
     
     <script>
         tailwind.config = {
@@ -1646,6 +1689,30 @@
                 console.error('獲取錢包資訊失敗:', error);
             }
             return null;
+        }
+
+        // 點數系統 UI 更新
+        function updateCreditsDisplay(balance) {
+            const badge = document.getElementById('points-badge');
+            if (badge) {
+                badge.textContent = `點數: ${balance || 0}`;
+            }
+        }
+
+        // 顯示購買模態框
+        function showPurchaseModal() {
+            const modal = document.getElementById('points-modal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+        // 隱藏購買模態框
+        function hidePurchaseModal() {
+            const modal = document.getElementById('points-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
 
         async function authorizeUsage(module, mode, count) {
