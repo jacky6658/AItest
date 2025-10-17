@@ -1678,21 +1678,54 @@
         async function fetchWalletInfo() {
             try {
                 console.log('正在獲取錢包資訊...');
+                console.log('API Base:', API_BASE);
+                console.log('請求 URL:', `${API_BASE}/points/wallet`);
+                
                 const response = await fetch(`${API_BASE}/points/wallet`, {
-                    credentials: 'include'
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
-                console.log('錢包 API 回應:', response.status, response.statusText);
+                
+                console.log('響應狀態:', response.status);
+                console.log('響應標頭:', Object.fromEntries(response.headers.entries()));
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('錢包資料:', data);
+                    console.log('錢包資訊獲取成功:', data);
                     updateCreditsDisplay(data.balance);
                     return data;
                 } else {
-                    console.error('錢包 API 錯誤:', response.status, response.statusText);
+                    console.error('錢包資訊獲取失敗:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('錯誤詳情:', errorText);
+                    
+                    // 嘗試從本地獲取用戶資料
+                    const userRaw = localStorage.getItem('user');
+                    if (userRaw) {
+                        const user = JSON.parse(userRaw);
+                        if (user.credits !== undefined) {
+                            console.log('使用本地點數資料:', user.credits);
+                            updateCreditsDisplay(user.credits);
+                            return { balance: user.credits };
+                        }
+                    }
                 }
             } catch (error) {
-                console.error('獲取錢包資訊失敗:', error);
+                console.error('錢包資訊獲取錯誤:', error);
+                
+                // 嘗試從本地獲取用戶資料
+                const userRaw = localStorage.getItem('user');
+                if (userRaw) {
+                    const user = JSON.parse(userRaw);
+                    if (user.credits !== undefined) {
+                        console.log('使用本地點數資料 (錯誤時):', user.credits);
+                        updateCreditsDisplay(user.credits);
+                        return { balance: user.credits };
+                    }
+                }
             }
             return null;
         }
@@ -1742,6 +1775,7 @@
 
         async function consumePoints(module, mode, count) {
             try {
+                const points = CREDIT_COSTS[module] * count;
                 const response = await fetch(`${API_BASE}/points/consume`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1751,13 +1785,16 @@
                         module, 
                         mode, 
                         count,
-                        points: CREDIT_COSTS[module] * count
+                        points: points
                     })
                 });
                 if (response.ok) {
                     // 更新本地點數顯示
                     const wallet = await fetchWalletInfo();
                     return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('扣點失敗:', response.status, errorText);
                 }
             } catch (error) {
                 console.error('扣點失敗:', error);
@@ -1908,8 +1945,22 @@
             }
             // 載入錢包資訊
             try {
-                fetchWalletInfo();
-                console.log('錢包資訊載入完成');
+                console.log('開始載入錢包資訊...');
+                const walletData = await fetchWalletInfo();
+                if (walletData) {
+                    console.log('錢包資訊載入成功:', walletData);
+                } else {
+                    console.log('錢包資訊載入失敗，使用本地資料');
+                    // 嘗試從本地用戶資料獲取點數
+                    const userRaw = localStorage.getItem('user');
+                    if (userRaw) {
+                        const user = JSON.parse(userRaw);
+                        if (user.credits) {
+                            updateCreditsDisplay(user.credits);
+                            console.log('使用本地點數:', user.credits);
+                        }
+                    }
+                }
             } catch (error) {
                 console.error('錢包資訊載入錯誤:', error);
             }
@@ -2340,23 +2391,30 @@
             if (scriptCount) scriptCount.textContent = `${stats.script || 0} 次`;
         }
 
-        // 扣點（前端模擬）
-        function tryConsumeCredits(agent){
-            const userRaw = localStorage.getItem('user');
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (!isLoggedIn || !userRaw) return true; // 未登入就不扣，直接通過
-            const u = JSON.parse(userRaw);
-            const cost = CREDIT_COSTS[agent] || 0;
-            if ((u.credits ?? 0) < cost) {
-                showToast(`點數不足，無法執行（需要 ${cost} 點）`, 'error');
+        // 統一的點數檢查和扣減函數
+        async function checkAndConsumeCredits(agent, mode = 'chat', count = 1) {
+            try {
+                // 先檢查授權
+                const authResult = await authorizeUsage(agent, mode, count);
+                if (!authResult.authorized) {
+                    if (authResult.needTopup) {
+                        showPurchaseModal();
+                    } else {
+                        showToast(`點數不足，無法執行（需要 ${CREDIT_COSTS[agent] * count} 點）`, 'error');
+                    }
+                    return false;
+                }
+                
+                // 執行功能後扣點
+                const success = await consumePoints(agent, mode, count);
+                if (success) {
+                    showToast(`已扣點 ${CREDIT_COSTS[agent] * count}，功能執行成功`, 'success');
+                }
+                return success;
+            } catch (error) {
+                console.error('點數檢查失敗:', error);
                 return false;
             }
-            u.credits = (u.credits ?? 0) - cost;
-            localStorage.setItem('user', JSON.stringify(u));
-            const navC = document.getElementById('nav-credits'); if (navC) navC.textContent = u.credits;
-            const accC = document.getElementById('acc-credits'); if (accC) accC.textContent = u.credits;
-            showToast(`已扣點 ${cost}，剩餘 ${u.credits}`, 'success');
-            return true;
         }
 
         // 測試輔助：在瀏覽器 Console 可呼叫下列方法模擬
@@ -2763,16 +2821,9 @@
                     const v = input.value.trim();
                     if (!v) return;
                     
-                    // 點數授權檢查
-                    const authResult = await authorizeUsage(agent, 'chat', 1);
-                    if (!authResult.authorized) {
-                        if (authResult.needTopup) {
-                            showPurchaseModal();
-                        } else {
-                            showToast(`點數不足，無法執行（需要 ${CREDIT_COSTS[agent]} 點）`, 'error');
-                        }
-                        return;
-                    }
+                    // 統一的點數檢查和扣減
+                    const canProceed = await checkAndConsumeCredits(agent, 'chat', 1);
+                    if (!canProceed) return;
                     
                     append('user', v);
                     input.value = '';
@@ -2781,13 +2832,10 @@
                         .then(async msg => {
                             if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
                             append('ai', msg);
-                            // 成功後扣點
-                            await consumePoints(agent, 'chat', 1);
                         })
                         .catch(async () => {
                             if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
                             append('ai', '抱歉，目前系統較繁忙，請稍後再試。');
-                            // 失敗不扣點
                         });
                 });
                 // Enter 送出（Shift+Enter 不送出）
@@ -3167,16 +3215,9 @@
         }
 
         async function generatePositioningResult() {
-            // 點數授權檢查
-            const authResult = await authorizeUsage('positioning', 'oneclick', 1);
-            if (!authResult.authorized) {
-                if (authResult.needTopup) {
-                    showPurchaseModal();
-                } else {
-                    showToast(`點數不足，無法執行（需要 ${CREDIT_COSTS['positioning']} 點）`, 'error');
-                }
-                return;
-            }
+            // 統一的點數檢查和扣減
+            const canProceed = await checkAndConsumeCredits('positioning', 'oneclick', 1);
+            if (!canProceed) return;
 
             const form = document.getElementById('positioning-form');
             const formData = new FormData(form);
@@ -3237,8 +3278,6 @@
                     }
                     document.getElementById('positioning-result').classList.remove('hidden');
                     showToast('定位分析完成！請查看右側結果', 'success');
-                    // 成功後扣點
-                    await consumePoints('positioning', 'oneclick', 1);
                     setTimeout(() => {
                         document.getElementById('positioning-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 300);
