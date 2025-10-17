@@ -1268,7 +1268,7 @@
                     <div class="lg:col-span-8">
                         <!-- 定位 顧問聊天室（強化版） -->
                         <div class="mb-6">
-                            <div id="positioning-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[500px] md:min-h-[600px] mx-auto max-w-4xl">
+                            <div id="positioning-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex flex-col min-h-[600px] md:min-h-[700px] max-w-2xl">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">🎯 AI影音定位顧問</h3>
                                     <button id="chat-clear-positioning" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
@@ -1398,7 +1398,7 @@
                     <div class="lg:col-span-8">
                         <!-- 選題 聊天室（強化版） -->
                         <div class="mb-6">
-                            <div id="ideation-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden min-h-[500px] md:min-h-[500px] flex flex-col mx-auto max-w-4xl">
+                            <div id="ideation-chat-card" class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden min-h-[600px] md:min-h-[700px] flex flex-col max-w-2xl">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">💡 AI選題小助手</h3>
                                     <button id="chat-clear-ideation" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
@@ -1478,7 +1478,7 @@
                                     </div>
                         <!-- 腳本 聊天室（強化版） -->
                         <div id="script-chat-panel" class="mb-6">
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mx-auto max-w-4xl">
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden max-w-2xl min-h-[600px] md:min-h-[700px] flex flex-col">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">📝 AI腳本生成大師</h3>
                                     <button id="chat-clear-script" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
@@ -2035,6 +2035,9 @@
                                 if (userName) userName.textContent = me.name || me.email || '用戶';
                                 if (userAvatar) userAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
                                 
+                                // 更新點數顯示
+                                updateCreditsDisplay(me.credits || 0);
+                                
                                 showToast('Google登入成功！', 'success');
                             } else {
                                 showToast('Google登入失敗，請重試', 'error');
@@ -2343,6 +2346,26 @@
             showToast('已填入示例資料', 'success');
         }
 
+
+        // 更新點數顯示（統一版本）
+        function updateCreditsDisplay(credits) {
+            const navCredits = document.getElementById('nav-credits');
+            const accCredits = document.getElementById('acc-credits');
+            const accountCurrentCredits = document.getElementById('account-current-credits');
+            
+            console.log('更新點數顯示:', credits);
+            if (navCredits) {
+                navCredits.textContent = credits || 0;
+                console.log('導覽列點數已更新:', navCredits.textContent);
+            }
+            if (accCredits) {
+                accCredits.textContent = credits || 0;
+                console.log('側邊欄點數已更新:', accCredits.textContent);
+            }
+            if (accountCurrentCredits) {
+                accountCurrentCredits.textContent = credits || 0;
+            }
+        }
 
         // UI更新函數
         function updateUIForLoggedInUser(user) {
@@ -3695,13 +3718,13 @@
                     // 更新標題和說明顏色
                     if (title) title.className = 'text-2xl font-bold text-gray-900 dark:text-white';
                     if (description) description.textContent = '直接與AI對話，描述你的業務與受眾，我會一步步引導你完成定位分析';
-                    // 隱藏左側一鍵生成設定模板（只隱藏表單，保留標籤）
+                    // 隱藏左側一鍵生成設定模板
                     leftForm.classList.add('hidden');
                     onePanel.classList.add('hidden');
-                    // 顯示聊天對話框
+                    // 顯示聊天對話框和結果面板（左右兩欄布局）
                     const chatCard = document.getElementById('positioning-chat-card');
                     if (chatCard) chatCard.classList.remove('hidden');
-                    if (resultPanel) resultPanel.classList.add('hidden');
+                    if (resultPanel) resultPanel.classList.remove('hidden');
                     // 調整聊天對話框高度
                     setTimeout(adjustPositioningHeights, 100);
                 });
@@ -3994,14 +4017,13 @@
                     // 更新標題和說明顏色
                     if (title) title.className = 'text-2xl font-bold text-gray-900 dark:text-white';
                     if (description) description.textContent = '直接與AI對話，描述你的主題與需求，我會一步步引導你完成選題分析';
-                    // 隱藏左側一鍵生成設定模板（只隱藏表單，保留標籤）
+                    // 隱藏左側一鍵生成設定模板
                     leftForm.classList.add('hidden');
                     emptyPanel.classList.add('hidden');
-                    // 顯示聊天對話框
+                    // 顯示聊天對話框和結果面板（左右兩欄布局）
                     const chatCard = document.getElementById('ideation-chat-card');
                     if (chatCard) chatCard.classList.remove('hidden');
-                    if (resultPanel) resultPanel.classList.add('hidden');
-                    if (emptyPanel) emptyPanel.classList.add('hidden');
+                    if (resultPanel) resultPanel.classList.remove('hidden');
                     // 調整聊天對話框高度
                     setTimeout(adjustIdeationHeights, 100);
                 });
