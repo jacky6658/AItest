@@ -2016,14 +2016,51 @@
                         console.log('重新檢查登入狀態...');
                         try{
                             const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                            console.log('Google登入回調檢查結果:', me);
+                            
                             if (me && me.id){
-                                console.log('Google登入成功，更新UI');
+                                console.log('Google登入成功，更新localStorage和UI');
+                                
+                                // 先更新localStorage
                                 localStorage.setItem('isLoggedIn','true');
                                 localStorage.setItem('user', JSON.stringify(me));
+                                
+                                // 等待一下確保localStorage更新完成
+                                await new Promise(resolve => setTimeout(resolve, 100));
+                                
+                                // 更新UI
                                 updateUIForLoggedInUser(me);
+                                
+                                // 強制刷新頁面狀態
+                                setTimeout(() => {
+                                    // 確保所有UI元素都正確更新
+                                    const loginBtn = document.getElementById('login-btn');
+                                    const dropdown = document.getElementById('user-dropdown');
+                                    
+                                    if (loginBtn && !loginBtn.classList.contains('hidden')) {
+                                        console.log('強制隱藏登入按鈕');
+                                        loginBtn.classList.add('hidden');
+                                    }
+                                    if (dropdown && dropdown.classList.contains('hidden')) {
+                                        console.log('強制顯示用戶下拉選單');
+                                        dropdown.classList.remove('hidden');
+                                    }
+                                }, 500);
+                                
+                                // 獲取點數資訊
+                                try {
+                                    const walletData = await fetchWalletInfo();
+                                    if (walletData) {
+                                        updateCreditsDisplay(walletData.credits || 0);
+                                    }
+                                } catch (error) {
+                                    console.error('獲取點數失敗:', error);
+                                }
+                                
                                 showToast('Google登入成功！', 'success');
+                                console.log('Google登入完成，UI已更新');
                             } else {
-                                console.log('Google登入失敗');
+                                console.log('Google登入失敗，用戶資料:', me);
                                 showToast('Google登入失敗，請重試', 'error');
                             }
                         } catch(error) {
@@ -2338,9 +2375,20 @@
             // 隱藏登入按鈕，顯示用戶資訊
             const loginBtn = document.getElementById('login-btn');
             const dropdown = document.getElementById('user-dropdown');
+            const creditsWrap = document.getElementById('nav-credits-wrap');
             
-            if (loginBtn) loginBtn.classList.add('hidden');
-            if (dropdown) dropdown.classList.remove('hidden');
+            if (loginBtn) {
+                loginBtn.classList.add('hidden');
+                console.log('登入按鈕已隱藏');
+            }
+            if (dropdown) {
+                dropdown.classList.remove('hidden');
+                console.log('用戶下拉選單已顯示');
+            }
+            if (creditsWrap) {
+                creditsWrap.classList.remove('hidden');
+                console.log('點數顯示區已顯示');
+            }
             
             // 更新用戶資訊顯示
             const userName = document.getElementById('user-name');
@@ -2356,7 +2404,7 @@
             // 更新點數顯示
             updateCreditsDisplay(user.credits || 0);
             
-            console.log('UI更新完成');
+            console.log('UI更新完成，登入狀態:', localStorage.getItem('isLoggedIn'));
         }
         
         function updateUIForLoggedOutUser() {
@@ -2447,6 +2495,8 @@
 
             loginBtn.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                console.log('登入按鈕點擊，登入狀態:', isLoggedIn);
+                
                 if (!isLoggedIn) {
                     // 顯示 Email 全畫面頁（使用者可改點右上角 Google 登入）
                     if (emailPage) {
