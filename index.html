@@ -1677,13 +1677,19 @@
         // 點數系統 API 調用
         async function fetchWalletInfo() {
             try {
+                console.log('正在獲取錢包資訊...');
                 const response = await fetch(`${API_BASE}/points/wallet`, {
                     credentials: 'include'
                 });
+                console.log('錢包 API 回應:', response.status, response.statusText);
+                
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('錢包資料:', data);
                     updateCreditsDisplay(data.balance);
                     return data;
+                } else {
+                    console.error('錢包 API 錯誤:', response.status, response.statusText);
                 }
             } catch (error) {
                 console.error('獲取錢包資訊失敗:', error);
@@ -1693,10 +1699,11 @@
 
         // 點數系統 UI 更新
         function updateCreditsDisplay(balance) {
-            const badge = document.getElementById('points-badge');
-            if (badge) {
-                badge.textContent = `點數: ${balance || 0}`;
-            }
+            const navCredits = document.getElementById('nav-credits');
+            const accCredits = document.getElementById('acc-credits');
+            
+            if (navCredits) navCredits.textContent = balance || 0;
+            if (accCredits) accCredits.textContent = balance || 0;
         }
 
         // 顯示購買模態框
