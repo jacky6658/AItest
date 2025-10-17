@@ -2036,7 +2036,6 @@
                                 if (userAvatar) userAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
                                 
                                 showToast('Google登入成功！', 'success');
-                                location.reload();
                             } else {
                                 showToast('Google登入失敗，請重試', 'error');
                             }
@@ -2343,6 +2342,7 @@
             // 顯示成功提示
             showToast('已填入示例資料', 'success');
         }
+
 
         // UI更新函數
         function updateUIForLoggedInUser(user) {
@@ -5618,25 +5618,6 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             }`;
         }
         
-        // 更新點數顯示（統一版本）
-        function updateCreditsDisplay(credits) {
-            const navCredits = document.getElementById('nav-credits');
-            const accCredits = document.getElementById('acc-credits');
-            const accountCurrentCredits = document.getElementById('account-current-credits');
-            
-            console.log('更新點數顯示:', credits);
-            if (navCredits) {
-                navCredits.textContent = credits || 0;
-                console.log('導覽列點數已更新:', navCredits.textContent);
-            }
-            if (accCredits) {
-                accCredits.textContent = credits || 0;
-                console.log('側邊欄點數已更新:', accCredits.textContent);
-            }
-            if (accountCurrentCredits) {
-                accountCurrentCredits.textContent = credits || 0;
-            }
-        }
         
         // 事件監聽器
         if (quickChargeClose) {
