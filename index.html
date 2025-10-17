@@ -1791,6 +1791,8 @@
                 if (response.ok) {
                     // 更新本地點數顯示
                     const wallet = await fetchWalletInfo();
+                    // 更新使用統計
+                    updateUsageCount(module);
                     return true;
                 } else {
                     const errorText = await response.text();
@@ -2284,7 +2286,10 @@
                     loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
                     loginBtn.classList.remove('bg-gray-100', 'text-gray-700');
                     // 顯示 Credits 區塊
-                    if (creditsWrap) creditsWrap.classList.remove('hidden');
+                    if (creditsWrap) {
+                        creditsWrap.classList.remove('hidden');
+                        console.log('Credits 區塊已顯示');
+                    }
                     
                     // 更新下拉選單內容
                     document.getElementById('user-name').textContent = u.name || 'Google 用戶';
@@ -2521,6 +2526,25 @@
             if (positioningCount) positioningCount.textContent = `${stats.positioning || 0} 次`;
             if (topicsCount) topicsCount.textContent = `${stats.topics || 0} 次`;
             if (scriptCount) scriptCount.textContent = `${stats.script || 0} 次`;
+        }
+        
+        // 更新單個功能的使用次數
+        function updateUsageCount(module) {
+            const moduleMap = {
+                'positioning': 'acc-positioning-count',
+                'topics': 'acc-topics-count', 
+                'script': 'acc-script-count'
+            };
+            
+            const elementId = moduleMap[module];
+            if (elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    const currentCount = parseInt(element.textContent) || 0;
+                    element.textContent = `${currentCount + 1} 次`;
+                    console.log(`${module} 使用次數已更新: ${currentCount + 1}`);
+                }
+            }
         }
 
         // 統一的點數檢查和扣減函數
