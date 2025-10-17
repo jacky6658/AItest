@@ -2385,6 +2385,7 @@
                         }
                     }
                 } catch (e) {
+                    console.error('後端連接錯誤:', e);
                     return '（後端不可用，這是前端示範回覆）';
                 }
             }
@@ -2607,6 +2608,7 @@
                     } catch (_) {}
                     return msg;
                 } catch (e) {
+                    console.error('普通 API 調用錯誤:', e);
                     return '（後端不可用，這是前端示範回覆）';
                 }
             }
