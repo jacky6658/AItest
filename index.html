@@ -2629,13 +2629,38 @@
                 btnEmailSignup.disabled = true;
                 
                 try{
-                    const res = await fetch(`${API_BASE}/auth/signup`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ phone, email, username, password }) });
-                    if (!res.ok) throw new Error('signup failed');
+                    console.log('開始註冊，發送數據:', { phone, email, username, password: '***' });
+                    const res = await fetch(`${API_BASE}/auth/signup`, { 
+                        method:'POST', 
+                        credentials:'include', 
+                        headers:{'Content-Type':'application/json'}, 
+                        body: JSON.stringify({ phone, email, username, password }) 
+                    });
+                    
+                    console.log('註冊響應狀態:', res.status);
+                    const signupData = await res.json();
+                    console.log('註冊響應數據:', signupData);
+                    
+                    if (!res.ok) {
+                        throw new Error(`註冊失敗: ${signupData.detail || 'unknown error'}`);
+                    }
+                    
+                    showToast('帳號建立成功！正在自動登入...', 'success');
                     
                     // 註冊成功後自動登入
-                    const loginRes = await fetch(`${API_BASE}/auth/login`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password }) });
+                    const loginRes = await fetch(`${API_BASE}/auth/login`, { 
+                        method:'POST', 
+                        credentials:'include', 
+                        headers:{'Content-Type':'application/json'}, 
+                        body: JSON.stringify({ identifier: email, password }) 
+                    });
+                    
+                    console.log('登入響應狀態:', loginRes.status);
+                    
                     if (loginRes.ok) {
                         const user = await loginRes.json();
+                        console.log('登入成功，用戶數據:', user);
+                        
                         localStorage.setItem('isLoggedIn','true');
                         localStorage.setItem('user', JSON.stringify(user));
                         
@@ -2647,10 +2672,13 @@
                         
                         showToast('帳號建立成功並已自動登入！', 'success');
                     } else {
+                        const loginError = await loginRes.json();
+                        console.log('自動登入失敗:', loginError);
                         showToast('帳號建立成功，請手動登入', 'success');
                     }
                 }catch(e){ 
-                    showToast('建立帳號失敗，請稍後再試', 'error'); 
+                    console.error('註冊過程錯誤:', e);
+                    showToast(`建立帳號失敗: ${e.message}`, 'error'); 
                 } finally {
                     // 恢復按鈕狀態
                     btnEmailSignup.textContent = originalText;
