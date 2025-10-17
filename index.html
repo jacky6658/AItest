@@ -1617,13 +1617,13 @@
                                         <textarea id="script-topic-input" class="flex-1 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-primary focus:border-primary resize-none" placeholder="請輸入您的腳本主題，例如：如何製作爆款短影音"></textarea>
                                         
                                         <div class="mt-4 flex justify-end">
-                                            <button id="oneclick-generate" class="bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+                                            <button id="oneclick-generate" class="bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-hover transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <span class="submit-text">生成腳本</span>
                                                 <span class="loading-text hidden">
-                                                    <svg class="loading-spinner w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="loading-spinner w-4 h-4 inline mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                                     </svg>
-                                                    生成中...
+                                                    AI生成中...
                                                 </span>
                                             </button>
                                         </div>
@@ -4087,6 +4087,11 @@
                                 const data = JSON.parse(event.data);
                                 
                                 if (data.type === 'content') {
+                                    // 第一次收到內容時隱藏載入動畫
+                                    if (submitText) submitText.classList.remove('hidden');
+                                    if (loadingText) loadingText.classList.add('hidden');
+                                    oneclickGenerateBtn.disabled = false;
+                                    
                                     contentDiv.textContent += data.token;
                                     contentDiv.scrollTop = contentDiv.scrollHeight;
                                 } else if (data.type === 'done') {
@@ -4097,6 +4102,11 @@
                                     window.currentEventSource.close();
                                     window.currentEventSource = null;
                                     showToast('生成失敗: ' + data.message, 'error');
+                                    
+                                    // 錯誤時也要恢復按鈕狀態
+                                    if (submitText) submitText.classList.remove('hidden');
+                                    if (loadingText) loadingText.classList.add('hidden');
+                                    oneclickGenerateBtn.disabled = false;
                                 }
                             } catch (e) {
                                 console.error('解析串流數據錯誤:', e);
@@ -4108,13 +4118,18 @@
                             window.currentEventSource.close();
                             window.currentEventSource = null;
                             showToast('生成過程中發生錯誤', 'error');
+                            
+                            // 錯誤時恢復按鈕狀態
+                            if (submitText) submitText.classList.remove('hidden');
+                            if (loadingText) loadingText.classList.add('hidden');
+                            oneclickGenerateBtn.disabled = false;
                         };
                         
                     } catch (error) {
                         console.error('腳本生成錯誤:', error);
                         showToast('生成失敗', 'error');
-                    } finally {
-                        // 恢復按鈕狀態
+                        
+                        // 錯誤時恢復按鈕狀態
                         if (submitText) submitText.classList.remove('hidden');
                         if (loadingText) loadingText.classList.add('hidden');
                         oneclickGenerateBtn.disabled = false;
