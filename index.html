@@ -1017,7 +1017,7 @@
                                 <span class="text-xs text-gray-500">或</span>
                                 <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
                             </div>
-                            <button id="btn-google-login" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 flex items-center justify-center gap-2">
+                            <button id="btn-google-login" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 flex items-center justify-center gap-2 min-h-[44px] touch-manipulation cursor-pointer select-none" style="-webkit-tap-highlight-color: rgba(0,0,0,0.1); -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;">
                                 <span>使用 Google 登入</span>
                             </button>
                         </div>
@@ -1058,7 +1058,7 @@
                                 <span class="text-xs text-gray-500">或</span>
                                 <div class="h-px bg-gray-200 dark:bg-gray-700 flex-1"></div>
                             </div>
-                            <button id="btn-google-signup" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center gap-2">
+                            <button id="btn-google-signup" class="mt-2 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center gap-2 min-h-[44px] touch-manipulation cursor-pointer select-none" style="-webkit-tap-highlight-color: rgba(0,0,0,0.1); -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;">
                                 <span>使用 Google 註冊</span>
                             </button>
                         </div>
@@ -1730,14 +1730,7 @@
             return null;
         }
 
-        // 點數系統 UI 更新
-        function updateCreditsDisplay(balance) {
-            const navCredits = document.getElementById('nav-credits');
-            const accCredits = document.getElementById('acc-credits');
-            
-            if (navCredits) navCredits.textContent = balance || 0;
-            if (accCredits) accCredits.textContent = balance || 0;
-        }
+        // 點數系統 UI 更新（已移至下方統一版本）
 
         // 顯示購買模態框
         function showPurchaseModal() {
@@ -1918,49 +1911,49 @@
                 
                 // 檢查函數是否存在
                 if (typeof initTheme === 'function') {
-                    initTheme();
+            initTheme();
                     console.log('主題初始化完成');
                 } else {
                     console.error('initTheme 函數不存在');
                 }
                 
                 if (typeof initRouter === 'function') {
-                    initRouter();
+            initRouter();
                     console.log('路由初始化完成');
                 } else {
                     console.error('initRouter 函數不存在');
                 }
                 
                 if (typeof initMobileMenu === 'function') {
-                    initMobileMenu();
+            initMobileMenu();
                     console.log('手機選單初始化完成');
                 } else {
                     console.error('initMobileMenu 函數不存在');
                 }
                 
                 if (typeof initPositioning === 'function') {
-                    initPositioning();
+            initPositioning();
                     console.log('定位助手初始化完成');
                 } else {
                     console.error('initPositioning 函數不存在');
                 }
                 
                 if (typeof initIdeation === 'function') {
-                    initIdeation();
+            initIdeation();
                     console.log('選題助手初始化完成');
                 } else {
                     console.error('initIdeation 函數不存在');
                 }
                 
                 if (typeof initScript === 'function') {
-                    initScript();
+            initScript();
                     console.log('腳本生成器初始化完成');
                 } else {
                     console.error('initScript 函數不存在');
                 }
                 
                 if (typeof initAuth === 'function') {
-                    initAuth();
+            initAuth();
                     console.log('認證初始化完成');
                 } else {
                     console.error('initAuth 函數不存在');
@@ -2409,14 +2402,43 @@
 
             // Google 登入/註冊（皆導向同一 OAuth 起始端點，後端處理不存在帳號時自動建帳）
             async function startGoogle(nextUrl){
+                // 檢測是否為 iOS Safari
+                const isIOSSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS|mercury/.test(navigator.userAgent);
+                
+                if (isIOSSafari) {
+                    // iOS Safari 直接跳轉，不使用彈窗
+                    try{ 
+                        await fetch(`${API_BASE}/logout`, {method:'POST', credentials:'include'}); 
+                    }catch(_){ }
+                    const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
+                    window.location.href = url;
+                    return;
+                }
+                
                 // 先清除現有 session，避免因為已登入而被誤認為成功
                 try{ await fetch(`${API_BASE}/logout`, {method:'POST', credentials:'include'}); }catch(_){ }
                 const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
                 const features = 'width=520,height=640,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes';
+                
+                // 確保在用戶交互事件中打開彈窗
                 const popup = window.open(url, 'google_auth', features);
+                
+                if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+                    // 彈窗被阻止，回退到直接跳轉
+                    showToast('彈窗被阻止，將直接跳轉到 Google 登入頁面', 'info');
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 1000);
+                    return;
+                }
+                
                 // 輕量輪詢：等待後端設定好 session cookie 後，自動關閉視窗並刷新父頁
                 const timer = setInterval(async ()=>{
                     try{
+                        if (popup.closed) {
+                            clearInterval(timer);
+                            return;
+                        }
                         const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
                         if (me && me.id){
                             localStorage.setItem('isLoggedIn','true');
@@ -2438,8 +2460,49 @@
                 }, 1000);
                 showToast('請在彈窗完成 Google 登入', 'info');
             }
-            document.getElementById('btn-google-login')?.addEventListener('click', ()=> startGoogle(location.href));
-            document.getElementById('btn-google-signup')?.addEventListener('click', ()=> startGoogle(location.href));
+            // Google 登入按鈕事件處理（iOS Safari 優化）
+            const googleLoginBtn = document.getElementById('btn-google-login');
+            const googleSignupBtn = document.getElementById('btn-google-signup');
+            
+            if (googleLoginBtn) {
+                // 添加觸控事件支援
+                googleLoginBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.98)';
+                }, { passive: false });
+                
+                googleLoginBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(1)';
+                    startGoogle(location.href);
+                }, { passive: false });
+                
+                // 保留原有的點擊事件
+                googleLoginBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    startGoogle(location.href);
+                });
+            }
+            
+            if (googleSignupBtn) {
+                // 添加觸控事件支援
+                googleSignupBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(0.98)';
+                }, { passive: false });
+                
+                googleSignupBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    this.style.transform = 'scale(1)';
+                    startGoogle(location.href);
+                }, { passive: false });
+                
+                // 保留原有的點擊事件
+                googleSignupBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    startGoogle(location.href);
+                });
+            }
 
             // 顯示/隱藏密碼
             function bindToggle(btnId, inputId){
@@ -2516,7 +2579,7 @@
                 updateUsageStats(data.usage_stats || {});
             } catch(e) { /* 忽略錯誤，保持原樣 */ }
         }
-        
+
         // 更新使用統計顯示
         function updateUsageStats(stats) {
             const positioningCount = document.getElementById('acc-positioning-count');
@@ -2558,8 +2621,8 @@
                     } else {
                         showToast(`點數不足，無法執行（需要 ${CREDIT_COSTS[agent] * count} 點）`, 'error');
                     }
-                    return false;
-                }
+                return false;
+            }
                 
                 // 執行功能後扣點
                 const success = await consumePoints(agent, mode, count);
@@ -2671,6 +2734,36 @@
             };
         }
 
+        // 對話歷史管理
+        const chatHistories = {
+            positioning: [],
+            topics: [],
+            script: []
+        };
+        
+        function getChatHistory(agent) {
+            const history = chatHistories[agent] || [];
+            return history.slice(-10); // 只保留最近10輪對話
+        }
+        
+        function addToChatHistory(agent, role, content) {
+            if (!chatHistories[agent]) {
+                chatHistories[agent] = [];
+            }
+            chatHistories[agent].push({ role, content });
+            
+            // 限制歷史長度，避免過長
+            if (chatHistories[agent].length > 20) {
+                chatHistories[agent] = chatHistories[agent].slice(-20);
+            }
+        }
+        
+        function clearChatHistory(agent) {
+            if (chatHistories[agent]) {
+                chatHistories[agent] = [];
+            }
+        }
+
         // 共用聊天邏輯（前端模擬）
         function initChats() {
             async function callBackend(agent, content) {
@@ -2712,6 +2805,8 @@
                     let fullResponse = '';
                     let isComplete = false;
                     
+                    let currentMessageElement = null;
+                    
                     currentEventSource.onmessage = function(event) {
                         if (event.data === '[DONE]') {
                             currentEventSource.close();
@@ -2726,7 +2821,42 @@
                         
                         if (event.data && !event.data.startsWith('錯誤：')) {
                             fullResponse += event.data;
-                            // 可以選擇即時更新 UI，這裡先累積完整回應
+                            
+                            // 即時更新 UI - 逐字顯示
+                            if (!currentMessageElement) {
+                                // 創建新的消息元素
+                                const item = document.createElement('div');
+                                item.className = 'text-left mb-3';
+                                const bubble = document.createElement('div');
+                                bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
+                                bubble.innerHTML = '<div class="whitespace-pre-line text-sm leading-relaxed"></div>';
+                                item.appendChild(bubble);
+                                
+                                // 找到對應的聊天框並添加消息
+                                const chatBoxes = ['chat-positioning', 'chat-ideation', 'chat-script'];
+                                for (const boxId of chatBoxes) {
+                                    const box = document.getElementById(boxId);
+                                    if (box && box.querySelector('.loading-spinner')) {
+                                        // 移除 loading 元素
+                                        const loading = box.querySelector('.loading-spinner').closest('.text-left');
+                                        if (loading) loading.remove();
+                                        box.appendChild(item);
+                                        break;
+                                    }
+                                }
+                                
+                                currentMessageElement = bubble.querySelector('div');
+                            }
+                            
+                            // 逐字更新內容
+                            if (currentMessageElement) {
+                                currentMessageElement.textContent = fullResponse;
+                                // 滾動到底部
+                                const chatBox = currentMessageElement.closest('.overflow-y-auto');
+                                if (chatBox) {
+                                    chatBox.scrollTop = chatBox.scrollHeight;
+                                }
+                            }
                         }
                     };
                     
@@ -2825,13 +2955,16 @@
             // 普通 API 調用（回退方案）
             async function callBackendNormal(agent, content, userId) {
                 try {
+                    // 獲取對話歷史
+                    const chatHistory = getChatHistory(agent);
+                    
                     const res = await fetch(`${API_BASE}/chat`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             user_id: userId,
                             agent_type: agent,
-                            messages: [{ role: 'user', content }]
+                            messages: chatHistory
                         })
                     });
                     const data = await res.json();
@@ -2994,26 +3127,50 @@
                     return item;
                 }
                 
+                let isProcessing = false;
+                
                 send.addEventListener('click', async () => {
+                    if (isProcessing) return;
+                    
                     const v = input.value.trim();
                     if (!v) return;
                     
-                    // 統一的點數檢查和扣減
-                    const canProceed = await checkAndConsumeCredits(agent, 'chat', 1);
-                    if (!canProceed) return;
+                    isProcessing = true;
+                    send.disabled = true;
+                    send.textContent = '處理中...';
                     
-                    append('user', v);
-                    input.value = '';
-                    const pending = appendPending();
-                    callBackend(agent, v)
-                        .then(async msg => {
-                            if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
-                            append('ai', msg);
-                        })
-                        .catch(async () => {
-                            if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
-                            append('ai', '抱歉，目前系統較繁忙，請稍後再試。');
-                        });
+                    try {
+                        // 統一的點數檢查和扣減
+                        const canProceed = await checkAndConsumeCredits(agent, 'chat', 1);
+                        if (!canProceed) {
+                            isProcessing = false;
+                            send.disabled = false;
+                            send.textContent = '分析';
+                            return;
+                        }
+                        
+                        append('user', v);
+                        input.value = '';
+                        const pending = appendPending();
+                        
+                        // 添加到對話歷史
+                        addToChatHistory(agent, 'user', v);
+                        
+                        const msg = await callBackend(agent, v);
+                        if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
+                        append('ai', msg);
+                        
+                        // 添加 AI 回覆到對話歷史
+                        addToChatHistory(agent, 'assistant', msg);
+                        
+                    } catch (error) {
+                        console.error('聊天錯誤:', error);
+                        append('ai', '抱歉，目前系統較繁忙，請稍後再試。');
+                    } finally {
+                        isProcessing = false;
+                        send.disabled = false;
+                        send.textContent = '分析';
+                    }
                 });
                 // Enter 送出（Shift+Enter 不送出）
                 input.addEventListener('keydown', (e) => {
@@ -3040,7 +3197,12 @@
                 const clearBtn = document.getElementById(btn);
                 const chatBox = document.getElementById(box);
                 if (clearBtn && chatBox) {
-                    clearBtn.addEventListener('click', () => chatBox.innerHTML = '');
+                    clearBtn.addEventListener('click', () => {
+                        chatBox.innerHTML = '';
+                        // 清空對應的對話歷史
+                        const agent = box.replace('chat-', '');
+                        clearChatHistory(agent);
+                    });
                 }
             });
 
@@ -3247,9 +3409,16 @@
                 }
             });
 
-            // 快速示例按鈕
+            // 快速示例按鈕（防重複點擊）
             document.querySelectorAll('.quick-example-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // 防止重複點擊
+                    if (this.disabled) return;
+                    this.disabled = true;
+                    
                     const examples = {
                         '科技新創公司': {
                             industry: '科技新創',
@@ -3282,6 +3451,11 @@
                         updateToneSelection();
                         showToast('已填入快速示例資料', 'success');
                     }
+                    
+                    // 1秒後重新啟用按鈕
+                    setTimeout(() => {
+                        this.disabled = false;
+                    }, 1000);
                 });
             });
 
@@ -5091,15 +5265,24 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             }`;
         }
         
-        // 更新點數顯示
+        // 更新點數顯示（統一版本）
         function updateCreditsDisplay(credits) {
             const navCredits = document.getElementById('nav-credits');
             const accCredits = document.getElementById('acc-credits');
             const accountCurrentCredits = document.getElementById('account-current-credits');
             
-            if (navCredits) navCredits.textContent = credits;
-            if (accCredits) accCredits.textContent = credits;
-            if (accountCurrentCredits) accountCurrentCredits.textContent = credits;
+            console.log('更新點數顯示:', credits);
+            if (navCredits) {
+                navCredits.textContent = credits || 0;
+                console.log('導覽列點數已更新:', navCredits.textContent);
+            }
+            if (accCredits) {
+                accCredits.textContent = credits || 0;
+                console.log('側邊欄點數已更新:', accCredits.textContent);
+            }
+            if (accountCurrentCredits) {
+                accountCurrentCredits.textContent = credits || 0;
+            }
         }
         
         // 事件監聽器
