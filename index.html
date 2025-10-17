@@ -1999,13 +1999,53 @@
             } catch (error) {
                 console.error('初始化錯誤:', error);
             }
+            // 檢查是否為Google登入回調
+            (function checkGoogleCallback() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
+                const state = urlParams.get('state');
+                
+                if (code && state) {
+                    console.log('檢測到Google登入回調，code:', code);
+                    // 清除URL參數，避免重複處理
+                    const newUrl = window.location.pathname + window.location.hash;
+                    window.history.replaceState({}, document.title, newUrl);
+                    
+                    // 延遲檢查登入狀態，讓後端處理完畢
+                    setTimeout(async () => {
+                        console.log('重新檢查登入狀態...');
+                        try{
+                            const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                            if (me && me.id){
+                                console.log('Google登入成功，更新UI');
+                                localStorage.setItem('isLoggedIn','true');
+                                localStorage.setItem('user', JSON.stringify(me));
+                                updateUIForLoggedInUser(me);
+                                showToast('Google登入成功！', 'success');
+                            } else {
+                                console.log('Google登入失敗');
+                                showToast('Google登入失敗，請重試', 'error');
+                            }
+                        } catch(error) {
+                            console.error('檢查Google登入狀態失敗:', error);
+                            showToast('登入狀態檢查失敗', 'error');
+                        }
+                    }, 2000);
+                }
+            })();
+            
             // 與後端 Session 對齊，避免 localStorage 殘留導致誤顯示已登入
             (async function syncSession(){
                 try{
+                    console.log('檢查登入狀態...');
                     const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                    console.log('後端返回的用戶資料:', me);
+                    
                     if (me && me.id){
+                        console.log('用戶已登入，更新UI');
                         localStorage.setItem('isLoggedIn','true');
                         localStorage.setItem('user', JSON.stringify(me));
+                        
                         // 用戶已登入，獲取點數資訊
                         try {
                             const walletData = await fetchWalletInfo();
@@ -2015,11 +2055,26 @@
                         } catch (error) {
                             console.error('Session 同步後點數載入失敗:', error);
                         }
+                        
+                        // 更新UI顯示登入狀態
+                        updateUIForLoggedInUser(me);
                     } else {
+                        console.log('用戶未登入，清除本地資料');
                         localStorage.setItem('isLoggedIn','false');
                         localStorage.removeItem('user');
+                        updateUIForLoggedOutUser();
                     }
-                }catch(_){ /* 忽略網路錯誤 */ }
+                }catch(error){ 
+                    console.error('檢查登入狀態失敗:', error);
+                    // 網路錯誤時，檢查本地是否有登入資料
+                    const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+                    if (localUser.id) {
+                        console.log('使用本地登入資料');
+                        updateUIForLoggedInUser(localUser);
+                    } else {
+                        updateUIForLoggedOutUser();
+                    }
+                }
             })();
             try {
             initChats();
@@ -2274,6 +2329,50 @@
             
             // 顯示成功提示
             showToast('已填入示例資料', 'success');
+        }
+
+        // UI更新函數
+        function updateUIForLoggedInUser(user) {
+            console.log('更新UI為登入狀態，用戶:', user);
+            
+            // 隱藏登入按鈕，顯示用戶資訊
+            const loginBtn = document.getElementById('login-btn');
+            const dropdown = document.getElementById('user-dropdown');
+            
+            if (loginBtn) loginBtn.classList.add('hidden');
+            if (dropdown) dropdown.classList.remove('hidden');
+            
+            // 更新用戶資訊顯示
+            const userName = document.getElementById('user-name');
+            const userAvatar = document.getElementById('user-avatar');
+            const accName = document.getElementById('acc-name');
+            const accAvatar = document.getElementById('acc-avatar');
+            
+            if (userName) userName.textContent = user.name || user.email || '用戶';
+            if (userAvatar) userAvatar.textContent = (user.name || user.email || 'U').charAt(0).toUpperCase();
+            if (accName) accName.textContent = user.name || user.email || '用戶';
+            if (accAvatar) accAvatar.textContent = (user.name || user.email || 'U').charAt(0).toUpperCase();
+            
+            // 更新點數顯示
+            updateCreditsDisplay(user.credits || 0);
+            
+            console.log('UI更新完成');
+        }
+        
+        function updateUIForLoggedOutUser() {
+            console.log('更新UI為登出狀態');
+            
+            // 顯示登入按鈕，隱藏用戶資訊
+            const loginBtn = document.getElementById('login-btn');
+            const dropdown = document.getElementById('user-dropdown');
+            
+            if (loginBtn) loginBtn.classList.remove('hidden');
+            if (dropdown) dropdown.classList.add('hidden');
+            
+            // 清除點數顯示
+            updateCreditsDisplay(0);
+            
+            console.log('UI更新完成');
         }
 
         // 簡易登入系統（參考 login.html）
