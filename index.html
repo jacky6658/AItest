@@ -1526,25 +1526,56 @@
 
                                     <!-- 模板選擇卡片 -->
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                                        <h3 class="text-lg font-semibold mb-4">模板選擇</h3>
-                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                            <label class="template-card flex flex-col items-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <input type="radio" name="script_template" value="A" class="hidden" checked>
-                                                <span class="text-xl mb-2">A</span>
-                                                <span class="text-sm">三段式</span>
+                                        <h3 class="text-lg font-semibold mb-4">腳本模板</h3>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="A" class="mr-3" checked>
+                                                <div>
+                                                    <div class="font-medium">A. 標準行銷三段式</div>
+                                                    <div class="text-sm text-gray-500">Hook → Value → CTA（通用/帶貨）</div>
+                                                </div>
                                             </label>
-                                            <label class="template-card flex flex-col items-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <input type="radio" name="script_template" value="B" class="hidden">
-                                                <span class="text-xl mb-2">B</span>
-                                                <span class="text-sm">問題解決</span>
+                                            <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="B" class="mr-3">
+                                                <div>
+                                                    <div class="font-medium">B. 問題解決證明</div>
+                                                    <div class="text-sm text-gray-500">Problem → Solution → Proof（教育/建立信任）</div>
+                                                </div>
                                             </label>
-                                            <label class="template-card flex flex-col items-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <input type="radio" name="script_template" value="C" class="hidden">
-                                                <span class="text-xl mb-2">C</span>
-                                                <span class="text-sm">故事敘述</span>
+                                            <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="C" class="mr-3">
+                                                <div>
+                                                    <div class="font-medium">C. Before-After揭露</div>
+                                                    <div class="text-sm text-gray-500">Before → After → 秘密揭露（視覺反差/爆量）</div>
+                                                </div>
                                             </label>
-                            </div>
-                        </div>
+                                            <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="D" class="mr-3">
+                                                <div>
+                                                    <div class="font-medium">D. 教學知識型</div>
+                                                    <div class="text-sm text-gray-500">迷思 → 原理 → 要點 → 行動（冷受眾）</div>
+                                                </div>
+                                            </label>
+                                            <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input type="radio" name="script_template" value="E" class="mr-3">
+                                                <div>
+                                                    <div class="font-medium">E. 故事敘事型</div>
+                                                    <div class="text-sm text-gray-500">起 → 承 → 轉 → 合（人設/口碑）</div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- 平台選擇卡片 -->
+                                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                                        <h3 class="text-lg font-semibold mb-4">目標平台</h3>
+                                        <select id="script_platform" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700">
+                                            <option value="Reels">Instagram Reels</option>
+                                            <option value="TikTok">TikTok</option>
+                                            <option value="小紅書">小紅書</option>
+                                            <option value="YouTube Shorts">YouTube Shorts</option>
+                                        </select>
+                                    </div>
                         
                                     <!-- 時長選擇卡片 -->
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
@@ -1599,8 +1630,13 @@
                                         
                                         <!-- 結果顯示區域 -->
                                         <div id="script-result" class="hidden mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                                            <h4 class="font-semibold text-gray-900 dark:text-white mb-2">生成結果</h4>
-                                        <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line"></div>
+                                            <div class="flex justify-between items-center mb-3">
+                                                <h4 class="font-semibold text-gray-900 dark:text-white">生成結果</h4>
+                                                <button id="copy_script_btn" class="text-sm px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+                                                    複製
+                                                </button>
+                                            </div>
+                                            <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line max-h-96 overflow-y-auto"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3979,6 +4015,112 @@
                     generateScriptWithTopic(mode, template, duration, applySettingsBtn);
                 });
             }
+
+            // 一鍵生成腳本按鈕（右側）
+            const oneclickGenerateBtn = document.getElementById('oneclick-generate');
+            if (oneclickGenerateBtn) {
+                oneclickGenerateBtn.addEventListener('click', async function() {
+                    const template = document.querySelector('input[name="script_template"]:checked')?.value || 'A';
+                    const platform = document.getElementById('script_platform')?.value || 'Reels';
+                    const duration = document.querySelector('input[name="script_duration"]:checked')?.value || '30';
+                    const topic = document.getElementById('script-topic-input')?.value?.trim();
+                    
+                    if (!topic) {
+                        showToast('請輸入腳本主題', 'error');
+                        return;
+                    }
+                    
+                    // 關閉現有串流
+                    if (window.currentEventSource) {
+                        window.currentEventSource.close();
+                        window.currentEventSource = null;
+                    }
+                    
+                    // 顯示結果區域
+                    const resultDiv = document.getElementById('script-result');
+                    const contentDiv = document.getElementById('script-content');
+                    if (resultDiv && contentDiv) {
+                        resultDiv.classList.remove('hidden');
+                        contentDiv.textContent = '';
+                    }
+                    
+                    // 顯示載入狀態
+                    const submitText = oneclickGenerateBtn.querySelector('.submit-text');
+                    const loadingText = oneclickGenerateBtn.querySelector('.loading-text');
+                    if (submitText) submitText.classList.add('hidden');
+                    if (loadingText) loadingText.classList.remove('hidden');
+                    oneclickGenerateBtn.disabled = true;
+                    
+                    try {
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        const userId = user.id || 'web';
+                        
+                        const streamUrl = `${API_BASE}/api/stream?agent=script_generation&topic=${encodeURIComponent(topic)}&template=${template}&platform=${encodeURIComponent(platform)}&duration=${duration}&user_id=${userId}`;
+                        
+                        window.currentEventSource = new EventSource(streamUrl);
+                        
+                        window.currentEventSource.onmessage = function(event) {
+                            try {
+                                const data = JSON.parse(event.data);
+                                
+                                if (data.type === 'content') {
+                                    contentDiv.textContent += data.token;
+                                    contentDiv.scrollTop = contentDiv.scrollHeight;
+                                } else if (data.type === 'done') {
+                                    window.currentEventSource.close();
+                                    window.currentEventSource = null;
+                                    showToast('腳本生成完成', 'success');
+                                } else if (data.type === 'error') {
+                                    window.currentEventSource.close();
+                                    window.currentEventSource = null;
+                                    showToast('生成失敗: ' + data.message, 'error');
+                                }
+                            } catch (e) {
+                                console.error('解析串流數據錯誤:', e);
+                            }
+                        };
+                        
+                        window.currentEventSource.onerror = function(event) {
+                            console.error('串流錯誤:', event);
+                            window.currentEventSource.close();
+                            window.currentEventSource = null;
+                            showToast('生成過程中發生錯誤', 'error');
+                        };
+                        
+                    } catch (error) {
+                        console.error('腳本生成錯誤:', error);
+                        showToast('生成失敗', 'error');
+                    } finally {
+                        // 恢復按鈕狀態
+                        if (submitText) submitText.classList.remove('hidden');
+                        if (loadingText) loadingText.classList.add('hidden');
+                        oneclickGenerateBtn.disabled = false;
+                    }
+                });
+            }
+
+            // 複製腳本功能
+            const copyScriptBtn = document.getElementById('copy_script_btn');
+            if (copyScriptBtn) {
+                copyScriptBtn.addEventListener('click', function() {
+                    const content = document.getElementById('script-content')?.textContent;
+                    if (content) {
+                        navigator.clipboard.writeText(content).then(() => {
+                            showToast('腳本已複製到剪貼板', 'success');
+                        }).catch(() => {
+                            showToast('複製失敗', 'error');
+                        });
+                    }
+                });
+            }
+
+            // 頁面卸載時關閉串流
+            window.addEventListener('beforeunload', function() {
+                if (window.currentEventSource) {
+                    window.currentEventSource.close();
+                    window.currentEventSource = null;
+                }
+            });
 
             // 生成主題和腳本函數
             async function generateScriptWithTopic(mode, template, duration, button) {
