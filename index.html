@@ -2013,42 +2013,37 @@
                     
                     // 延遲檢查登入狀態，讓後端處理完畢
                     setTimeout(async () => {
-                        console.log('重新檢查登入狀態...');
                         try{
                             const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
-                            console.log('Google登入回調檢查結果:', me);
                             
                             if (me && me.id){
-                                console.log('Google登入成功，更新localStorage和UI');
-                                
-                                // 更新localStorage
                                 localStorage.setItem('isLoggedIn','true');
                                 localStorage.setItem('user', JSON.stringify(me));
                                 
-                                // 更新UI
-                                updateUIForLoggedInUser(me);
+                                // 強制更新UI
+                                const loginBtn = document.getElementById('login-btn');
+                                const dropdown = document.getElementById('user-dropdown');
+                                const creditsWrap = document.getElementById('nav-credits-wrap');
                                 
-                                // 獲取點數資訊
-                                try {
-                                    const walletData = await fetchWalletInfo();
-                                    if (walletData) {
-                                        updateCreditsDisplay(walletData.credits || 0);
-                                    }
-                                } catch (error) {
-                                    console.error('獲取點數失敗:', error);
-                                }
+                                if (loginBtn) loginBtn.classList.add('hidden');
+                                if (dropdown) dropdown.classList.remove('hidden');
+                                if (creditsWrap) creditsWrap.classList.remove('hidden');
+                                
+                                // 更新用戶資訊
+                                const userName = document.getElementById('user-name');
+                                const userAvatar = document.getElementById('user-avatar');
+                                if (userName) userName.textContent = me.name || me.email || '用戶';
+                                if (userAvatar) userAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
                                 
                                 showToast('Google登入成功！', 'success');
-                                console.log('Google登入完成，UI已更新');
+                                location.reload();
                             } else {
-                                console.log('Google登入失敗，用戶資料:', me);
                                 showToast('Google登入失敗，請重試', 'error');
                             }
                         } catch(error) {
-                            console.error('檢查Google登入狀態失敗:', error);
                             showToast('登入狀態檢查失敗', 'error');
                         }
-                    }, 2000);
+                    }, 1000);
                 }
             })();
             
