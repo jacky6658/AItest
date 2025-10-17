@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>AIJob短影音顧問智能</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1801,13 +1802,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 console.log('開始初始化頁面...');
-                initTheme();
-                initRouter();
-                initMobileMenu();
-                initPositioning();
-                initIdeation();
-                initScript();
-                initAuth();
+            initTheme();
+            initRouter();
+            initMobileMenu();
+            initPositioning();
+            initIdeation();
+            initScript();
+            initAuth();
                 console.log('基本初始化完成');
             } catch (error) {
                 console.error('初始化錯誤:', error);
@@ -1826,7 +1827,7 @@
                 }catch(_){ /* 忽略網路錯誤 */ }
             })();
             try {
-                initChats();
+            initChats();
                 console.log('聊天功能初始化完成');
             } catch (error) {
                 console.error('聊天功能初始化錯誤:', error);
