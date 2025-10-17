@@ -1598,12 +1598,12 @@
                                         <!-- 套用設定按鈕 -->
                                         <div class="mt-6">
                                             <button id="apply-settings-generate" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                                                <span class="apply-text">套用設定並生成腳本</span>
+                                                <span class="apply-text">套用設定</span>
                                                 <span class="apply-loading hidden">
                                                     <svg class="loading-spinner w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                 </svg>
-                                                    生成中...
+                                                    套用中...
                                                 </span>
                                             </button>
                             </div>
@@ -3996,13 +3996,22 @@
                 });
             }
 
-            // 套用設定並生成腳本按鈕（左側設定區域）
+            // 套用設定按鈕（左側設定區域）
             const applySettingsBtn = document.getElementById('apply-settings-generate');
             if (applySettingsBtn) {
                 applySettingsBtn.addEventListener('click', function() {
                     const mode = document.querySelector('input[name="script_mode"]:checked')?.value || 'educational';
                     const template = document.querySelector('input[name="script_template"]:checked')?.value || 'A';
                     const duration = document.querySelector('input[name="script_duration"]:checked')?.value || '30';
+                    const platform = document.getElementById('script_platform')?.value || 'Reels';
+
+                    // 儲存設定到全域變數
+                    window.scriptSettings = {
+                        mode: mode,
+                        template: template,
+                        duration: duration,
+                        platform: platform
+                    };
 
                     // 顯示載入狀態
                     const loadingText = applySettingsBtn.querySelector('.apply-loading');
@@ -4011,8 +4020,16 @@
                     if (applyText) applyText.classList.add('hidden');
                     applySettingsBtn.disabled = true;
 
-                    // 生成主題和腳本
-                    generateScriptWithTopic(mode, template, duration, applySettingsBtn);
+                    // 模擬載入過程
+                    setTimeout(() => {
+                        // 恢復按鈕狀態
+                        if (loadingText) loadingText.classList.add('hidden');
+                        if (applyText) applyText.classList.remove('hidden');
+                        applySettingsBtn.disabled = false;
+                        
+                        // 顯示套用成功通知
+                        showToast('設定已套用！請輸入主題後點擊「生成腳本」', 'success');
+                    }, 1000);
                 });
             }
 
@@ -4020,15 +4037,21 @@
             const oneclickGenerateBtn = document.getElementById('oneclick-generate');
             if (oneclickGenerateBtn) {
                 oneclickGenerateBtn.addEventListener('click', async function() {
-                    const template = document.querySelector('input[name="script_template"]:checked')?.value || 'A';
-                    const platform = document.getElementById('script_platform')?.value || 'Reels';
-                    const duration = document.querySelector('input[name="script_duration"]:checked')?.value || '30';
                     const topic = document.getElementById('script-topic-input')?.value?.trim();
                     
                     if (!topic) {
                         showToast('請輸入腳本主題', 'error');
                         return;
                     }
+                    
+                    // 檢查是否已套用設定
+                    if (!window.scriptSettings) {
+                        showToast('請先點擊「套用設定」按鈕', 'error');
+                        return;
+                    }
+                    
+                    // 使用已套用的設定
+                    const { template, platform, duration } = window.scriptSettings;
                     
                     // 關閉現有串流
                     if (window.currentEventSource) {
