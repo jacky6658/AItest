@@ -1975,6 +1975,15 @@
                     if (me && me.id){
                         localStorage.setItem('isLoggedIn','true');
                         localStorage.setItem('user', JSON.stringify(me));
+                        // 用戶已登入，獲取點數資訊
+                        try {
+                            const walletData = await fetchWalletInfo();
+                            if (walletData) {
+                                console.log('Session 同步後點數載入成功:', walletData);
+                            }
+                        } catch (error) {
+                            console.error('Session 同步後點數載入失敗:', error);
+                        }
                     } else {
                         localStorage.setItem('isLoggedIn','false');
                         localStorage.removeItem('user');
@@ -2360,7 +2369,22 @@
                     const res = await fetch(`${API_BASE}/auth/login`, { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ identifier, password }) });
                     if (!res.ok) throw new Error('login failed');
                     const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=>r.ok?r.json():null);
-                    if (me){ localStorage.setItem('isLoggedIn','true'); localStorage.setItem('user', JSON.stringify(me)); closeEmailPage(); showToast('登入成功', 'success'); location.reload(); }
+                    if (me){ 
+                        localStorage.setItem('isLoggedIn','true'); 
+                        localStorage.setItem('user', JSON.stringify(me)); 
+                        closeEmailPage(); 
+                        showToast('登入成功', 'success'); 
+                        // 登入成功後立即獲取點數資訊
+                        try {
+                            const walletData = await fetchWalletInfo();
+                            if (walletData) {
+                                console.log('登入後點數載入成功:', walletData);
+                            }
+                        } catch (error) {
+                            console.error('登入後點數載入失敗:', error);
+                        }
+                        location.reload(); 
+                    }
                 }catch(e){ showToast('登入失敗，請檢查帳密或稍後再試', 'error'); }
             });
 
@@ -2394,6 +2418,15 @@
                             localStorage.setItem('user', JSON.stringify(me));
                             clearInterval(timer);
                             try{ popup && popup.close(); }catch(_){ }
+                            // Google 登入成功後立即獲取點數資訊
+                            try {
+                                const walletData = await fetchWalletInfo();
+                                if (walletData) {
+                                    console.log('Google 登入後點數載入成功:', walletData);
+                                }
+                            } catch (error) {
+                                console.error('Google 登入後點數載入失敗:', error);
+                            }
                             location.reload();
                         }
                     }catch(_){ /* 忽略暫時錯誤 */ }
@@ -2525,6 +2558,27 @@
             const navC = document.getElementById('nav-credits'); if (navC) navC.textContent = u.credits;
             const accC = document.getElementById('acc-credits'); if (accC) accC.textContent = u.credits;
             showToast(`已設定點數為 ${u.credits}`, 'success');
+        };
+        
+        // 手動刷新點數功能
+        window.refreshCredits = async function(){
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) { 
+                showToast('請先登入', 'error'); 
+                return; 
+            }
+            try {
+                console.log('手動刷新點數...');
+                const walletData = await fetchWalletInfo();
+                if (walletData) {
+                    showToast(`點數已更新: ${walletData.balance}`, 'success');
+                } else {
+                    showToast('點數更新失敗', 'error');
+                }
+            } catch (error) {
+                console.error('手動刷新點數失敗:', error);
+                showToast('點數更新失敗', 'error');
+            }
         };
         window.getCredits = function(){
             const userRaw = localStorage.getItem('user');
