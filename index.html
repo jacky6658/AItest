@@ -2020,23 +2020,8 @@
                                 localStorage.setItem('isLoggedIn','true');
                                 localStorage.setItem('user', JSON.stringify(me));
                                 
-                                // 強制更新UI
-                                const loginBtn = document.getElementById('login-btn');
-                                const dropdown = document.getElementById('user-dropdown');
-                                const creditsWrap = document.getElementById('nav-credits-wrap');
-                                
-                                if (loginBtn) loginBtn.classList.add('hidden');
-                                if (dropdown) dropdown.classList.remove('hidden');
-                                if (creditsWrap) creditsWrap.classList.remove('hidden');
-                                
-                                // 更新用戶資訊
-                                const userName = document.getElementById('user-name');
-                                const userAvatar = document.getElementById('user-avatar');
-                                if (userName) userName.textContent = me.name || me.email || '用戶';
-                                if (userAvatar) userAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
-                                
-                                // 更新點數顯示
-                                updateCreditsDisplay(me.credits || 0);
+                                // 使用統一的UI更新函數
+                                updateUIForLoggedInUser(me);
                                 
                                 showToast('Google登入成功！', 'success');
                             } else {
@@ -2045,7 +2030,7 @@
                         } catch(error) {
                             showToast('登入狀態檢查失敗', 'error');
                         }
-                    }, 1000);
+                    }, 2000);
                 }
             })();
             
@@ -2730,21 +2715,38 @@
 
             // 登出功能
             if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
+                logoutBtn.addEventListener('click', async () => {
+                    // 清除後端session
+                    try {
+                        await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+                    } catch (e) {}
+                    
+                    // 清除本地存儲
                     localStorage.removeItem('user');
                     localStorage.setItem('isLoggedIn', 'false');
+                    
+                    // 強制更新UI為登出狀態
+                    updateUIForLoggedOutUser();
+                    
                     showToast('已登出', 'success');
-                    refreshUserUI();
-                    dropdown.classList.add('hidden');
                 });
             }
 
             if (drawerLogout) {
-                drawerLogout.addEventListener('click', () => {
+                drawerLogout.addEventListener('click', async () => {
+                    // 清除後端session
+                    try {
+                        await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+                    } catch (e) {}
+                    
+                    // 清除本地存儲
                     localStorage.removeItem('user');
                     localStorage.setItem('isLoggedIn', 'false');
+                    
+                    // 強制更新UI為登出狀態
+                    updateUIForLoggedOutUser();
+                    
                     showToast('已登出', 'success');
-                    refreshUserUI();
                     drawer.classList.add('translate-x-full');
                     overlay.classList.add('hidden');
                 });
