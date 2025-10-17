@@ -1467,7 +1467,7 @@
                             <h2 class="text-3xl font-bold mb-2">AI腳本生成大師</h2>
                             <p class="text-gray-600 dark:text-gray-400">直接與AI對話，描述你的腳本需求與風格，我會一步步引導你完成腳本創作</p>
                         </div>
-                    </div>
+                        </div>
 
                     <!-- 右側預覽區 -->
                     <div class="lg:col-span-8">
@@ -1475,14 +1475,14 @@
                         <div id="script-tabs" class="relative z-10 flex flex-wrap md:flex-nowrap gap-2 mb-3 overflow-x-auto whitespace-nowrap">
                             <button id="tab-script-chat" onclick="window.switchScriptTab && window.switchScriptTab('chat')" class="pointer-events-auto shrink-0 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-hover">AI 對話</button>
                             <button id="tab-script-oneclick" onclick="window.switchScriptTab && window.switchScriptTab('one')" class="pointer-events-auto shrink-0 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">一鍵生成</button>
-                        </div>
+                                    </div>
                         <!-- 腳本 聊天室（強化版） -->
                         <div id="script-chat-panel" class="mb-6">
                             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mx-auto max-w-4xl">
                                 <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold">📝 AI腳本生成大師</h3>
                                     <button id="chat-clear-script" class="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 dark:border-gray-600">清空對話</button>
-                                </div>
+                                    </div>
                                 <div id="chat-script" class="h-96 sm:h-96 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900"></div>
                                 <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
                                     <div class="flex flex-wrap gap-2 mb-3 text-sm">
@@ -1520,9 +1520,9 @@
                                             <label class="mode-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_mode" value="promotional" class="hidden">
                                                 <span class="text-center">推廣型</span>
-                                            </label>
-                                </div>
-                                    </div>
+                                </label>
+                            </div>
+                        </div>
 
                                     <!-- 模板選擇卡片 -->
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
@@ -1530,41 +1530,41 @@
                                         <div class="space-y-2">
                                             <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_template" value="A" class="mr-3" checked>
-                                                <div>
+                        <div>
                                                     <div class="font-medium">A. 標準行銷三段式</div>
                                                     <div class="text-sm text-gray-500">Hook → Value → CTA（通用/帶貨）</div>
-                                                </div>
-                                            </label>
+                                    </div>
+                                </label>
                                             <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_template" value="B" class="mr-3">
                                                 <div>
                                                     <div class="font-medium">B. 問題解決證明</div>
                                                     <div class="text-sm text-gray-500">Problem → Solution → Proof（教育/建立信任）</div>
-                                                </div>
-                                            </label>
+                                    </div>
+                                </label>
                                             <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_template" value="C" class="mr-3">
                                                 <div>
                                                     <div class="font-medium">C. Before-After揭露</div>
                                                     <div class="text-sm text-gray-500">Before → After → 秘密揭露（視覺反差/爆量）</div>
-                                                </div>
-                                            </label>
+                                    </div>
+                                </label>
                                             <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_template" value="D" class="mr-3">
                                                 <div>
                                                     <div class="font-medium">D. 教學知識型</div>
                                                     <div class="text-sm text-gray-500">迷思 → 原理 → 要點 → 行動（冷受眾）</div>
-                                                </div>
-                                            </label>
+                                    </div>
+                                </label>
                                             <label class="flex items-center p-3 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_template" value="E" class="mr-3">
                                                 <div>
                                                     <div class="font-medium">E. 故事敘事型</div>
                                                     <div class="text-sm text-gray-500">起 → 承 → 轉 → 合（人設/口碑）</div>
-                                                </div>
-                                            </label>
-                                        </div>
                                     </div>
+                                </label>
+                                    </div>
+                            </div>
 
                                     <!-- 平台選擇卡片 -->
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
@@ -1575,16 +1575,16 @@
                                             <option value="小紅書">小紅書</option>
                                             <option value="YouTube Shorts">YouTube Shorts</option>
                                         </select>
-                                    </div>
-                        
+                        </div>
+
                                     <!-- 時長選擇卡片 -->
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-                                        <h3 class="text-lg font-semibold mb-4">時長選擇</h3>
+                            <h3 class="text-lg font-semibold mb-4">時長選擇</h3>
                                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                             <label class="duration-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_duration" value="30" class="hidden" checked>
                                                 <span class="text-center">30秒</span>
-                                            </label>
+                                </label>
                                             <label class="duration-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_duration" value="60" class="hidden">
                                                 <span class="text-center">60秒</span>
@@ -1592,9 +1592,9 @@
                                             <label class="duration-option flex items-center justify-center p-4 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer transition-all duration-200 has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input type="radio" name="script_duration" value="90" class="hidden">
                                                 <span class="text-center">90秒</span>
-                                            </label>
-                            </div>
-                                        
+                                </label>
+                        </div>
+
                                         <!-- 套用設定按鈕 -->
                                         <div class="mt-6">
                                             <button id="apply-settings-generate" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
@@ -1605,11 +1605,11 @@
                                 </svg>
                                                     套用中...
                                                 </span>
-                                            </button>
+                        </button>
+                    </div>
                             </div>
-                                        </div>
-                                    </div>
-                                
+                        </div>
+                        
                                 <!-- 右側主題輸入與結果 -->
                                     <div>
                                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 min-h-[380px] md:min-h-[500px] flex flex-col">
@@ -1621,12 +1621,12 @@
                                                 <span class="submit-text">生成腳本</span>
                                                 <span class="loading-text hidden">
                                                     <svg class="loading-spinner w-4 h-4 inline mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                                    </svg>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
                                                     AI生成中...
                                                 </span>
                                             </button>
-                                        </div>
+                            </div>
                                         
                                         <!-- 結果顯示區域 -->
                                         <div id="script-result" class="hidden mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
@@ -1635,9 +1635,9 @@
                                                 <button id="copy_script_btn" class="text-sm px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
                                                     複製
                                                 </button>
-                                            </div>
-                                            <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line max-h-96 overflow-y-auto"></div>
                                         </div>
+                                            <div id="script-content" class="text-gray-600 dark:text-gray-400 whitespace-pre-line max-h-96 overflow-y-auto"></div>
+                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -2021,31 +2021,12 @@
                             if (me && me.id){
                                 console.log('Google登入成功，更新localStorage和UI');
                                 
-                                // 先更新localStorage
+                                // 更新localStorage
                                 localStorage.setItem('isLoggedIn','true');
                                 localStorage.setItem('user', JSON.stringify(me));
                                 
-                                // 等待一下確保localStorage更新完成
-                                await new Promise(resolve => setTimeout(resolve, 100));
-                                
                                 // 更新UI
                                 updateUIForLoggedInUser(me);
-                                
-                                // 強制刷新頁面狀態
-                                setTimeout(() => {
-                                    // 確保所有UI元素都正確更新
-                                    const loginBtn = document.getElementById('login-btn');
-                                    const dropdown = document.getElementById('user-dropdown');
-                                    
-                                    if (loginBtn && !loginBtn.classList.contains('hidden')) {
-                                        console.log('強制隱藏登入按鈕');
-                                        loginBtn.classList.add('hidden');
-                                    }
-                                    if (dropdown && dropdown.classList.contains('hidden')) {
-                                        console.log('強制顯示用戶下拉選單');
-                                        dropdown.classList.remove('hidden');
-                                    }
-                                }, 500);
                                 
                                 // 獲取點數資訊
                                 try {
@@ -2413,9 +2394,28 @@
             // 顯示登入按鈕，隱藏用戶資訊
             const loginBtn = document.getElementById('login-btn');
             const dropdown = document.getElementById('user-dropdown');
+            const creditsWrap = document.getElementById('nav-credits-wrap');
             
-            if (loginBtn) loginBtn.classList.remove('hidden');
-            if (dropdown) dropdown.classList.add('hidden');
+            console.log('登入按鈕元素:', loginBtn);
+            console.log('用戶下拉選單元素:', dropdown);
+            console.log('點數顯示區元素:', creditsWrap);
+            
+            if (loginBtn) {
+                loginBtn.classList.remove('hidden');
+                console.log('登入按鈕已顯示');
+            } else {
+                console.error('找不到登入按鈕元素');
+            }
+            
+            if (dropdown) {
+                dropdown.classList.add('hidden');
+                console.log('用戶下拉選單已隱藏');
+            }
+            
+            if (creditsWrap) {
+                creditsWrap.classList.add('hidden');
+                console.log('點數顯示區已隱藏');
+            }
             
             // 清除點數顯示
             updateCreditsDisplay(0);
@@ -2425,7 +2425,10 @@
 
         // 簡易登入系統（參考 login.html）
         function initAuth() {
+            console.log('initAuth 函數開始執行');
             const loginBtn = document.getElementById('login-btn');
+            console.log('登入按鈕元素:', loginBtn);
+            
             const dropdown = document.getElementById('user-dropdown');
             const logoutBtn = document.getElementById('logout-btn');
             const drawer = document.getElementById('account-drawer');
@@ -2444,7 +2447,13 @@
             const emailPageOverlay = document.getElementById('email-auth-overlay');
             const btnEmailLogin = document.getElementById('btn-email-login');
             const btnEmailSignup = document.getElementById('btn-email-signup');
-            if (!loginBtn) return;
+            
+            if (!loginBtn) {
+                console.error('找不到登入按鈕元素，initAuth 函數退出');
+                return;
+            }
+            
+            console.log('登入按鈕找到，繼續初始化');
 
             function closeEmailPage(){
                 if (emailPage) emailPage.classList.add('hidden');
@@ -3354,23 +3363,23 @@
                             return;
                         }
                         
-                        append('user', v);
-                        input.value = '';
-                        const pending = appendPending();
+                    append('user', v);
+                    input.value = '';
+                    const pending = appendPending();
                         
                         // 添加到對話歷史
                         addToChatHistory(agent, 'user', v);
                         
                         const msg = await callBackend(agent, v);
-                        if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
-                        append('ai', msg);
+                            if (pending && pending.parentNode) pending.parentNode.removeChild(pending);
+                            append('ai', msg);
                         
                         // 添加 AI 回覆到對話歷史
                         addToChatHistory(agent, 'assistant', msg);
                         
                     } catch (error) {
                         console.error('聊天錯誤:', error);
-                        append('ai', '抱歉，目前系統較繁忙，請稍後再試。');
+                            append('ai', '抱歉，目前系統較繁忙，請稍後再試。');
                     } finally {
                         isProcessing = false;
                         send.disabled = false;
