@@ -1071,7 +1071,7 @@
     <!-- 主要內容區域 -->
     <main class="min-h-screen bg-gray-50 dark:bg-gray-900">
         <!-- 首頁 -->
-        <div id="page-home" class="page hidden">
+        <div id="page-home" class="page">
             <!-- Hero 區 -->
             <section class="bg-gradient-to-br from-primary to-primary-hover text-white py-20">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -1910,16 +1910,60 @@
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
         // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             try {
                 console.log('開始初始化頁面...');
-            initTheme();
-            initRouter();
-            initMobileMenu();
-            initPositioning();
-            initIdeation();
-            initScript();
-            initAuth();
+                
+                // 檢查函數是否存在
+                if (typeof initTheme === 'function') {
+                    initTheme();
+                    console.log('主題初始化完成');
+                } else {
+                    console.error('initTheme 函數不存在');
+                }
+                
+                if (typeof initRouter === 'function') {
+                    initRouter();
+                    console.log('路由初始化完成');
+                } else {
+                    console.error('initRouter 函數不存在');
+                }
+                
+                if (typeof initMobileMenu === 'function') {
+                    initMobileMenu();
+                    console.log('手機選單初始化完成');
+                } else {
+                    console.error('initMobileMenu 函數不存在');
+                }
+                
+                if (typeof initPositioning === 'function') {
+                    initPositioning();
+                    console.log('定位助手初始化完成');
+                } else {
+                    console.error('initPositioning 函數不存在');
+                }
+                
+                if (typeof initIdeation === 'function') {
+                    initIdeation();
+                    console.log('選題助手初始化完成');
+                } else {
+                    console.error('initIdeation 函數不存在');
+                }
+                
+                if (typeof initScript === 'function') {
+                    initScript();
+                    console.log('腳本生成器初始化完成');
+                } else {
+                    console.error('initScript 函數不存在');
+                }
+                
+                if (typeof initAuth === 'function') {
+                    initAuth();
+                    console.log('認證初始化完成');
+                } else {
+                    console.error('initAuth 函數不存在');
+                }
+                
                 console.log('基本初始化完成');
             } catch (error) {
                 console.error('初始化錯誤:', error);
@@ -2050,25 +2094,80 @@
 
             // 初始化頁面
             const hash = window.location.hash.replace('#!', '') || 'home';
+            console.log('初始化頁面，目標:', hash);
+            
+            // 確保首頁內容可見
+            setTimeout(() => {
+                const homePage = document.getElementById('page-home');
+                if (homePage) {
+                    homePage.style.display = 'block';
+                    homePage.style.visibility = 'visible';
+                    homePage.classList.remove('hidden');
+                    console.log('首頁強制顯示完成');
+                    console.log('首頁最終樣式:', {
+                        display: homePage.style.display,
+                        visibility: homePage.style.visibility,
+                        className: homePage.className
+                    });
+                    
+                    // 檢查首頁內容是否可見
+                    const heroSection = homePage.querySelector('section');
+                    if (heroSection) {
+                        console.log('Hero 區域存在:', heroSection);
+                        console.log('Hero 區域樣式:', {
+                            display: heroSection.style.display,
+                            visibility: heroSection.style.visibility,
+                            className: heroSection.className
+                        });
+                    } else {
+                        console.error('找不到 Hero 區域');
+                    }
+                } else {
+                    console.error('找不到首頁元素');
+                }
+            }, 50);
+            
             navigateToPage(hash);
         }
 
         function navigateToPage(page) {
+            console.log('導航到頁面:', page);
+            
             // 隱藏所有頁面
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.add('hidden');
+                p.style.display = 'none';
+            });
             
             // 顯示目標頁面
             const targetPage = document.getElementById(`page-${page}`);
+            console.log('目標頁面元素:', targetPage);
+            
             if (targetPage) {
                 targetPage.classList.remove('hidden');
                 targetPage.classList.add('fade-in');
+                targetPage.style.display = 'block';
                 currentPage = page;
+                console.log('頁面已顯示:', page);
+                console.log('頁面類別:', targetPage.className);
+                console.log('頁面樣式:', targetPage.style.display);
                 
                 // 更新 URL
                 window.location.hash = `#!${page}`;
                 
                 // 更新導覽狀態
                 updateNavigation(page);
+            } else {
+                console.error(`找不到頁面: page-${page}`);
+                // 如果找不到目標頁面，顯示首頁
+                const homePage = document.getElementById('page-home');
+                if (homePage) {
+                    homePage.classList.remove('hidden');
+                    homePage.classList.add('fade-in');
+                    homePage.style.display = 'block';
+                    currentPage = 'home';
+                    console.log('顯示首頁作為備用');
+                }
             }
         }
 
