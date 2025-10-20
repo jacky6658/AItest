@@ -2926,6 +2926,11 @@
                 if (emailPage) {
                     emailPage.classList.remove('hidden');
                     document.documentElement.classList.add('modal-open');
+                    // 確保 Gmail 登入按鈕可見
+                    const googleLoginBtn = document.getElementById('btn-google-login');
+                    if (googleLoginBtn) {
+                        googleLoginBtn.style.display = 'flex';
+                    }
                 }
             } else {
                 // 開啟帳號抽屜
@@ -3177,96 +3182,17 @@
 
             // Google 登入/註冊（皆導向同一 OAuth 起始端點，後端處理不存在帳號時自動建帳）
             async function startGoogle(nextUrl){
-                // 檢測是否為 iOS Safari
-                const isIOSSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS|mercury/.test(navigator.userAgent);
+                console.log('開始 Google 登入流程');
                 
-                if (isIOSSafari) {
-                    // iOS Safari 使用彈窗，但設置特殊參數
-                    try{ 
-                        await fetch(`${API_BASE}/logout`, {method:'POST', credentials:'include'}); 
-                    }catch(_){ }
-                    const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}&popup=true`;
-                    const popup = window.open(url, 'google_auth', 'width=520,height=640,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes');
-                    
-                    if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-                        // 彈窗被阻止，回退到直接跳轉
-                        showToast('彈窗被阻止，將直接跳轉到 Google 登入頁面', 'info');
-                        setTimeout(() => {
-                            window.location.href = url;
-                        }, 1000);
-                        return;
-                    }
-                    
-                    // 監聽彈窗關閉
-                    const timer = setInterval(async ()=>{
-                        try{
-                            if (popup.closed) {
-                                clearInterval(timer);
-                                // 檢查登入狀態
-                                const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
-                                console.log('檢查登入狀態，me:', me);
-                                if (me && me.id){
-                                    console.log('登入成功，用戶ID:', me.id);
-                                    
-                                    // 設置登入狀態
-                                    localStorage.setItem('isLoggedIn','true');
-                                    localStorage.setItem('user', JSON.stringify(me));
-                                    
-                                    // 立即更新登入按鈕
-                                    const loginBtn = document.getElementById('login-btn');
-                                    const creditsWrap = document.getElementById('nav-credits-wrap');
-                                    
-                                    if (loginBtn) {
-                                        loginBtn.textContent = me.name || me.email || '用戶';
-                                        loginBtn.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
-                                        loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
-                                        console.log('登入按鈕已更新為:', loginBtn.textContent);
-                                        
-                                        // 登入按鈕已更新，點擊行為由 handleLoginButtonClick 處理
-                                    }
-                                    
-                                    if (creditsWrap) {
-                                        creditsWrap.classList.remove('hidden');
-                                        console.log('點數區塊已顯示');
-                                    }
-                                    
-                                    // 更新抽屜內容
-                                    const accName = document.getElementById('acc-name');
-                                    const accEmail = document.getElementById('acc-email');
-                                    const accAvatar = document.getElementById('acc-avatar');
-                                    
-                                    if (accName) accName.textContent = me.name || me.email || '用戶';
-                                    if (accEmail) accEmail.textContent = me.email || 'user@gmail.com';
-                                    if (accAvatar) accAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
-                                    
-                                    // 載入完整的帳戶數據
-                                    loadAccountData().catch(error => {
-                                        console.error('載入帳戶數據失敗:', error);
-                                        // 如果API調用失敗，至少更新基本的抽屜數據
-                                        updateDrawerData(me, { positioning: 0, topics: 0, script: 0 });
-                                    });
-                                    
-                                    showToast('Google登入成功！', 'success');
-                                    console.log('登入跳轉完成');
-                                } else {
-                                    console.log('登入失敗，me:', me);
-                                    showToast('Google登入失敗，請重試', 'error');
-                                }
-                                return;
-                            }
-                        }catch(e){
-                            console.error('檢查登入狀態失敗:', e);
-                        }
-                    }, 1000);
-                    return;
-                }
+                // 先清除現有 session
+                try{ 
+                    await fetch(`${API_BASE}/logout`, {method:'POST', credentials:'include'}); 
+                }catch(_){ }
                 
-                // 先清除現有 session，避免因為已登入而被誤認為成功
-                try{ await fetch(`${API_BASE}/logout`, {method:'POST', credentials:'include'}); }catch(_){ }
                 const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
                 const features = 'width=520,height=640,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes';
                 
-                // 確保在用戶交互事件中打開彈窗
+                // 開啟彈窗
                 const popup = window.open(url, 'google_auth', features);
                 
                 if (!popup || popup.closed || typeof popup.closed == 'undefined') {
@@ -3278,32 +3204,62 @@
                     return;
                 }
                 
-                // 輕量輪詢：等待後端設定好 session cookie 後，自動關閉視窗並刷新父頁
-                const timer = setInterval(async ()=>{
-                    try{
-                        if (popup.closed) {
-                            clearInterval(timer);
-                            return;
-                        }
-                        const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
-                        if (me && me.id){
-                            localStorage.setItem('isLoggedIn','true');
-                            localStorage.setItem('user', JSON.stringify(me));
-                            clearInterval(timer);
-                            try{ popup && popup.close(); }catch(_){ }
-                            // Google 登入成功後立即獲取點數資訊
+                // 監聽來自彈窗的訊息
+                const messageHandler = async (event) => {
+                    console.log('收到彈窗訊息:', event.data);
+                    
+                    if (event.data && event.data.type === 'google_login_result') {
+                        // 移除監聽器
+                        window.removeEventListener('message', messageHandler);
+                        
+                        if (event.data.success) {
+                            console.log('Google 登入成功');
+                            showToast('Google 登入成功！', 'success');
+                            
+                            // 檢查登入狀態
                             try {
-                                const walletData = await fetchWalletInfo();
-                                if (walletData) {
-                                    console.log('Google 登入後點數載入成功:', walletData);
+                                const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                                console.log('確認登入狀態，me:', me);
+                                
+                                if (me && me.id) {
+                                    // 設置登入狀態
+                                    localStorage.setItem('isLoggedIn','true');
+                                    localStorage.setItem('user', JSON.stringify(me));
+                                    
+                                    // 更新 UI
+                                    updateUIForLoggedInUser(me);
+                                    
+                                    // 載入完整的帳戶數據
+                                    loadAccountData().catch(error => {
+                                        console.error('載入帳戶數據失敗:', error);
+                                        updateDrawerData(me, { positioning: 0, topics: 0, script: 0 });
+                                    });
+                                } else {
+                                    showToast('登入狀態確認失敗', 'error');
                                 }
                             } catch (error) {
-                                console.error('Google 登入後點數載入失敗:', error);
+                                console.error('確認登入狀態失敗:', error);
+                                showToast('登入狀態確認失敗', 'error');
                             }
-                            location.reload();
+                        } else {
+                            console.log('Google 登入失敗:', event.data.error);
+                            showToast('Google 登入失敗，請重試', 'error');
                         }
-                    }catch(_){ /* 忽略暫時錯誤 */ }
-                }, 1000);
+                    }
+                };
+                
+                // 添加訊息監聽器
+                window.addEventListener('message', messageHandler);
+                
+                // 超時保護：如果 30 秒內沒有收到訊息，移除監聽器
+                setTimeout(() => {
+                    window.removeEventListener('message', messageHandler);
+                    if (!popup.closed) {
+                        showToast('登入超時，請重試', 'error');
+                        popup.close();
+                    }
+                }, 30000);
+                
                 showToast('請在彈窗完成 Google 登入', 'info');
             }
             // Google 登入按鈕事件處理（iOS Safari 優化）
@@ -5924,6 +5880,17 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             }
         }
         
+        // 設置帳戶模態視窗關閉按鈕事件監聽器
+        if (accountModalClose) {
+            accountModalClose.addEventListener('click', function(e) {
+                console.log('帳戶模態視窗關閉按鈕被點擊');
+                e.preventDefault();
+                hideAccountModal();
+            });
+        } else {
+            console.error('找不到帳戶模態視窗關閉按鈕元素');
+        }
+        
         // 開啟設定視窗（已移至上方全域定義）
         
         // 關閉設定視窗
@@ -5933,6 +5900,17 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
                 settingsModal.classList.remove('flex');
                 document.body.classList.remove('modal-open');
             }
+        }
+        
+        // 設置設定模態視窗關閉按鈕事件監聽器
+        if (settingsModalClose) {
+            settingsModalClose.addEventListener('click', function(e) {
+                console.log('設定模態視窗關閉按鈕被點擊');
+                e.preventDefault();
+                hideSettingsModal();
+            });
+        } else {
+            console.error('找不到設定模態視窗關閉按鈕元素');
         }
         
         // 載入帳戶資料（本地版本）
