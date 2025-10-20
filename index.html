@@ -2098,41 +2098,6 @@
         let currentPage = 'home';
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
-    // 導覽功能函數
-    function showKnowledgeModal() {
-        const modal = document.getElementById('knowledge-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            loadKnowledgeContent();
-        }
-    }
-
-        function showAccountModal() {
-            const modal = document.getElementById('account-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
-
-        function showSettingsModal() {
-            showToast('設定功能開發中...', 'info');
-        }
-
-        function goToHomepage() {
-            window.location.hash = '#!home';
-            showPage('home');
-        }
-
-    function showHelpModal() {
-        const modal = document.getElementById('help-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-    }
-
     // 載入知識內容
     function loadKnowledgeContent() {
         const currentAgent = localStorage.getItem('currentKnowledgeAgent') || 'positioning';
@@ -5526,6 +5491,58 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         }
     }
     
+    // 導覽功能函數（全域）
+    function showKnowledgeModal() {
+        console.log('showKnowledgeModal 被調用');
+        const modal = document.getElementById('knowledge-modal');
+        console.log('知識模態視窗元素:', modal);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            loadKnowledgeContent();
+            console.log('知識模態視窗已顯示');
+        } else {
+            console.error('找不到知識模態視窗元素');
+        }
+    }
+
+    function showAccountModal() {
+        console.log('showAccountModal 被調用');
+        const modal = document.getElementById('account-modal');
+        console.log('帳戶模態視窗元素:', modal);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            console.log('帳戶模態視窗已顯示');
+        } else {
+            console.error('找不到帳戶模態視窗元素');
+        }
+    }
+
+    function showSettingsModal() {
+        console.log('showSettingsModal 被調用');
+        showToast('設定功能開發中...', 'info');
+    }
+
+    function goToHomepage() {
+        console.log('goToHomepage 被調用');
+        window.location.hash = '#!home';
+        showPage('home');
+    }
+
+    function showHelpModal() {
+        console.log('showHelpModal 被調用');
+        const modal = document.getElementById('help-modal');
+        console.log('幫助模態視窗元素:', modal);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            console.log('幫助模態視窗已顯示');
+        } else {
+            console.error('找不到幫助模態視窗元素');
+        }
+    }
+
     // 設置付款頁面事件監聽器
     function setupPaymentPageEvents() {
         // 返回選擇方案按鈕
@@ -5643,15 +5660,7 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         const settingsModalClose = document.getElementById('settings-modal-close');
         const settingsLinks = document.querySelectorAll('a[href="#"]:has(span:contains("設定"))');
         
-        // 開啟帳戶視窗
-        function showAccountModal() {
-            if (accountModal) {
-                accountModal.classList.remove('hidden');
-                accountModal.classList.add('flex');
-                document.body.classList.add('modal-open');
-                loadAccountData();
-            }
-        }
+        // 開啟帳戶視窗（已移至上方全域定義）
         
         // 關閉帳戶視窗
         function hideAccountModal() {
@@ -5662,15 +5671,7 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             }
         }
         
-        // 開啟設定視窗
-        function showSettingsModal() {
-            if (settingsModal) {
-                settingsModal.classList.remove('hidden');
-                settingsModal.classList.add('flex');
-                document.body.classList.add('modal-open');
-                loadSettingsData();
-            }
-        }
+        // 開啟設定視窗（已移至上方全域定義）
         
         // 關閉設定視窗
         function hideSettingsModal() {
