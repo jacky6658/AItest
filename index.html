@@ -2439,41 +2439,36 @@
                             const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
                             
                             if (me && me.id){
+                                console.log('登入成功，用戶ID:', me.id);
+                                
+                                // 設置登入狀態
                                 localStorage.setItem('isLoggedIn','true');
                                 localStorage.setItem('user', JSON.stringify(me));
                                 
-                                // 使用統一的UI更新函數
-                                updateUIForLoggedInUser(me);
+                                // 立即更新登入按鈕
+                                const loginBtn = document.getElementById('login-btn');
+                                const creditsWrap = document.getElementById('nav-credits-wrap');
                                 
-                                // 強制刷新UI狀態
-                                setTimeout(() => {
-                                    // 直接更新UI，不依賴 refreshUserUI 函數
-                                    const loginBtn = document.getElementById('login-btn');
-                                    const creditsWrap = document.getElementById('nav-credits-wrap');
-                                    
-                                    if (loginBtn) {
-                                        loginBtn.textContent = me.name || me.email || '用戶';
-                                        loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
-                                        loginBtn.classList.remove('bg-gray-100', 'text-gray-700');
-                                        console.log('登入按鈕已更新');
-                                    }
-                                    
-                                    if (creditsWrap) {
-                                        creditsWrap.classList.remove('hidden');
-                                        console.log('點數區塊已顯示');
-                                    }
-                                    
-                                    // 更新抽屜內容
-                                    const accName = document.getElementById('acc-name');
-                                    const accEmail = document.getElementById('acc-email');
-                                    const accAvatar = document.getElementById('acc-avatar');
-                                    
-                                    if (accName) accName.textContent = me.name || me.email || '用戶';
-                                    if (accEmail) accEmail.textContent = me.email || 'user@gmail.com';
-                                    if (accAvatar) accAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
-                                    
-                                    console.log('UI強制刷新完成');
-                                }, 100);
+                                if (loginBtn) {
+                                    loginBtn.textContent = me.name || me.email || '用戶';
+                                    loginBtn.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                                    loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
+                                    console.log('登入按鈕已更新為:', loginBtn.textContent);
+                                }
+                                
+                                if (creditsWrap) {
+                                    creditsWrap.classList.remove('hidden');
+                                    console.log('點數區塊已顯示');
+                                }
+                                
+                                // 更新抽屜內容
+                                const accName = document.getElementById('acc-name');
+                                const accEmail = document.getElementById('acc-email');
+                                const accAvatar = document.getElementById('acc-avatar');
+                                
+                                if (accName) accName.textContent = me.name || me.email || '用戶';
+                                if (accEmail) accEmail.textContent = me.email || 'user@gmail.com';
+                                if (accAvatar) accAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
                                 
                                 // 載入完整的帳戶數據
                                 loadAccountData().catch(error => {
@@ -2483,7 +2478,9 @@
                                 });
                                 
                                 showToast('Google登入成功！', 'success');
+                                console.log('登入跳轉完成');
                             } else {
+                                console.log('登入失敗，me:', me);
                                 showToast('Google登入失敗，請重試', 'error');
                             }
                         } catch(error) {
@@ -3193,41 +3190,35 @@
                                 console.log('檢查登入狀態，me:', me);
                                 if (me && me.id){
                                     console.log('登入成功，用戶ID:', me.id);
+                                    
+                                    // 設置登入狀態
                                     localStorage.setItem('isLoggedIn','true');
                                     localStorage.setItem('user', JSON.stringify(me));
                                     
-                                    // 立即更新UI
-                                    updateUIForLoggedInUser(me);
+                                    // 立即更新登入按鈕
+                                    const loginBtn = document.getElementById('login-btn');
+                                    const creditsWrap = document.getElementById('nav-credits-wrap');
                                     
-                                    // 強制刷新UI狀態
-                                    setTimeout(() => {
-                                        // 直接更新UI，不依賴 refreshUserUI 函數
-                                        const loginBtn = document.getElementById('login-btn');
-                                        const creditsWrap = document.getElementById('nav-credits-wrap');
-                                        
-                                        if (loginBtn) {
-                                            loginBtn.textContent = me.name || me.email || '用戶';
-                                            loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
-                                            loginBtn.classList.remove('bg-gray-100', 'text-gray-700');
-                                            console.log('登入按鈕已更新');
-                                        }
-                                        
-                                        if (creditsWrap) {
-                                            creditsWrap.classList.remove('hidden');
-                                            console.log('點數區塊已顯示');
-                                        }
-                                        
-                                        // 更新抽屜內容
-                                        const accName = document.getElementById('acc-name');
-                                        const accEmail = document.getElementById('acc-email');
-                                        const accAvatar = document.getElementById('acc-avatar');
-                                        
-                                        if (accName) accName.textContent = me.name || me.email || '用戶';
-                                        if (accEmail) accEmail.textContent = me.email || 'user@gmail.com';
-                                        if (accAvatar) accAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
-                                        
-                                        console.log('UI強制刷新完成');
-                                    }, 100);
+                                    if (loginBtn) {
+                                        loginBtn.textContent = me.name || me.email || '用戶';
+                                        loginBtn.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                                        loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
+                                        console.log('登入按鈕已更新為:', loginBtn.textContent);
+                                    }
+                                    
+                                    if (creditsWrap) {
+                                        creditsWrap.classList.remove('hidden');
+                                        console.log('點數區塊已顯示');
+                                    }
+                                    
+                                    // 更新抽屜內容
+                                    const accName = document.getElementById('acc-name');
+                                    const accEmail = document.getElementById('acc-email');
+                                    const accAvatar = document.getElementById('acc-avatar');
+                                    
+                                    if (accName) accName.textContent = me.name || me.email || '用戶';
+                                    if (accEmail) accEmail.textContent = me.email || 'user@gmail.com';
+                                    if (accAvatar) accAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
                                     
                                     // 載入完整的帳戶數據
                                     loadAccountData().catch(error => {
@@ -3237,6 +3228,7 @@
                                     });
                                     
                                     showToast('Google登入成功！', 'success');
+                                    console.log('登入跳轉完成');
                                 } else {
                                     console.log('登入失敗，me:', me);
                                     showToast('Google登入失敗，請重試', 'error');
