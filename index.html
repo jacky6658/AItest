@@ -2454,6 +2454,22 @@
                                     loginBtn.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
                                     loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
                                     console.log('登入按鈕已更新為:', loginBtn.textContent);
+                                    
+                                    // 強制更新登入按鈕的點擊行為
+                                    loginBtn.onclick = function() {
+                                        console.log('登入按鈕點擊，當前登入狀態:', localStorage.getItem('isLoggedIn'));
+                                        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                                        if (isLoggedIn) {
+                                            // 開啟帳號抽屜
+                                            const drawer = document.getElementById('account-drawer');
+                                            const overlay = document.getElementById('drawer-overlay');
+                                            if (drawer && overlay) {
+                                                drawer.classList.remove('translate-x-full');
+                                                overlay.classList.remove('hidden');
+                                                console.log('抽屜已開啟');
+                                            }
+                                        }
+                                    };
                                 }
                                 
                                 if (creditsWrap) {
@@ -3204,6 +3220,22 @@
                                         loginBtn.classList.remove('bg-gray-100', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
                                         loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
                                         console.log('登入按鈕已更新為:', loginBtn.textContent);
+                                        
+                                        // 強制更新登入按鈕的點擊行為
+                                        loginBtn.onclick = function() {
+                                            console.log('登入按鈕點擊，當前登入狀態:', localStorage.getItem('isLoggedIn'));
+                                            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                                            if (isLoggedIn) {
+                                                // 開啟帳號抽屜
+                                                const drawer = document.getElementById('account-drawer');
+                                                const overlay = document.getElementById('drawer-overlay');
+                                                if (drawer && overlay) {
+                                                    drawer.classList.remove('translate-x-full');
+                                                    overlay.classList.remove('hidden');
+                                                    console.log('抽屜已開啟');
+                                                }
+                                            }
+                                        };
                                     }
                                     
                                     if (creditsWrap) {
