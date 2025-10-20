@@ -516,6 +516,22 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- 邀請朋友區塊 -->
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-4 space-y-3">
+                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    </svg>
+                    邀請朋友
+                </h4>
+                <div class="space-y-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400">邀請朋友註冊，雙方各得 500 點數</p>
+                    <button id="invite-friend-btn" class="w-full px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs rounded-lg transition-colors">
+                        複製邀請連結
+                    </button>
+                </div>
+            </div>
             <nav class="pt-2 space-y-1 text-gray-700 dark:text-gray-300">
                 <a href="#" onclick="showKnowledgeModal()" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100 cursor-pointer">
                     <span>知識</span>
@@ -3116,12 +3132,18 @@
                 btnEmailSignup.disabled = true;
                 
                 try{
-                    console.log('開始註冊，發送數據:', { phone, email, username, password: '***' });
+                    // 獲取推薦碼
+                    const referralCode = localStorage.getItem('pending_referral_code') || '';
+                    if (referralCode) {
+                        console.log('使用推薦碼註冊:', referralCode);
+                    }
+                    
+                    console.log('開始註冊，發送數據:', { phone, email, username, password: '***', referral_code: referralCode });
                     const res = await fetch(`${API_BASE}/auth/signup`, { 
                         method:'POST', 
                         credentials:'include', 
                         headers:{'Content-Type':'application/json'}, 
-                        body: JSON.stringify({ phone, email, username, password }) 
+                        body: JSON.stringify({ phone, email, username, password, referral_code: referralCode }) 
                     });
                     
                     console.log('註冊響應狀態:', res.status);
@@ -6291,8 +6313,63 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         window.showQuickChargeModal = showQuickChargeModal;
     }
 
-    // 設置知識和幫助視窗事件
-    function setupKnowledgeAndHelpModals() {
+        // 邀請朋友功能
+        function setupInviteFriend() {
+            const inviteBtn = document.getElementById('invite-friend-btn');
+            if (inviteBtn) {
+                inviteBtn.addEventListener('click', async function() {
+                    try {
+                        // 獲取用戶的推薦碼
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        const referralCode = user.referral_code;
+                        
+                        if (!referralCode) {
+                            showToast('無法獲取推薦碼，請重新登入', 'error');
+                            return;
+                        }
+                        
+                        // 生成邀請連結
+                        const inviteUrl = `${window.location.origin}${window.location.pathname}?ref=${referralCode}`;
+                        
+                        // 複製到剪貼板
+                        await navigator.clipboard.writeText(inviteUrl);
+                        showToast('邀請連結已複製到剪貼板！', 'success');
+                        
+                        // 更新按鈕文字
+                        const originalText = inviteBtn.textContent;
+                        inviteBtn.textContent = '已複製！';
+                        inviteBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                        inviteBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                        
+                        // 2秒後恢復原狀
+                        setTimeout(() => {
+                            inviteBtn.textContent = originalText;
+                            inviteBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                            inviteBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error('複製邀請連結失敗:', error);
+                        showToast('複製失敗，請手動複製', 'error');
+                    }
+                });
+            }
+        }
+
+        // 檢查邀請碼並處理
+        function checkReferralCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            
+            if (refCode) {
+                // 儲存推薦碼到 localStorage，註冊時使用
+                localStorage.setItem('pending_referral_code', refCode);
+                showToast(`檢測到邀請碼: ${refCode}，註冊後雙方將各獲得 500 點數！`, 'info');
+            }
+        }
+
+        // 設置知識和幫助視窗事件
+        function setupKnowledgeAndHelpModals() {
         // 知識視窗關閉按鈕
         const knowledgeCloseBtn = document.getElementById('knowledge-modal-close');
         if (knowledgeCloseBtn) {
@@ -6374,6 +6451,10 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
                 
                 // 知識和幫助視窗事件
                 setupKnowledgeAndHelpModals();
+                
+                // 邀請朋友功能
+                setupInviteFriend();
+                checkReferralCode();
     </script>
 </body>
 </html>
