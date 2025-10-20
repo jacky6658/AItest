@@ -1940,6 +1940,32 @@
         let currentPage = 'home';
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
+        // 導覽功能函數
+        function showKnowledgeModal() {
+            showToast('知識庫功能開發中...', 'info');
+        }
+
+        function showAccountModal() {
+            const modal = document.getElementById('account-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function showSettingsModal() {
+            showToast('設定功能開發中...', 'info');
+        }
+
+        function goToHomepage() {
+            window.location.hash = '#!home';
+            showPage('home');
+        }
+
+        function showHelpModal() {
+            showToast('幫助功能開發中...', 'info');
+        }
+
         // 初始化
         document.addEventListener('DOMContentLoaded', async function() {
             try {
@@ -1994,6 +2020,7 @@
                 } else {
                     console.error('initAuth 函數不存在');
                 }
+                
                 
                 console.log('基本初始化完成');
             } catch (error) {
@@ -3129,38 +3156,44 @@
                                 
                                 // 即時更新 UI - 逐字顯示
                                 if (!currentMessageElement) {
-                                // 創建新的消息元素
-                                const item = document.createElement('div');
-                                item.className = 'text-left mb-3';
-                                const bubble = document.createElement('div');
-                                bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
-                                bubble.innerHTML = '<div class="whitespace-pre-line text-sm leading-relaxed"></div>';
-                                item.appendChild(bubble);
+                                    // 創建新的消息元素
+                                    const item = document.createElement('div');
+                                    item.className = 'text-left mb-3';
+                                    const bubble = document.createElement('div');
+                                    bubble.className = 'inline-block px-4 py-3 rounded-lg max-w-[85%] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm';
+                                    bubble.innerHTML = '<div class="whitespace-pre-line text-sm leading-relaxed"></div>';
+                                    item.appendChild(bubble);
+                                    
+                                    // 找到對應的聊天框並添加消息
+                                    const chatBoxes = ['chat-positioning', 'chat-ideation', 'chat-script'];
+                                    for (const boxId of chatBoxes) {
+                                        const box = document.getElementById(boxId);
+                                        if (box && box.querySelector('.loading-spinner')) {
+                                            // 移除 loading 元素
+                                            const loading = box.querySelector('.loading-spinner').closest('.text-left');
+                                            if (loading) loading.remove();
+                                            box.appendChild(item);
+                                            break;
+                                        }
+                                    }
+                                    
+                                    currentMessageElement = bubble.querySelector('div');
+                                }
                                 
-                                // 找到對應的聊天框並添加消息
-                                const chatBoxes = ['chat-positioning', 'chat-ideation', 'chat-script'];
-                                for (const boxId of chatBoxes) {
-                                    const box = document.getElementById(boxId);
-                                    if (box && box.querySelector('.loading-spinner')) {
-                                        // 移除 loading 元素
-                                        const loading = box.querySelector('.loading-spinner').closest('.text-left');
-                                        if (loading) loading.remove();
-                                        box.appendChild(item);
-                                        break;
+                                // 逐字更新內容
+                                if (currentMessageElement) {
+                                    currentMessageElement.textContent = fullResponse;
+                                    // 滾動到底部
+                                    const chatBox = currentMessageElement.closest('.overflow-y-auto');
+                                    if (chatBox) {
+                                        chatBox.scrollTop = chatBox.scrollHeight;
                                     }
                                 }
-                                
-                                currentMessageElement = bubble.querySelector('div');
                             }
-                            
-                            // 逐字更新內容
-                            if (currentMessageElement) {
-                                currentMessageElement.textContent = fullResponse;
-                                // 滾動到底部
-                                const chatBox = currentMessageElement.closest('.overflow-y-auto');
-                                if (chatBox) {
-                                    chatBox.scrollTop = chatBox.scrollHeight;
-                                }
+                        } catch (parseError) {
+                            console.error('解析串流數據失敗:', parseError);
+                            if (event.data && !event.data.startsWith('錯誤：')) {
+                                fullResponse += event.data;
                             }
                         }
                     };
@@ -3221,15 +3254,7 @@
                             }
                             return;
                         }
-                        
-                        } catch (parseError) {
-                            console.error('解析串流數據失敗:', parseError);
-                            if (event.data && !event.data.startsWith('錯誤：')) {
-                                fullResponse += event.data;
-                            }
-                        }
-                            // 可以選擇即時更新 UI，這裡先累積完整回應
-                        }
+                        // 可以選擇即時更新 UI，這裡先累積完整回應
                     };
                     
                     currentWebSocket.onerror = function(event) {
@@ -3653,7 +3678,6 @@
                 ibox.appendChild(wrap); ibox.dataset.intro = '1';
             }
         }
-
 
         // Toast 通知系統
         function showToast(message, type = 'info') {
@@ -5244,49 +5268,6 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         }
     }
     
-    // 初始化訂閱方案
-    initSubscriptionPlans();
-    
-    // 確保頁面載入後執行
-    // 導覽功能函數
-    function showKnowledgeModal() {
-        showToast('知識庫功能開發中...', 'info');
-    }
-
-    function showAccountModal() {
-        const modal = document.getElementById('account-modal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-    }
-
-    function showSettingsModal() {
-        showToast('設定功能開發中...', 'info');
-    }
-
-    function goToHomepage() {
-        window.location.hash = '#!home';
-        showPage('home');
-    }
-
-    function showHelpModal() {
-        showToast('幫助功能開發中...', 'info');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initSubscriptionPlans();
-        
-        // 付款頁面事件監聽器
-        setupPaymentPageEvents();
-        
-        // 手機版手勢支援
-        setupMobileGestures();
-        
-        // 帳戶和設定視窗事件
-        setupAccountAndSettingsModals();
-    });
-    
     // 設置付款頁面事件監聽器
     function setupPaymentPageEvents() {
         // 返回選擇方案按鈕
@@ -5812,6 +5793,18 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         // 將函數設為全域，供其他部分調用
         window.showQuickChargeModal = showQuickChargeModal;
     }
+    
+    // 初始化訂閱方案
+    initSubscriptionPlans();
+    
+    // 付款頁面事件監聽器
+    setupPaymentPageEvents();
+    
+    // 手機版手勢支援
+    setupMobileGestures();
+    
+    // 帳戶和設定視窗事件
+    setupAccountAndSettingsModals();
     </script>
 </body>
 </html>
