@@ -2780,6 +2780,10 @@
         function updateUIForLoggedInUser(user) {
             console.log('更新UI為登入狀態，用戶:', user);
             
+            // 設置登入狀態
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('user', JSON.stringify(user));
+            
             // 更新登入按鈕為用戶按鈕
             const loginBtn = document.getElementById('login-btn');
             const creditsWrap = document.getElementById('nav-credits-wrap');
@@ -2804,7 +2808,6 @@
                 
                 console.log('登入按鈕已更新為用戶按鈕:', displayName);
             }
-            
             
             if (creditsWrap) {
                 creditsWrap.classList.remove('hidden');
