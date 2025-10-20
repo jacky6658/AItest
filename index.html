@@ -2455,21 +2455,22 @@
                                     loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
                                     console.log('登入按鈕已更新為:', loginBtn.textContent);
                                     
-                                    // 強制更新登入按鈕的點擊行為
-                                    loginBtn.onclick = function() {
-                                        console.log('登入按鈕點擊，當前登入狀態:', localStorage.getItem('isLoggedIn'));
-                                        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                                        if (isLoggedIn) {
-                                            // 開啟帳號抽屜
-                                            const drawer = document.getElementById('account-drawer');
-                                            const overlay = document.getElementById('drawer-overlay');
-                                            if (drawer && overlay) {
-                                                drawer.classList.remove('translate-x-full');
-                                                overlay.classList.remove('hidden');
-                                                console.log('抽屜已開啟');
-                                            }
-                                        }
-                                    };
+                                    // 登入按鈕已更新，點擊行為由 handleLoginButtonClick 處理
+                                    
+                                    // 測試登入狀態
+                                    setTimeout(() => {
+                                        console.log('測試登入狀態:', localStorage.getItem('isLoggedIn'));
+                                        console.log('測試用戶數據:', localStorage.getItem('user'));
+                                        
+                                        // 模擬點擊測試
+                                        const testClick = () => {
+                                            console.log('模擬點擊測試開始');
+                                            handleLoginButtonClick();
+                                        };
+                                        
+                                        // 3秒後自動測試點擊
+                                        setTimeout(testClick, 3000);
+                                    }, 1000);
                                 }
                                 
                                 if (creditsWrap) {
@@ -2995,15 +2996,10 @@
                 }
             }
 
-            loginBtn.addEventListener('click', () => {
+            // 登入按鈕點擊事件 - 動態檢查登入狀態
+            function handleLoginButtonClick() {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 console.log('登入按鈕點擊，登入狀態:', isLoggedIn);
-                console.log('抽屜元素狀態:', {
-                    drawer: drawer,
-                    overlay: overlay,
-                    drawerClassList: drawer ? drawer.classList.toString() : 'null',
-                    overlayClassList: overlay ? overlay.classList.toString() : 'null'
-                });
                 
                 if (!isLoggedIn) {
                     // 顯示 Email 全畫面頁（使用者可改點右上角 Google 登入）
@@ -3014,6 +3010,8 @@
                 } else {
                     // 開啟帳號抽屜
                     console.log('嘗試開啟抽屜...');
+                    const drawer = document.getElementById('account-drawer');
+                    const overlay = document.getElementById('drawer-overlay');
                     if (drawer && overlay) {
                         drawer.classList.remove('translate-x-full');
                         overlay.classList.remove('hidden');
@@ -3022,7 +3020,9 @@
                         console.error('抽屜元素未找到');
                     }
                 }
-            });
+            }
+            
+            loginBtn.addEventListener('click', handleLoginButtonClick);
 
             // Email 登入 Modal 控制（舊，暫保留）
             function openEmailModal(){ if (emailModal) emailModal.classList.remove('hidden'); emailInput?.focus(); }
@@ -3221,21 +3221,7 @@
                                         loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
                                         console.log('登入按鈕已更新為:', loginBtn.textContent);
                                         
-                                        // 強制更新登入按鈕的點擊行為
-                                        loginBtn.onclick = function() {
-                                            console.log('登入按鈕點擊，當前登入狀態:', localStorage.getItem('isLoggedIn'));
-                                            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                                            if (isLoggedIn) {
-                                                // 開啟帳號抽屜
-                                                const drawer = document.getElementById('account-drawer');
-                                                const overlay = document.getElementById('drawer-overlay');
-                                                if (drawer && overlay) {
-                                                    drawer.classList.remove('translate-x-full');
-                                                    overlay.classList.remove('hidden');
-                                                    console.log('抽屜已開啟');
-                                                }
-                                            }
-                                        };
+                                        // 登入按鈕已更新，點擊行為由 handleLoginButtonClick 處理
                                     }
                                     
                                     if (creditsWrap) {
