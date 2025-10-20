@@ -3086,12 +3086,43 @@
                 const isIOSSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS|mercury/.test(navigator.userAgent);
                 
                 if (isIOSSafari) {
-                    // iOS Safari 直接跳轉，不使用彈窗
+                    // iOS Safari 使用彈窗，但設置特殊參數
                     try{ 
                         await fetch(`${API_BASE}/logout`, {method:'POST', credentials:'include'}); 
                     }catch(_){ }
-                    const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}`;
-                    window.location.href = url;
+                    const url = `${API_BASE}/auth/google/start?next=${encodeURIComponent(nextUrl||location.href)}&popup=true`;
+                    const popup = window.open(url, 'google_auth', 'width=520,height=640,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes');
+                    
+                    if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+                        // 彈窗被阻止，回退到直接跳轉
+                        showToast('彈窗被阻止，將直接跳轉到 Google 登入頁面', 'info');
+                        setTimeout(() => {
+                            window.location.href = url;
+                        }, 1000);
+                        return;
+                    }
+                    
+                    // 監聽彈窗關閉
+                    const timer = setInterval(async ()=>{
+                        try{
+                            if (popup.closed) {
+                                clearInterval(timer);
+                                // 檢查登入狀態
+                                const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                                if (me && me.id){
+                                    localStorage.setItem('isLoggedIn','true');
+                                    localStorage.setItem('user', JSON.stringify(me));
+                                    updateUIForLoggedInUser(me);
+                                    showToast('Google登入成功！', 'success');
+                                } else {
+                                    showToast('Google登入失敗，請重試', 'error');
+                                }
+                                return;
+                            }
+                        }catch(e){
+                            console.error('檢查登入狀態失敗:', e);
+                        }
+                    }, 1000);
                     return;
                 }
                 
