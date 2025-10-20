@@ -2440,6 +2440,13 @@
                                 // 使用統一的UI更新函數
                                 updateUIForLoggedInUser(me);
                                 
+                                // 載入完整的帳戶數據
+                                loadAccountData().catch(error => {
+                                    console.error('載入帳戶數據失敗:', error);
+                                    // 如果API調用失敗，至少更新基本的抽屜數據
+                                    updateDrawerData(me, { positioning: 0, topics: 0, script: 0 });
+                                });
+                                
                                 showToast('Google登入成功！', 'success');
                             } else {
                                 showToast('Google登入失敗，請重試', 'error');
@@ -2993,6 +3000,13 @@
                         // 更新UI為登入狀態
                         updateUIForLoggedInUser(me);
                         
+                        // 載入完整的帳戶數據
+                        loadAccountData().catch(error => {
+                            console.error('載入帳戶數據失敗:', error);
+                            // 如果API調用失敗，至少更新基本的抽屜數據
+                            updateDrawerData(me, { positioning: 0, topics: 0, script: 0 });
+                        });
+                        
                         closeEmailPage(); 
                         showToast('登入成功', 'success'); 
                         
@@ -3061,6 +3075,13 @@
                         // 更新UI為登入狀態
                         updateUIForLoggedInUser(user);
                         
+                        // 載入完整的帳戶數據
+                        loadAccountData().catch(error => {
+                            console.error('載入帳戶數據失敗:', error);
+                            // 如果API調用失敗，至少更新基本的抽屜數據
+                            updateDrawerData(user, { positioning: 0, topics: 0, script: 0 });
+                        });
+                        
                         // 關閉註冊頁面
                         closeEmailPage();
                         
@@ -3113,6 +3134,14 @@
                                     localStorage.setItem('isLoggedIn','true');
                                     localStorage.setItem('user', JSON.stringify(me));
                                     updateUIForLoggedInUser(me);
+                                    
+                                    // 載入完整的帳戶數據
+                                    loadAccountData().catch(error => {
+                                        console.error('載入帳戶數據失敗:', error);
+                                        // 如果API調用失敗，至少更新基本的抽屜數據
+                                        updateDrawerData(me, { positioning: 0, topics: 0, script: 0 });
+                                    });
+                                    
                                     showToast('Google登入成功！', 'success');
                                 } else {
                                     showToast('Google登入失敗，請重試', 'error');
