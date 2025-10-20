@@ -2915,6 +2915,33 @@
             console.log('UI更新完成');
         }
 
+        // 登入按鈕點擊事件 - 動態檢查登入狀態
+        function handleLoginButtonClick() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            console.log('登入按鈕點擊，登入狀態:', isLoggedIn);
+            
+            if (!isLoggedIn) {
+                // 顯示 Email 全畫面頁（使用者可改點右上角 Google 登入）
+                const emailPage = document.getElementById('email-auth-page');
+                if (emailPage) {
+                    emailPage.classList.remove('hidden');
+                    document.documentElement.classList.add('modal-open');
+                }
+            } else {
+                // 開啟帳號抽屜
+                console.log('嘗試開啟抽屜...');
+                const drawer = document.getElementById('account-drawer');
+                const overlay = document.getElementById('drawer-overlay');
+                if (drawer && overlay) {
+                    drawer.classList.remove('translate-x-full');
+                    overlay.classList.remove('hidden');
+                    console.log('抽屜已開啟');
+                } else {
+                    console.error('抽屜元素未找到');
+                }
+            }
+        }
+
         // 簡易登入系統（參考 login.html）
         function initAuth() {
             console.log('initAuth 函數開始執行');
@@ -2996,32 +3023,6 @@
                 }
             }
 
-            // 登入按鈕點擊事件 - 動態檢查登入狀態
-            function handleLoginButtonClick() {
-                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                console.log('登入按鈕點擊，登入狀態:', isLoggedIn);
-                
-                if (!isLoggedIn) {
-                    // 顯示 Email 全畫面頁（使用者可改點右上角 Google 登入）
-                    if (emailPage) {
-                        emailPage.classList.remove('hidden');
-                        document.documentElement.classList.add('modal-open');
-                    }
-                } else {
-                    // 開啟帳號抽屜
-                    console.log('嘗試開啟抽屜...');
-                    const drawer = document.getElementById('account-drawer');
-                    const overlay = document.getElementById('drawer-overlay');
-                    if (drawer && overlay) {
-                        drawer.classList.remove('translate-x-full');
-                        overlay.classList.remove('hidden');
-                        console.log('抽屜已開啟');
-                    } else {
-                        console.error('抽屜元素未找到');
-                    }
-                }
-            }
-            
             loginBtn.addEventListener('click', handleLoginButtonClick);
 
             // Email 登入 Modal 控制（舊，暫保留）
