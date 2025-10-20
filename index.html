@@ -58,6 +58,188 @@
     </style>
     
     <script>
+        // 導覽功能函數（全域）
+        function showKnowledgeModal() {
+            console.log('showKnowledgeModal 被調用');
+            const modal = document.getElementById('knowledge-modal');
+            console.log('知識模態視窗元素:', modal);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                loadKnowledgeContent();
+                console.log('知識模態視窗已顯示');
+            } else {
+                console.error('找不到知識模態視窗元素');
+            }
+        }
+
+        function showAccountModal() {
+            console.log('showAccountModal 被調用');
+            const modal = document.getElementById('account-modal');
+            console.log('帳戶模態視窗元素:', modal);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                loadAccountData();
+                console.log('帳戶模態視窗已顯示');
+            } else {
+                console.error('找不到帳戶模態視窗元素');
+            }
+        }
+
+        function showSettingsModal() {
+            console.log('showSettingsModal 被調用');
+            showToast('設定功能開發中...', 'info');
+        }
+
+        function goToHomepage() {
+            console.log('goToHomepage 被調用');
+            window.location.hash = '#!home';
+            showPage('home');
+        }
+
+        function showHelpModal() {
+            console.log('showHelpModal 被調用');
+            const modal = document.getElementById('help-modal');
+            console.log('幫助模態視窗元素:', modal);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                console.log('幫助模態視窗已顯示');
+            } else {
+                console.error('找不到幫助模態視窗元素');
+            }
+        }
+
+        // 載入帳戶數據
+        async function loadAccountData() {
+            try {
+                const response = await fetch(`${API_BASE}/api/user/profile`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateAccountUI(data);
+                } else {
+                    console.error('載入帳戶數據失敗:', response.status);
+                }
+            } catch (error) {
+                console.error('載入帳戶數據錯誤:', error);
+            }
+        }
+
+        // 更新帳戶UI
+        function updateAccountUI(data) {
+            const { user, usage_stats, credit_history } = data;
+            
+            // 更新用戶信息
+            const userName = document.getElementById('account-user-name');
+            const userEmail = document.getElementById('account-user-email');
+            const userCredits = document.getElementById('account-user-credits');
+            
+            if (userName) userName.textContent = user.name || '用戶';
+            if (userEmail) userEmail.textContent = user.email;
+            if (userCredits) userCredits.textContent = user.credits || 0;
+            
+            // 更新使用統計
+            const positioningCount = document.getElementById('account-positioning-count');
+            const topicsCount = document.getElementById('account-topics-count');
+            const scriptCount = document.getElementById('account-script-count');
+            
+            if (positioningCount) positioningCount.textContent = `${usage_stats.positioning} 次`;
+            if (topicsCount) topicsCount.textContent = `${usage_stats.topics} 次`;
+            if (scriptCount) scriptCount.textContent = `${usage_stats.script} 次`;
+        }
+
+        // 載入知識內容
+        async function loadKnowledgeContent() {
+            const currentAgent = localStorage.getItem('currentKnowledgeAgent') || 'positioning';
+            await switchKnowledgeTab(currentAgent);
+        }
+
+        // 切換知識標籤頁
+        async function switchKnowledgeTab(agent) {
+            // 更新標籤頁樣式
+            document.querySelectorAll('[id^="knowledge-tab-"]').forEach(tab => {
+                tab.classList.remove('bg-white', 'dark:bg-gray-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
+                tab.classList.add('text-gray-600', 'dark:text-gray-400');
+            });
+            
+            const activeTab = document.getElementById(`knowledge-tab-${agent}`);
+            if (activeTab) {
+                activeTab.classList.remove('text-gray-600', 'dark:text-gray-400');
+                activeTab.classList.add('bg-white', 'dark:bg-gray-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
+            }
+
+            // 載入對應的內容
+            await loadKnowledgeAgentContent(agent);
+            localStorage.setItem('currentKnowledgeAgent', agent);
+        }
+
+        // 載入特定AI代理的知識內容
+        async function loadKnowledgeAgentContent(agent) {
+            try {
+                const response = await fetch(`${API_BASE}/api/user/knowledge?agent=${agent}`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateKnowledgeUI(data, agent);
+                } else {
+                    console.error('載入知識內容失敗:', response.status);
+                }
+            } catch (error) {
+                console.error('載入知識內容錯誤:', error);
+            }
+        }
+
+        // 更新知識UI
+        function updateKnowledgeUI(data, agent) {
+            const { oneclick_results, chat_history } = data;
+            const oneclickContent = document.getElementById('knowledge-oneclick-content');
+            const chatContent = document.getElementById('knowledge-chat-content');
+
+            // 更新一鍵生成結果
+            if (oneclick_results && oneclick_results.length > 0) {
+                oneclickContent.innerHTML = oneclick_results.map(result => `
+                    <div class="bg-white dark:bg-gray-600 rounded-lg p-4 border border-gray-200 dark:border-gray-500">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">${new Date(result.created_at).toLocaleString()}</span>
+                            <button onclick="copyToClipboard('${result.content.replace(/'/g, "\\'")}')" class="text-blue-600 hover:text-blue-800 text-sm">複製</button>
+                        </div>
+                        <div class="text-gray-900 dark:text-white whitespace-pre-wrap">${result.content}</div>
+                    </div>
+                `).join('');
+            } else {
+                oneclickContent.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-center py-8">暫無一鍵生成記錄</div>';
+            }
+
+            // 更新對話紀錄
+            if (chat_history && chat_history.length > 0) {
+                chatContent.innerHTML = chat_history.map(msg => `
+                    <div class="flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4">
+                        <div class="max-w-[80%] ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white'} rounded-lg px-4 py-2">
+                            <div class="text-sm whitespace-pre-wrap">${msg.content}</div>
+                            <div class="text-xs ${msg.role === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'} mt-1">${new Date(msg.created_at).toLocaleString()}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                chatContent.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-center py-8">暫無對話記錄</div>';
+            }
+        }
+
+        // 複製到剪貼板
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已複製到剪貼板', 'success');
+            }).catch(() => {
+                showToast('複製失敗', 'error');
+            });
+        }
+
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -2099,13 +2281,13 @@
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
     // 載入知識內容
-    function loadKnowledgeContent() {
+    async function loadKnowledgeContent() {
         const currentAgent = localStorage.getItem('currentKnowledgeAgent') || 'positioning';
-        switchKnowledgeTab(currentAgent);
+        await switchKnowledgeTab(currentAgent);
     }
 
     // 切換知識標籤頁
-    function switchKnowledgeTab(agent) {
+    async function switchKnowledgeTab(agent) {
         // 更新標籤頁樣式
         document.querySelectorAll('[id^="knowledge-tab-"]').forEach(tab => {
             tab.classList.remove('bg-white', 'dark:bg-gray-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
@@ -2119,7 +2301,7 @@
         }
 
         // 載入對應的內容
-        loadKnowledgeAgentContent(agent);
+        await loadKnowledgeAgentContent(agent);
         localStorage.setItem('currentKnowledgeAgent', agent);
     }
 
@@ -5491,57 +5673,6 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         }
     }
     
-    // 導覽功能函數（全域）
-    function showKnowledgeModal() {
-        console.log('showKnowledgeModal 被調用');
-        const modal = document.getElementById('knowledge-modal');
-        console.log('知識模態視窗元素:', modal);
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            loadKnowledgeContent();
-            console.log('知識模態視窗已顯示');
-        } else {
-            console.error('找不到知識模態視窗元素');
-        }
-    }
-
-    function showAccountModal() {
-        console.log('showAccountModal 被調用');
-        const modal = document.getElementById('account-modal');
-        console.log('帳戶模態視窗元素:', modal);
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            console.log('帳戶模態視窗已顯示');
-        } else {
-            console.error('找不到帳戶模態視窗元素');
-        }
-    }
-
-    function showSettingsModal() {
-        console.log('showSettingsModal 被調用');
-        showToast('設定功能開發中...', 'info');
-    }
-
-    function goToHomepage() {
-        console.log('goToHomepage 被調用');
-        window.location.hash = '#!home';
-        showPage('home');
-    }
-
-    function showHelpModal() {
-        console.log('showHelpModal 被調用');
-        const modal = document.getElementById('help-modal');
-        console.log('幫助模態視窗元素:', modal);
-        if (modal) {
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            console.log('幫助模態視窗已顯示');
-        } else {
-            console.error('找不到幫助模態視窗元素');
-        }
-    }
 
     // 設置付款頁面事件監聽器
     function setupPaymentPageEvents() {
