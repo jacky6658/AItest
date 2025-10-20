@@ -2784,6 +2784,9 @@
             const loginBtn = document.getElementById('login-btn');
             const creditsWrap = document.getElementById('nav-credits-wrap');
             
+            console.log('登入按鈕元素:', loginBtn);
+            console.log('點數包裝元素:', creditsWrap);
+            
             if (loginBtn) {
                 // 顯示登入按鈕但改為用戶名稱
                 loginBtn.classList.remove('hidden');
@@ -3130,9 +3133,13 @@
                                 clearInterval(timer);
                                 // 檢查登入狀態
                                 const me = await fetch(`${API_BASE}/me`, { credentials:'include' }).then(r=> r.ok ? r.json() : null);
+                                console.log('檢查登入狀態，me:', me);
                                 if (me && me.id){
+                                    console.log('登入成功，用戶ID:', me.id);
                                     localStorage.setItem('isLoggedIn','true');
                                     localStorage.setItem('user', JSON.stringify(me));
+                                    
+                                    // 立即更新UI
                                     updateUIForLoggedInUser(me);
                                     
                                     // 載入完整的帳戶數據
@@ -3144,6 +3151,7 @@
                                     
                                     showToast('Google登入成功！', 'success');
                                 } else {
+                                    console.log('登入失敗，me:', me);
                                     showToast('Google登入失敗，請重試', 'error');
                                 }
                                 return;
