@@ -2874,6 +2874,13 @@
             const overlay = document.getElementById('drawer-overlay');
             const drawerClose = document.getElementById('drawer-close');
             const drawerLogout = document.getElementById('drawer-logout-btn');
+            
+            console.log('抽屜元素檢查:', {
+                drawer: drawer,
+                overlay: overlay,
+                drawerClose: drawerClose,
+                drawerLogout: drawerLogout
+            });
             const emailOpen = document.getElementById('email-login-open');
             const emailModal = document.getElementById('email-modal');
             const emailClose = document.getElementById('email-modal-close');
@@ -2940,6 +2947,12 @@
             loginBtn.addEventListener('click', () => {
                 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 console.log('登入按鈕點擊，登入狀態:', isLoggedIn);
+                console.log('抽屜元素狀態:', {
+                    drawer: drawer,
+                    overlay: overlay,
+                    drawerClassList: drawer ? drawer.classList.toString() : 'null',
+                    overlayClassList: overlay ? overlay.classList.toString() : 'null'
+                });
                 
                 if (!isLoggedIn) {
                     // 顯示 Email 全畫面頁（使用者可改點右上角 Google 登入）
@@ -2949,8 +2962,14 @@
                     }
                 } else {
                     // 開啟帳號抽屜
-                    drawer.classList.remove('translate-x-full');
-                    overlay.classList.remove('hidden');
+                    console.log('嘗試開啟抽屜...');
+                    if (drawer && overlay) {
+                        drawer.classList.remove('translate-x-full');
+                        overlay.classList.remove('hidden');
+                        console.log('抽屜已開啟');
+                    } else {
+                        console.error('抽屜元素未找到');
+                    }
                 }
             });
 
