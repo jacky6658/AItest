@@ -6,6 +6,7 @@
     <title>AIJob短影音顧問智能</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+    <!-- 版本: 2024-10-20-15:30 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -2032,6 +2033,10 @@
         const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://aijobvideobackend.zeabur.app';
         // 會員 API base（可與主 API 相同）
         const ACCOUNT_API = API_BASE;
+        
+        // 版本檢查和強制刷新
+        console.log('前端版本: 2024-10-20-15:30');
+        console.log('當前時間:', new Date().toLocaleString());
         // 功能扣點設定（可依實際調整）
         const CREDIT_COSTS = { positioning: 5, topics: 3, script: 8 };
 
@@ -2439,6 +2444,36 @@
                                 
                                 // 使用統一的UI更新函數
                                 updateUIForLoggedInUser(me);
+                                
+                                // 強制刷新UI狀態
+                                setTimeout(() => {
+                                    // 直接更新UI，不依賴 refreshUserUI 函數
+                                    const loginBtn = document.getElementById('login-btn');
+                                    const creditsWrap = document.getElementById('nav-credits-wrap');
+                                    
+                                    if (loginBtn) {
+                                        loginBtn.textContent = me.name || me.email || '用戶';
+                                        loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
+                                        loginBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                                        console.log('登入按鈕已更新');
+                                    }
+                                    
+                                    if (creditsWrap) {
+                                        creditsWrap.classList.remove('hidden');
+                                        console.log('點數區塊已顯示');
+                                    }
+                                    
+                                    // 更新抽屜內容
+                                    const accName = document.getElementById('acc-name');
+                                    const accEmail = document.getElementById('acc-email');
+                                    const accAvatar = document.getElementById('acc-avatar');
+                                    
+                                    if (accName) accName.textContent = me.name || me.email || '用戶';
+                                    if (accEmail) accEmail.textContent = me.email || 'user@gmail.com';
+                                    if (accAvatar) accAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
+                                    
+                                    console.log('UI強制刷新完成');
+                                }, 100);
                                 
                                 // 載入完整的帳戶數據
                                 loadAccountData().catch(error => {
@@ -3163,6 +3198,36 @@
                                     
                                     // 立即更新UI
                                     updateUIForLoggedInUser(me);
+                                    
+                                    // 強制刷新UI狀態
+                                    setTimeout(() => {
+                                        // 直接更新UI，不依賴 refreshUserUI 函數
+                                        const loginBtn = document.getElementById('login-btn');
+                                        const creditsWrap = document.getElementById('nav-credits-wrap');
+                                        
+                                        if (loginBtn) {
+                                            loginBtn.textContent = me.name || me.email || '用戶';
+                                            loginBtn.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-200');
+                                            loginBtn.classList.remove('bg-gray-100', 'text-gray-700');
+                                            console.log('登入按鈕已更新');
+                                        }
+                                        
+                                        if (creditsWrap) {
+                                            creditsWrap.classList.remove('hidden');
+                                            console.log('點數區塊已顯示');
+                                        }
+                                        
+                                        // 更新抽屜內容
+                                        const accName = document.getElementById('acc-name');
+                                        const accEmail = document.getElementById('acc-email');
+                                        const accAvatar = document.getElementById('acc-avatar');
+                                        
+                                        if (accName) accName.textContent = me.name || me.email || '用戶';
+                                        if (accEmail) accEmail.textContent = me.email || 'user@gmail.com';
+                                        if (accAvatar) accAvatar.textContent = (me.name || me.email || 'U').charAt(0).toUpperCase();
+                                        
+                                        console.log('UI強制刷新完成');
+                                    }, 100);
                                     
                                     // 載入完整的帳戶數據
                                     loadAccountData().catch(error => {
