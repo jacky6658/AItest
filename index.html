@@ -153,7 +153,7 @@
         function updateAccountUI(data) {
             const { user, usage_stats, credit_history } = data;
             
-            // 更新用戶信息
+            // 更新用戶信息（帳戶模態視窗）
             const userName = document.getElementById('account-user-name');
             const userEmail = document.getElementById('account-user-email');
             const userCredits = document.getElementById('account-user-credits');
@@ -162,7 +162,7 @@
             if (userEmail) userEmail.textContent = user.email;
             if (userCredits) userCredits.textContent = user.credits || 0;
             
-            // 更新使用統計
+            // 更新使用統計（帳戶模態視窗）
             const positioningCount = document.getElementById('account-positioning-count');
             const topicsCount = document.getElementById('account-topics-count');
             const scriptCount = document.getElementById('account-script-count');
@@ -170,6 +170,36 @@
             if (positioningCount) positioningCount.textContent = `${usage_stats.positioning} 次`;
             if (topicsCount) topicsCount.textContent = `${usage_stats.topics} 次`;
             if (scriptCount) scriptCount.textContent = `${usage_stats.script} 次`;
+            
+            // 更新右側抽屜的數據
+            updateDrawerData(user, usage_stats);
+        }
+        
+        // 更新右側抽屜數據
+        function updateDrawerData(user, usage_stats) {
+            // 更新用戶信息
+            const accName = document.getElementById('acc-name');
+            const accEmail = document.getElementById('acc-email');
+            const accAvatar = document.getElementById('acc-avatar');
+            const accCredits = document.getElementById('acc-credits');
+            const accPlan = document.getElementById('acc-plan');
+            
+            if (accName) accName.textContent = user.name || user.email || '用戶';
+            if (accEmail) accEmail.textContent = user.email || 'user@email.com';
+            if (accAvatar) accAvatar.textContent = (user.name || user.email || 'U').charAt(0).toUpperCase();
+            if (accCredits) accCredits.textContent = user.credits || 0;
+            if (accPlan) accPlan.textContent = user.plan || '免費';
+            
+            // 更新使用統計
+            const accPositioningCount = document.getElementById('acc-positioning-count');
+            const accTopicsCount = document.getElementById('acc-topics-count');
+            const accScriptCount = document.getElementById('acc-script-count');
+            
+            if (accPositioningCount) accPositioningCount.textContent = `${usage_stats.positioning || 0} 次`;
+            if (accTopicsCount) accTopicsCount.textContent = `${usage_stats.topics || 0} 次`;
+            if (accScriptCount) accScriptCount.textContent = `${usage_stats.script || 0} 次`;
+            
+            console.log('右側抽屜數據已更新:', { user, usage_stats });
         }
 
         // 載入知識內容
@@ -5739,8 +5769,8 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
             }
         }
         
-        // 載入帳戶資料
-        function loadAccountData() {
+        // 載入帳戶資料（本地版本）
+        function loadAccountDataLocal() {
             const user = JSON.parse(localStorage.getItem('user') || '{}');
             
             // 更新個人資料
@@ -5817,7 +5847,14 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         
         // 事件監聽器
         if (accountModalClose) {
-            accountModalClose.addEventListener('click', hideAccountModal);
+            console.log('設置帳戶模態視窗關閉按鈕事件監聽器');
+            accountModalClose.addEventListener('click', function(e) {
+                console.log('帳戶模態視窗關閉按鈕被點擊');
+                e.preventDefault();
+                hideAccountModal();
+            });
+        } else {
+            console.error('找不到帳戶模態視窗關閉按鈕元素');
         }
         
         if (settingsModalClose) {
@@ -6115,13 +6152,18 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         // 知識視窗關閉按鈕
         const knowledgeCloseBtn = document.getElementById('knowledge-modal-close');
         if (knowledgeCloseBtn) {
-            knowledgeCloseBtn.addEventListener('click', function() {
+            console.log('設置知識模態視窗關閉按鈕事件監聽器');
+            knowledgeCloseBtn.addEventListener('click', function(e) {
+                console.log('知識模態視窗關閉按鈕被點擊');
+                e.preventDefault();
                 const modal = document.getElementById('knowledge-modal');
                 if (modal) {
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
                 }
             });
+        } else {
+            console.error('找不到知識模態視窗關閉按鈕元素');
         }
 
         // 知識視窗標籤頁切換
@@ -6138,13 +6180,18 @@ After（${Math.floor(duration * 0.4)}-${Math.floor(duration * 0.8)}秒）：
         // 幫助視窗關閉按鈕
         const helpCloseBtn = document.getElementById('help-modal-close');
         if (helpCloseBtn) {
-            helpCloseBtn.addEventListener('click', function() {
+            console.log('設置幫助模態視窗關閉按鈕事件監聽器');
+            helpCloseBtn.addEventListener('click', function(e) {
+                console.log('幫助模態視窗關閉按鈕被點擊');
+                e.preventDefault();
                 const modal = document.getElementById('help-modal');
                 if (modal) {
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
                 }
             });
+        } else {
+            console.error('找不到幫助模態視窗關閉按鈕元素');
         }
 
         // 點擊模態視窗背景關閉
